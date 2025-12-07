@@ -8,6 +8,17 @@
 
 // Module
 namespace Peanut {
+    interface IJoinMeetingRequest {
+        email : string;
+        name? : string;
+        action: string;
+    }
+
+    interface IJoinMeetingResponse {
+        registered : boolean;
+        error : string;
+    }
+
     // JoinMeeting view model
     export class JoinMeetingViewModel  extends Peanut.ViewModelBase {
         ready = ko.observable(false);
@@ -18,7 +29,9 @@ namespace Peanut {
         passcode = ko.observable('');
         needsEmail = ko.observable(true);
         needsName = ko.observable(false);
+        registrationConfirmed = ko.observable(false);
 
+        action = 'checkregistration';
 
         messageText =
             ko.observable('Please enter your email address below to join the meeting.');
@@ -35,6 +48,7 @@ namespace Peanut {
             me.bindDefaultSection();
             successFunction();
         }
+
 
 
         onContinue = () => {

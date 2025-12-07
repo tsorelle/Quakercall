@@ -11,6 +11,8 @@ var Peanut;
             this.passcode = ko.observable('');
             this.needsEmail = ko.observable(true);
             this.needsName = ko.observable(false);
+            this.registrationConfirmed = ko.observable(false);
+            this.action = 'checkregistration';
             this.messageText = ko.observable('Please enter your email address below to join the meeting.');
             this.onContinue = () => {
                 if (this.needsName()) {
