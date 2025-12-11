@@ -5,7 +5,7 @@
  * Date: 5/1/2017
  * Time: 10:33 AM
  */
-
+// todo: sync with latest peanut e.g. fma application
 namespace Peanut;
 use Tops\sys\TKeyValuePair;
 use Tops\sys\TLanguage;
@@ -64,13 +64,17 @@ class Bootstrap
             exit ("No autoload file: $autoloadFile");
         }
         @include_once $fileRoot.$settings->composerPath.'/autoload.php';
+        $applicationRoot = realpath(dirname(__FILE__).'/..');
 
         $topsRoot = $settings->topsLocation;
         $appSrcRoot = $settings->mvvmPath.'src';
         $loader = Autoloader::getInstance();
+        $test = $fileRoot.$appSrcRoot;
         $loader->addPsr4('Peanut\Application',$fileRoot.$appSrcRoot);
         $loader->addPsr4('Tops',$fileRoot.$topsRoot);
         $loader->addPsr4('Peanut',$fileRoot.$settings->peanutSrcLocation);
+        $loader->addPsr4('Application', $applicationRoot.'/src');
+
         $packages = ViewModelManager::getPackageList();
         if (!empty($packages)) {
             $packagePath = ViewModelManager::getPackagePath();

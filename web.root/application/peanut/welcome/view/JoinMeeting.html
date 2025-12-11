@@ -1,37 +1,41 @@
 <div id="joinmeeting-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
-<div id="joinmeeting-view-container" class="row" style="display: none">    <div data-bind="visible: !ready()">
+<div id="joinmeeting-view-container" class="row" style="display: none">
+    <div data-bind="visible:!fatalError()">
         <div class="pt-4">
             <h2>Welcome to Quaker Call to Action National Meeting</h2>
+            <h3 data-bind="text: messageText"></h3>
+        </div>
+        <div  data-bind="visible: !ready()" >
+            <form id="joinmeeting-form" >
+                <label class="control-label" for="email">Your registration email address:</label>
+                <div class="form-group" data-bind="css: {'text-danger': emailError}">
+                    <input type="text" class="form-control" id="email" data-bind="textInput: emailAddress" />
+                    <span class="error" data-bind="visible: emailError">Enter a valid email address please</span>
+                </div>
+
+                <div class="form-group mt-3" data-bind="visible: needsName, css: {'text-danger': nameError} ">
+                    <label class="control-label" for="name">Your name:</label>
+                    <input type="text" class="form-control" id="name" data-bind="textInput: participantName" />
+                    <span class="error" data-bind="visible: nameError">Enter your name please</span>
+                </div>
+            </form>
+            <p class="mt-3"><button type="button" class="btn btn-primary" data-bind="click: onContinue">Continue</button></p>
+        </div>
+        <div class="mt-4" data-bind="visible: ready">
             <p>
-                <strong data-bind="text: messageText"></strong>
+                <strong><a data-bind="attr: { href: zoomUrl }" target="_blank">Join Meeting</a></strong>
+            </p>
+            <p>
+                Meeting ID: <span data-bind="text: zoomId"></span>
+            </p>
+            <p>
+                Passcode: <span data-bind="text: zoomPasscode"></span>
             </p>
         </div>
-        <form id="joinmeeting-form" >
-            <div class="form-group" data-bind="visible: needsEmail">
-                <label class="control-label" for="email">Your registration email address:</label>
-                <input type="text" class="form-control" id="email" data-bind="textInput: emailAddress" />
 
-            </div>
-            <div class="form-group mt-3" data-bind="visible: needsName">
-                <label class="control-label" for="name">Your name:</label>
-                <input type="text" class="form-control" id="name" data-bind="textInput: participantName" />
-            </div>
-        </form>
-        <p class="mt-3"><button type="button" class="btn btn-primary" data-bind="click: onContinue">Continue</button></p>
     </div>
-    <div class="mt-4" data-bind="visible: ready">
-        <h3>Click the link below, or use the meeting id and passcode to join the meeting</h3>
-        <p>
-            <strong><a data-bind="attr: { href: zoomUrl }" target="_blank">Join Meeting</a></strong>
-        </p>
-        <p>
-            Meeting ID: <span data-bind="text: meetingId"></span>
-        </p>
-        <p>
-            Passcode: <span data-bind="text: passcode"></span>
-        </p>
+    <div data-bind="visible: fatalError" id="errorDisplay" style="margin-top:10ex">
+        <h4>Sorry we are not able to complete your request.</h4>
+        <p>For assistance, <a href="#"> contact us here.</a></p>
     </div>
-
-</div>
-<div class="row">
 </div>

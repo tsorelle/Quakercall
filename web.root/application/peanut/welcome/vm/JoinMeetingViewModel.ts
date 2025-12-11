@@ -9,6 +9,7 @@
 // Module
 namespace Peanut {
     interface IJoinMeetingRequest {
+        meetingId: string;
         email : string;
         name? : string;
         action: string;
@@ -16,22 +17,33 @@ namespace Peanut {
 
     interface IJoinMeetingResponse {
         registered : boolean;
-        error : string;
+        message : string;
+        nameError: boolean;
+        emailError: boolean;
+        denied : boolean;
+        zoomId : string;
+        zoomHref :string;
+        zoomPwd: string;
     }
 
     // JoinMeeting view model
     export class JoinMeetingViewModel  extends Peanut.ViewModelBase {
         ready = ko.observable(false);
         emailAddress = ko.observable('');
+        emailError = ko.observable(false)
         participantName = ko.observable('');
-        zoomUrl = ko.observable('#');
         meetingId = ko.observable('');
-        passcode = ko.observable('');
-        needsEmail = ko.observable(true);
+        zoomUrl = ko.observable('#');
+        zoomId = ko.observable('');
+        zoomPasscode = ko.observable('');
+        // needsEmail = ko.observable(true);
         needsName = ko.observable(false);
+        nameError = ko.observable(false);
         registrationConfirmed = ko.observable(false);
+        fatalError = ko.observable(false);
+        fatalErrorTest = ko.observable(false);
 
-        action = 'checkregistration';
+        action = 'check';
 
         messageText =
             ko.observable('Please enter your email address below to join the meeting.');
@@ -40,11 +52,6 @@ namespace Peanut {
         init(successFunction?: () => void) {
             console.log('Init JoinMeeting');
             let me = this;
-/*
-            me.hideElement('top-navbar');
-            me.hideElement('breadcrumb-menu');
-            me.hideElement('site-footer');
-*/
             me.bindDefaultSection();
             successFunction();
         }
@@ -52,13 +59,57 @@ namespace Peanut {
 
 
         onContinue = () => {
-            if (this.needsName()) {
-                this.ready(true)
+            let me = this;
+            let request : IJoinMeetingRequest = {
+                meetingId : me.meetingId(),
+                email : me.emailAddress(),
+                name: me.participantName(),
+                action: me.action
             }
-            else {
-                this.messageText('No registration was found for your email address. Correct the address or enter your name to register')
-                this.needsName(true);
-            }
+
+            me.application.hideServiceMessages();
+            me.application.showWaiter('Please wait...');
+
+            me.services.executeService('CheckMeetingRegistration',request,
+                function(serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                        let response : IJoinMeetingResponse = serviceResponse.Value;
+                        // me.needsName(!response.registered);
+                        me.ready(response.registered);
+                        if (response.denied) {
+                            me.fatalError(true);
+                            return;
+                        }
+                        if (response.registered) {
+                            me.messageText('Click the link below, or use the meeting id and passcode to join the meeting');
+                            me.zoomId(response.zoomId);
+                            me.zoomPasscode(response.zoomPwd);
+                            me.zoomUrl(response.zoomHref);
+                            me.action='done';
+                        }
+                        else {
+                            // me.needsName(request.action == 'check' || (!response.emailError));
+                            me.nameError(response.nameError);
+                            me.emailError(response.emailError);
+                            me.messageText(response.message);
+                            if (!(response.emailError || response.nameError)) {
+                                me.messageText('To register for the meeting, enter your name and click "Continue"')
+                                me.action = 'register'
+                                me.needsName(true);
+                            }
+                        }
+                    }
+                    else {
+                        let debug = serviceResponse;
+                        me.fatalError(true);
+                    }
+                }
+            ).fail(function () {
+                let trace = me.services.getErrorInformation();
+                me.fatalError(true);
+            }).always(() => {
+                me.hideWaiter();
+            });
         };
         onShowError = () => {
             this.application.showError('This is an error.');
