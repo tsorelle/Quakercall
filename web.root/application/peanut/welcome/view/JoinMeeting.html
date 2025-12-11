@@ -1,8 +1,8 @@
 <div id="joinmeeting-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
 <div id="joinmeeting-view-container" class="row" style="display: none">
     <div data-bind="visible:!fatalError()">
-        <div class="pt-4">
-            <h2>Welcome to Quaker Call to Action National Meeting</h2>
+        <div class="pt-4" id="site-header">
+            <h2 class="mt-5">Welcome to Quaker Call to Action <br>National Meeting</h2>
             <h3 data-bind="text: messageText"></h3>
         </div>
         <div  data-bind="visible: !ready()" >
@@ -36,6 +36,62 @@
     </div>
     <div data-bind="visible: fatalError" id="errorDisplay" style="margin-top:10ex">
         <h4>Sorry we are not able to complete your request.</h4>
-        <p>For assistance, <a href="#"> contact us here.</a></p>
     </div>
+    <div id="site-footer" style="padding-left: 5em;padding-top: 2ex; padding-bottom: 1ex">
+        <p>For assistance please <a href="#" data-bind="click:onShowMessageForm"> contact us here.</a></p>
+    </div>
+
+    <div class="modal" id="message-modal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+
+
+                    <h4 class="modal-title">Send a message to the meeting administrator.</h4>
+                    <button type="button" class="close btn-close"
+                            data-dismiss="modal"
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                        <span data-bind="visible:bootstrapVersion() < 5" aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group" data-bind="css: {'has-error': fromNameError}">
+                        <label class="control-label form-control-label" for="fromName">Your name</label>
+                        <span class="error" data-bind="visible: fromNameError, text: fromNameError"></span>
+                        <input type="text" class="form-control" id="fromName" data-bind="textInput: fromName" />
+                    </div>
+
+                    <div class="form-group" data-bind="css: {'has-error': fromAddressError}">
+                        <label class="control-label" for="fromAddress">Your email address</label>
+                        <span class="error" data-bind="visible: fromAddressError, text: fromAddressError"></span>
+                        <input type="text" class="form-control" id="fromAddress" data-bind="textInput: fromAddress" />
+                    </div>
+
+                    <div class="form-group" data-bind="css: {'has-error': subjectError}">
+                        <label class="control-label" for="subject">Subject</label>
+                        <span class="error" data-bind="visible: subjectError, text: subjectError"></span>
+                        <input type="text" class="form-control" id="subject" data-bind="textInput: messageSubject" />
+                    </div>
+
+                    <div class="form-group"  data-bind="css: {'has-error': bodyError() != ''}">
+                        <label class="control-label" for="body">Message</label>
+                        <span class="error" data-bind="visible: bodyError, text: bodyError"></span>
+                        <textarea rows="8" class="form-control" id="body" data-bind="value: messageBody"></textarea>
+                    </div>
+
+
+
+
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-primary" data-bind="click:onSendMessage">Send Message</button>
+                    <!-- data-bs-dismiss used by bootstrap 5, data-dismiss used by bootstrap 3 and 4 -->
+                    <a href="#" data-bs-dismiss="modal" data-dismiss="modal">Close</a>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
 </div>

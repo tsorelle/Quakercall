@@ -26,6 +26,13 @@ namespace Peanut {
         zoomPwd: string;
     }
 
+    interface IMeetingAlertMessage {
+        fromAddress : string;
+        fromName : string;
+        messageSubject : string;
+        messageBody : string;
+    }
+
     // JoinMeeting view model
     export class JoinMeetingViewModel  extends Peanut.ViewModelBase {
         ready = ko.observable(false);
@@ -45,6 +52,15 @@ namespace Peanut {
 
         action = 'check';
 
+        fromAddress = ko.observable('');
+        fromName = ko.observable('');
+        messageSubject = ko.observable('');
+        messageBody = ko.observable('');
+        subjectError = ko.observable('');
+        bodyError = ko.observable('');
+        fromNameError = ko.observable('');
+        fromAddressError = ko.observable('');
+
         messageText =
             ko.observable('Please enter your email address below to join the meeting.');
 
@@ -52,8 +68,12 @@ namespace Peanut {
         init(successFunction?: () => void) {
             console.log('Init JoinMeeting');
             let me = this;
-            me.bindDefaultSection();
-            successFunction();
+            me.application.loadResources([
+                '@pnut/ViewModelHelpers.js'
+            ], () => {
+                me.bindDefaultSection();
+                successFunction();
+            });
         }
 
 
@@ -114,5 +134,85 @@ namespace Peanut {
         onShowError = () => {
             this.application.showError('This is an error.');
         };
+
+        clearMessageForm = () => {
+            this.fromAddress(this.emailAddress());
+            this.fromName(this.participantName());
+            this.messageSubject('');
+            this.messageBody('');
+            this.subjectError('');
+            this.bodyError('');
+            this.fromNameError('');
+            this.fromAddressError('');
+        }
+        onShowMessageForm = () => {
+            this.clearMessageForm();
+            this.showModal('#message-modal')
+        }
+        onSendMessage = () => {
+            let me = this;
+            let request = <IMeetingAlertMessage>{
+                fromAddress: this.fromAddress().trim(),
+                messageBody: this.messageBody().trim(),
+                fromName: this.fromName().trim(),
+                messageSubject: this.messageSubject().trim(),
+            }
+
+            this.subjectError('');
+            this.bodyError('');
+            this.fromNameError('');
+            this.fromAddressError('');
+
+            let ok = true;
+            if (!request.fromName) {
+                this.fromNameError('Your name is required');
+                ok = false;
+            }
+            if (!request.messageBody) {
+                this.bodyError('Please enter a message')
+                ok = false;
+            }
+
+            if (!Peanut.Helper.ValidateEmail(request.fromAddress)) {
+                this.fromAddressError('A valid email address is required')
+                ok = false;
+            }
+
+            if (!request.fromAddress) {
+                this.fromAddressError('Valid email address is required')
+                ok = false;
+            }
+
+            if (!request.messageSubject) {
+                this.subjectError('Please enter a subject')
+                ok = false;
+            }
+            if (!ok) {
+                return;
+            }
+
+
+            //SendAdminAlertCommand
+            me.clearMessageForm();
+            me.application.hideServiceMessages();
+            me.application.showWaiter('Please wait...');
+
+            me.services.executeService('SendAdminAlert', request,
+                function (serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                    } else {
+                        let debug = serviceResponse;
+                        me.fatalError(true);
+                    }
+                }
+            ).fail(function () {
+                let trace = me.services.getErrorInformation();
+                me.fatalError(true);
+            }).always(() => {
+                me.hideWaiter();
+            });
+
+            this.hideModal("#message-modal")
+        }
     }
 }

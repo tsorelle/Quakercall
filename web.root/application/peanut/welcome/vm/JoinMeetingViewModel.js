@@ -17,6 +17,14 @@ var Peanut;
             this.fatalError = ko.observable(false);
             this.fatalErrorTest = ko.observable(false);
             this.action = 'check';
+            this.fromAddress = ko.observable('');
+            this.fromName = ko.observable('');
+            this.messageSubject = ko.observable('');
+            this.messageBody = ko.observable('');
+            this.subjectError = ko.observable('');
+            this.bodyError = ko.observable('');
+            this.fromNameError = ko.observable('');
+            this.fromAddressError = ko.observable('');
             this.messageText = ko.observable('Please enter your email address below to join the meeting.');
             this.onContinue = () => {
                 let me = this;
@@ -68,12 +76,84 @@ var Peanut;
             this.onShowError = () => {
                 this.application.showError('This is an error.');
             };
+            this.clearMessageForm = () => {
+                this.fromAddress(this.emailAddress());
+                this.fromName(this.participantName());
+                this.messageSubject('');
+                this.messageBody('');
+                this.subjectError('');
+                this.bodyError('');
+                this.fromNameError('');
+                this.fromAddressError('');
+            };
+            this.onShowMessageForm = () => {
+                this.clearMessageForm();
+                this.showModal('#message-modal');
+            };
+            this.onSendMessage = () => {
+                let me = this;
+                let request = {
+                    fromAddress: this.fromAddress().trim(),
+                    messageBody: this.messageBody().trim(),
+                    fromName: this.fromName().trim(),
+                    messageSubject: this.messageSubject().trim(),
+                };
+                this.subjectError('');
+                this.bodyError('');
+                this.fromNameError('');
+                this.fromAddressError('');
+                let ok = true;
+                if (!request.fromName) {
+                    this.fromNameError('Your name is required');
+                    ok = false;
+                }
+                if (!request.messageBody) {
+                    this.bodyError('Please enter a message');
+                    ok = false;
+                }
+                if (!Peanut.Helper.ValidateEmail(request.fromAddress)) {
+                    this.fromAddressError('A valid email address is required');
+                    ok = false;
+                }
+                if (!request.fromAddress) {
+                    this.fromAddressError('Valid email address is required');
+                    ok = false;
+                }
+                if (!request.messageSubject) {
+                    this.subjectError('Please enter a subject');
+                    ok = false;
+                }
+                if (!ok) {
+                    return;
+                }
+                me.clearMessageForm();
+                me.application.hideServiceMessages();
+                me.application.showWaiter('Please wait...');
+                me.services.executeService('SendAdminAlert', request, function (serviceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                    }
+                    else {
+                        let debug = serviceResponse;
+                        me.fatalError(true);
+                    }
+                }).fail(function () {
+                    let trace = me.services.getErrorInformation();
+                    me.fatalError(true);
+                }).always(() => {
+                    me.hideWaiter();
+                });
+                this.hideModal("#message-modal");
+            };
         }
         init(successFunction) {
             console.log('Init JoinMeeting');
             let me = this;
-            me.bindDefaultSection();
-            successFunction();
+            me.application.loadResources([
+                '@pnut/ViewModelHelpers.js'
+            ], () => {
+                me.bindDefaultSection();
+                successFunction();
+            });
         }
     }
     Peanut.JoinMeetingViewModel = JoinMeetingViewModel;
