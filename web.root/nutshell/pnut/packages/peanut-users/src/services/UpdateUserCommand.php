@@ -52,7 +52,7 @@ class UpdateUserCommand extends \Tops\services\TServiceCommand
             }
             $registered = $manager->registerSiteUser($username,$request->password,$fullname,$email,$roles);
             if ($registered->errorCode !== false) {
-                $this->addErrorMessage($registered);
+                $this->addErrorMessage("Account creation error: $registered->errorCode");
                 return;
             }
         }

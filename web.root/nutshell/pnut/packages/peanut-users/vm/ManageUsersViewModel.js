@@ -43,7 +43,8 @@ var PeanutUsers;
                     fullname: this.fullname().trim(),
                     email: this.email().trim(),
                     roles: this.rolesController.getValues(),
-                    password: this.password().trim()
+                    password: this.password().trim(),
+                    active: this.active() ? 1 : 0
                 };
                 this.errorMessage('');
                 if (!result.username) {
