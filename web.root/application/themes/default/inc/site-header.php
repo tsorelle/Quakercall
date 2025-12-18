@@ -3,7 +3,7 @@
          aria-label="Top navigation">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
-                <img style="height:3rem" class="img img-fluid" src="/application/assets/img/peanut-logo-6.jpg">
+                <img style="height:3rem" class="img img-fluid" src="/application/assets/img/qc-header-logo.jpg">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#nutshell-top-navigation-menu"

@@ -23,6 +23,7 @@
     /** @var int $sitefooter */
     /** @var int $pageheader */
     /** @var int $frontpage */
+    /** @var int $specialheader */
     /** @var int $bscdn */
 
 ?>
@@ -47,7 +48,9 @@
         }
     ?>
     <title>
-        <?php print $title ?>
+        <?php
+            print $title?? ''
+        ?>
     </title>
     <script src="https://kit.fontawesome.com/e3f06c8db4.js" crossorigin="anonymous"></script>
 </head>
@@ -55,6 +58,9 @@
     <div id="page-top"></div>
 
     <?php
+    if (!empty($specialheader)) {
+        include $themeIncludePath."/site-header2.php";
+    }
     if ($siteheader === 1) {
         include $themeIncludePath."/site-header.php";
     }
