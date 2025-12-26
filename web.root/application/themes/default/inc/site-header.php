@@ -2,7 +2,7 @@
     <nav id="top-navbar" class="navbar navbar-expand-sm navbar-light bg-light"
          aria-label="Top navigation">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">
+            <a class="navbar-brand" href="https://quakercall.net">
                 <img style="height:3rem" class="img img-fluid" src="/application/assets/img/qc-header-logo.jpg">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -22,13 +22,13 @@
 
                 </ul>
 
-                <form id="song-search" method="post" action="/songs" >
+                <!-- form id="song-search" method="post" action="/songs" >
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Search" autocomplete="off"
                                id="searchstring" name="searchstring"></input>
                         <button class="btn btn-outline-primary" type="submit"><i class="fas fa-search"></i></button>
                     </div>
-                </form>
+                </form -->
             </div>
         </div>
     </nav>

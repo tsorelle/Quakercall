@@ -267,7 +267,7 @@ class TModelBuilder
         }
     }
 
-    public static function Build($config=array(),$toolsRoot) {
+    public static function Build($config=array(),$toolsRoot=null) {
         $databaseKey =  @$config['settings']['databaseKey'];
         $srcRoot=@$config['settings']['sourcePath'];
         $appNamespace = @$config['settings']['namespace'];
