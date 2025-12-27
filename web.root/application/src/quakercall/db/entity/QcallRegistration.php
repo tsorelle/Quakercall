@@ -19,12 +19,14 @@ class QcallRegistration  extends \Tops\db\TimeStampedEntity
     public $affiliation;
     public $submissionId;
     public $ipAddress;
+    public $confirmed;
     public $active;
 
     public function getDtoDataTypes()
     {
         $types = parent::getDtoDataTypes();
         $types['submissionDate'] = \Tops\sys\TDataTransfer::dataTypeDate;
+        $types['confirmed'] = \Tops\sys\TDataTransfer::dataTypeFlag;
         return $types;
     }
 }

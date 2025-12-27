@@ -32,7 +32,7 @@ class QcallGroupendorsementsRepository extends \Tops\db\TEntityRepository
         'contactId'=>PDO::PARAM_STR,
         'submissionDate'=>PDO::PARAM_STR,
         'organizationType'=>PDO::PARAM_STR,
-        'NAME'=>PDO::PARAM_STR,
+        'name'=>PDO::PARAM_STR,
         'address'=>PDO::PARAM_STR,
         'contactName'=>PDO::PARAM_STR,
         'phone'=>PDO::PARAM_STR,

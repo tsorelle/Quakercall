@@ -13,7 +13,7 @@ class QcallGroupendorsement  extends \Tops\db\TimeStampedEntity
     public $contactId;
     public $submissionDate;
     public $organizationType;
-    public $NAME;
+    public $name;
     public $address;
     public $contactName;
     public $phone;

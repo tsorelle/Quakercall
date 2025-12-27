@@ -4,6 +4,7 @@ namespace PeanutTest\scripts;
 
 use Application\quakercall\db\entity\QcallContact;
 use Application\quakercall\db\entity\QcallEndorsement;
+use Application\quakercall\db\entity\QcallGdcustomer;
 use Application\quakercall\db\repository\QcallEndorsementsRepository;
 //use DateTime;
 //use mysql_xdevapi\Exception;
@@ -14,7 +15,10 @@ class ImportcontactsTest extends TestScript
 {
     private $importDate;
 
-    private function formatSort(QcallContact $record)
+    private function formatSort(
+        // QcallContact
+        QcallGdcustomer
+                                $record)
     {
         $result = '';
         if (!empty($record->firstName)) {
@@ -51,7 +55,9 @@ class ImportcontactsTest extends TestScript
         return $result;
     }
 
-    private function setFullNameAndSort(QcallContact $record)
+    private function setFullNameAndSort(// QcallContact
+                                        QcallGdcustomer
+                                        $record)
     {
         $personName = $this->formatName($record->firstName, $record->lastName);
         if (empty($organizationName)) {
@@ -70,7 +76,10 @@ class ImportcontactsTest extends TestScript
      * @param mixed $record
      * @return array
      */
-    public function assignValues(array $values, QcallContact $record): void
+    public function assignValues(array $values,
+                                 QcallGdcustomer
+                                 // QcallContact
+                                 $record): void
     {
         //  0 Email,
         //  1 First name,
@@ -120,6 +129,11 @@ class ImportcontactsTest extends TestScript
         $record->suppressed = $values[22] == 'true' ? true : false;
         $record->importDate =  $this->importDate;
         $record->active = true;
+
+        // customer list only
+        $record->lastUpdate = $values[14];
+        $record->lastActivity = $values[15];
+        $record->lastActivityDate = $values[16];
     }
 
     public function execute()
@@ -128,8 +142,10 @@ class ImportcontactsTest extends TestScript
         $this->importDate = date('Y-m-d H:i:s');
 
         $colcount = 26;
-        $entityClass = 'Application\quakercall\db\entity\QcallContact';
-        $repoclass = 'Application\quakercall\db\repository\QcallContactsRepository';
+        $entityClass = 'Application\quakercall\db\entity\QcallGdcustomer';
+        $repoclass = 'Application\quakercall\db\repository\QcallGdcustomersRepository';
+//        $entityClass = 'Application\quakercall\db\entity\QcallContact';
+//        $repoclass = 'Application\quakercall\db\repository\QcallContactsRepository';
         $csv = 'D:\dev\quakercall\data\customers-2025-12-23.csv';
         $extraRows = 0;
 

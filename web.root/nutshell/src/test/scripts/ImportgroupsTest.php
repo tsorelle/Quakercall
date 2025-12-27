@@ -11,6 +11,17 @@ use PeanutTest\scripts\TestScript;
 class ImportgroupsTest extends TestScript
 {
 
+    private function getOrgType($description)
+    {
+        switch ($description) {
+            case 'Quaker Monthly, Quarterly or Yearly Meeting' :
+                return 'meeting';
+            case 'Quaker Organization'                         :
+                return 'org';
+            default                                       :
+                return 'other';
+        }
+    }
     /**
      * @param array $values
      * @param mixed $record
@@ -20,15 +31,16 @@ class ImportgroupsTest extends TestScript
     {
         $date = new \DateTime($values[0]);
         $record->submissionDate = $date->format('Y-m-d');
-        $record->organizationType = $values[1]; //"Type of organization",
+        $record->organizationType = $this->getOrgType($values[1]); //"Type of organization",
         $record->name = $values[2]; //"Organization name:",
         $record->address = $values[3]; //Address,
         $record->contactName = $values[4]; //"Authorized Contact",
         $record->phone = $values[5]; //"Phone Number",
         $record->email = $values[6]; // Email,
-        if (!empty($values[6])) {
+        if (!empty($values[7])) {
             $record->attachment = $values[6]; //"Attach Copy of Authorizing Minute, if required."
         }
+        $record->active = 1;
 
         return $values;
     }
