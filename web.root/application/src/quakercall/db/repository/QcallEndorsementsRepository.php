@@ -28,9 +28,9 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
     protected function getFieldDefinitionList()
     {
         return array(
-        'id'=>PDO::PARAM_STR,
+        'id'=>PDO::PARAM_INT,
         'submissionDate'=>PDO::PARAM_STR,
-        'name'=>PDO::PARAM_STR,
+        'contactId'=>PDO::PARAM_INT,
         'email'=>PDO::PARAM_STR,
         'address'=>PDO::PARAM_STR,
         'comments'=>PDO::PARAM_STR,
@@ -44,4 +44,10 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
         'changedon'=>PDO::PARAM_STR,
         'active'=>PDO::PARAM_STR);
     }
+
+    public function getAllByEmail($email)
+    {
+        return $this->getEntityCollection('email = ?', [$email]);
+    }
+
 }

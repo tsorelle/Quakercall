@@ -13,6 +13,12 @@ use \Tops\db\TEntityRepository;
 
 class QcallContactsRepository extends \Tops\db\TEntityRepository
 {
+    public function isSubscribed($email)
+    {
+        $count = $this->getRecordCount('email = ? and subscribed=1', [$email]);
+        return $count > 0;
+    }
+
     protected function getTableName() {
         return 'qcall_contacts';
     }
@@ -28,7 +34,7 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
     protected function getFieldDefinitionList()
     {
         return array(
-        'id'=>PDO::PARAM_STR,
+        'id'=>PDO::PARAM_INT,
         'firstName'=>PDO::PARAM_STR,
         'lastName'=>PDO::PARAM_STR,
         'email'=>PDO::PARAM_STR,
@@ -47,7 +53,7 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         'postedDate'=>PDO::PARAM_STR,
         'importDate'=>PDO::PARAM_STR,
         'subscribed'=>PDO::PARAM_STR,
-        'suppressed'=>PDO::PARAM_STR,
+        'bounced'=>PDO::PARAM_STR,
         'createdby'=>PDO::PARAM_STR,
         'createdon'=>PDO::PARAM_STR,
         'changedby'=>PDO::PARAM_STR,

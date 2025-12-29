@@ -28,7 +28,7 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
     public $postedDate;
     public $importDate;
     public $subscribed;
-    public $suppressed;
+    public $bounced;
     public $active;
 
     public function getDtoDataTypes()
@@ -36,7 +36,7 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
         $types = parent::getDtoDataTypes();
         $types['postedDate'] = \Tops\sys\TDataTransfer::dataTypeDateTime;
         $types['subscribed'] = \Tops\sys\TDataTransfer::dataTypeFlag;
-        $types['suppressed'] = \Tops\sys\TDataTransfer::dataTypeFlag;
+        $types['bounced'] = \Tops\sys\TDataTransfer::dataTypeFlag;
         return $types;
     }
 }

@@ -22,17 +22,16 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
     }
 
     protected function getClassName() {
-       // return 'Application\quakercall\db\entity\QcallRegistration';
-        return null; // delete and uncomment above for deployment
+       return 'Application\quakercall\db\entity\QcallRegistration';
     }
 
     protected function getFieldDefinitionList()
     {
         return array(
-        'id'=>PDO::PARAM_STR,
+        'id'=>PDO::PARAM_INT,
         'participant'=>PDO::PARAM_STR,
-        'contactId'=>PDO::PARAM_STR,
-        'meetingId'=>PDO::PARAM_STR,
+        'contactId'=>PDO::PARAM_INT,
+        'meetingId'=>PDO::PARAM_INT,
         'submissionDate'=>PDO::PARAM_STR,
         'location'=>PDO::PARAM_STR,
         'religion'=>PDO::PARAM_STR,
@@ -45,5 +44,9 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
         'changedon'=>PDO::PARAM_STR,
         'confirmed'=>PDO::PARAM_STR,
         'active'=>PDO::PARAM_STR);
+    }
+
+    public function getByParticipant($contactId,$meetingId) {
+        return $this->getSingleEntity('contactId = ? and meetingId = ?',[$contactId,$meetingId]);
     }
 }

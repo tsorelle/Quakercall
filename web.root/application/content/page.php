@@ -76,7 +76,7 @@
 
 
     <!-- main content -->
-    <div  id="nutshell-main-section" style="padding-bottom: 2ex"> <!-- todo: this goes in stylesheet -->
+    <div  id="nutshell-main-section" style="padding-bottom: 10ex"> <!-- todo: this goes in stylesheet -->
         <div class="container" id="page-content">
             <div class="row pagecontent-row">
                 <?php

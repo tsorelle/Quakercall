@@ -76,7 +76,7 @@ class ImportoldregsTest extends TestScript
         }
         $fullName = $values[2];
         $email = $values[3];
-        $contact = $this->contactsRepo->findByEmail($email);
+        $contact = $this->contactsRepo->getAllByEmail($email);
         if ($contact) {
             $contactId = $contact->id;
         }

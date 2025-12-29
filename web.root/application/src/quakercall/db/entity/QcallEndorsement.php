@@ -11,6 +11,7 @@ class QcallEndorsement  extends \Tops\db\TimeStampedEntity
 { 
     public $id;
     public $submissionDate;
+    public $contactId;
     public $name;
     public $email;
     public $address;
