@@ -19,6 +19,16 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
         return $this->getSingleEntity('meetingCode',[$meetingCode]);
     }
 
+    public function getMeetingsList()
+    {
+        $sql =
+            'SELECT  id,meetingCode,meetingDate, meetingTime,theme,presenter,`meetingType` '.
+            'FROM `qcall_meetings` WHERE meetingType = 1 '.
+            'ORDER BY meetingDate DESC';
+        $stmt = $this->executeStatement($sql);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
     public function meetingReady(string $meetingCode) {
         $meeting = $this->getMeetingByCode($meetingCode);
         if ($meeting) {

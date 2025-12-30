@@ -1,0 +1,58 @@
+<div id="registrations-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
+<div id="registrations-view-container" class="row" style="display: none">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12">
+                <!-- div class="dropdown mb-2">
+                    <button class="btn btn-outline-dark dropdown-toggle" type="button" id="dropdownMenu1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        Filter <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" data-bind="foreach:meetingList">
+
+                        <li><a class="dropdown-item"  href="#" data-bind="click:$parent.applyFilter"><span data-bind="text:$data"></span></a></li>
+                    </ul>
+
+                </div -->
+                <h4>
+                   Registrations received for <span data-bind="text:meetingDate"></span> meeting. Count: <span data-bind="text: registrationCount"></span>
+                </h4>
+                <div data-bind="css: {'table-responsive':bootstrapVersion() < 4}">
+                    <h4 data-bind="meetingDescription"></h4>
+                    <table class="table" data-bind="css: {'table-responsive':bootstrapVersion() > 3}">
+                        <thead>
+                        <tr>
+                            <th>Received</th>
+                            <th>Participant</th>
+                            <th>Location</th>
+                            <th>Religion</th>
+                            <th>Affiliation</th>
+                            <th>Confirmed</th>
+                        </tr>
+                        </thead>
+                        <tbody data-bind="foreach:registrationList">
+                        <!-- tr data-bind="css: {danger:(!active())}" -->
+                        <tr>
+                            <td data-bind="text:submissionDate"></td>
+                            <td data-bind="text:participant"></td>
+                            <td data-bind="text:location"></td>
+                            <td data-bind="text:religion"></td>
+                            <td data-bind="text:affiliation"></td>
+                            <td data-bind="text:confirmed"></td>
+                        </tr>
+                        </tbody>
+
+                    </table>
+                    <div class="row">
+                        <div class="col-md-1">
+                            Page <span data-bind="text:currentPage"></span> of <span data-bind="text:maxPages"></span>
+                        </div>
+                        <div class="col-md-11">
+                            <a href="#" data-bind="visible:prevEntries,click:getPrevious" style="margin-right:10px">< Previous page</a>
+                            <a href="#" data-bind="visible:moreEntries,click:getNext">Next page ></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

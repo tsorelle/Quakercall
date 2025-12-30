@@ -27,6 +27,9 @@ class TWebSite
     }
 
     public static function ExpandUrl($url) {
+        if (empty($url)) {
+            return self::GetBaseUrl();
+        }
         $scheme = strtolower(parse_url($url,4)); // PHP_URL_SCHEME
         if ($scheme=='http' || $scheme =='https:') {
             return $url;

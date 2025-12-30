@@ -6,6 +6,7 @@ use Application\quakercall\db\repository\QcallContactsRepository;
 use Application\quakercall\db\repository\QcallEndorsementsRepository;
 use Application\quakercall\db\repository\QcallGroupendorsementsRepository;
 use Application\quakercall\db\repository\QcallMeetingsRepository;
+use Application\quakercall\db\repository\QcallRegistrationsRepository;
 
 class QcallDataManager
 {
@@ -13,6 +14,16 @@ class QcallDataManager
     private QcallEndorsementsRepository $endorsementsRepo;
     private QcallGroupendorsementsRepository $groupendorsementsRepo;
     private QcallMeetingsRepository $meetingsRepo;
+
+    private QcallRegistrationsRepository $registrationsRepo;
+
+    protected function getRegistrationsRepository() {
+        if (!isset($this->registrationsRepo)) {
+            $this->registrationsRepo = new QcallRegistrationsRepository();
+        }
+        return $this->registrationsRepo;
+    }
+
 
     protected function getContactsRepo() {
         if (!isset($this->contactRepo)) {
@@ -55,4 +66,20 @@ class QcallDataManager
         }
         return $response;
     }
+
+    public function getMeetingRegistrationList(array $meetingList, $meetingId=null) {
+        if (empty($meetingList)) {
+            throw new \Exception('Meeting list is empty');
+        }
+        if (empty($meetingId)) {
+            $meetingId = $meetingList[0]->id;
+        }
+        return $this->getRegistrationsRepository()->getRegistrationList($meetingId);
+    }
+
+    public function getMeetingsList()
+    {
+        return $this->getMeetingsRepo()->getMeetingsList();
+    }
+
 }

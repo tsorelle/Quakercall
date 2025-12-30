@@ -20,6 +20,10 @@
 		<pager title="Pager Test" description="Demo pager component" roles="" />
 		<editor title="Editor Test" description="Demo editor component" roles="" />
 	</tests>
+	<admin title="Admin" description="Management utilities" roles="adminitrator,manager">
+		<registrations title="Registrations" description="Manage zoom call registration" roles="administrator,manager" />
+		<contacts title="Contacts" description="Manage contact list" roles="administrator,manager" />
+	</admin>
 	<tools title="Tools" description="Utilities for administration" roles="administrator" icon="fas fa-cog">
 		<users title="Users" description="User management" roles="administrator" />
 		<scheduler title="Task Scheduler" description="Manage automated tasks"  />

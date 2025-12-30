@@ -13,6 +13,18 @@ use \Tops\db\TEntityRepository;
 
 class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
 {
+    public function getRegistrationList(mixed $meetingId) : array
+    {
+        $sql =
+            'SELECT id,participant,contactId,meetingId, submissionDate, '.
+            'location,religion,affiliation, submissionId, '.
+            "IF(confirmed=1,'Yes','No') AS confirmed ".
+            'FROM `qcall_registrations` WHERE meetingId = ? '.
+            'ORDER BY `submissionDate` DESC';
+        $stmt = $this->executeStatement($sql, [$meetingId]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
     protected function getTableName() {
         return 'qcall_registrations';
     }

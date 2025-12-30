@@ -7,7 +7,7 @@ $result = \Application\quakercall\services\JotFormManager::processForm();
 </p>
 <p>We'll send a reminder by email.</p>
 <p>Use the contact link below if any of the information below is incorrect or if you have any other questions.  Please
-    reference your email or the "SubmissionId" in the list below.</p>
+    reference your email or the "Submission Id" in the list below.</p>
 
 <table class="table">
     <tbody>
@@ -18,10 +18,10 @@ $result = \Application\quakercall\services\JotFormManager::processForm();
         <tr><td>Location      </td><td><?php print ($result->location          );?> </td></tr>
         <tr><td>Affiliation   </td><td><?php print (  $result->affiliation     );?> </td></tr>
         <tr><td>Meeting or Organization   </td><td><?php print (  $result->meeting  );?> </td></tr>
+        <tr><td>Submission Id</td><td><?php print ( $result->submissionId       );?> </td></tr>
         <?php
         if($result->testmode === 'yes'){   ?>
             <tr><td>Submission Date</td><td><?php print (	$result->submissionDate);?> </td></tr>
-            <tr><td>SubmissionId</td><td><?php print ( $result->submissionId       );?> </td></tr>
             <tr><td>Ip Address   </td><td><?php print ( 	$result->ipAddress     );?> </td></tr>
             <tr><td>FormId     	</td><td><?php print ( $result->formId             );?> </td></tr>
             <tr><td>MeetingId    </td><td><?php print ( $result->meetingId       )?></td></tr>
@@ -31,6 +31,8 @@ $result = \Application\quakercall\services\JotFormManager::processForm();
 
 <div>
     <?php
-    print_r($_POST)
+    if  ($result->testmode === 'yes') {
+        print_r($_POST);
+    }
     ?>
 </div>
