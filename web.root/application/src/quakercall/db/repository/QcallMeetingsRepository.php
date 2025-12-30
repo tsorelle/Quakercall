@@ -6,6 +6,7 @@
  // Deployment NS:
 namespace Application\quakercall\db\repository;
 
+use DateTime;
 use \PDO;
 use PDOStatement;
 use Tops\db\TDatabase;
@@ -13,6 +14,45 @@ use \Tops\db\TEntityRepository;
 
 class QcallMeetingsRepository extends \Tops\db\TEntityRepository
 {
+    public function getMeetingByCode(string $meetingCode)
+    {
+        return $this->getSingleEntity('meetingCode',[$meetingCode]);
+    }
+
+    public function meetingReady(string $meetingCode) {
+        $meeting = $this->getMeetingByCode($meetingCode);
+        if ($meeting) {
+            $meetingDate = new DateTime($meeting->meetingDate);
+            $today = new DateTime();
+            if ($meetingDate < $today) {
+                return -1;
+            }
+            if ($meetingDate > $today) {
+                return +1;
+            }
+            return 0;
+
+            // today fix for time
+/*
+            $meetingTime = $meeting->meetingTime;
+            $timeParts = explode("-", $meetingTime);
+            if (isset($timeParts[0]) && is_numeric($timeParts[0])) {
+                $meetingTime .= sprintf('%02d:00 PM', $timeParts[0]);
+                $startTime = new DateTime($meetingTime);
+                $now = new DateTime('now');
+                if ($now > $meetingTime) {
+
+                }
+            }
+            $startTime = new dateTime($meetingTime);
+*/
+
+
+        }
+        return false;
+
+    }
+
     protected function getTableName() {
         return 'qcall_meetings';
     }

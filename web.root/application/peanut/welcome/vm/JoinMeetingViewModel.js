@@ -3,11 +3,12 @@ var Peanut;
     class JoinMeetingViewModel extends Peanut.ViewModelBase {
         constructor() {
             super(...arguments);
+            this.timeForMeeting = ko.observable(-1);
             this.ready = ko.observable(false);
             this.emailAddress = ko.observable('');
             this.emailError = ko.observable(false);
             this.participantName = ko.observable('');
-            this.meetingId = ko.observable('');
+            this.meetingId = ko.observable('2026-01');
             this.zoomUrl = ko.observable('#');
             this.zoomId = ko.observable('');
             this.zoomPasscode = ko.observable('');
@@ -151,6 +152,14 @@ var Peanut;
             me.application.loadResources([
                 '@pnut/ViewModelHelpers.js'
             ], () => {
+                if (me.timeForMeeting() == -1) {
+                    me.messageText('The meeting is not ready to start. Please check back later');
+                }
+                else {
+                    if (me.timeForMeeting() == 1) {
+                        me.messageText('Sorry this meeting has concluded.');
+                    }
+                }
                 me.bindDefaultSection();
                 successFunction();
             });

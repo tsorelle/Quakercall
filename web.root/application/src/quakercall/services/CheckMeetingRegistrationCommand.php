@@ -2,6 +2,7 @@
 
 namespace Application\quakercall\services;
 
+use Application\quakercall\db\repository\QcallMeetingsRepository;
 use Tops\mail\TEmailValidator;
 use Tops\services\TServiceCommand;
 
@@ -63,6 +64,7 @@ class CheckMeetingRegistrationCommand extends TServiceCommand
         $email = $request->email ?? '';
         $meetingId = $request->meetingId ?? '';
 
+
         if ($this->checkEmail($email)) {
             switch ($request->action) {
                 case 'register':
@@ -70,16 +72,15 @@ class CheckMeetingRegistrationCommand extends TServiceCommand
                     if (empty($name)) {
                         $response->nameError = true;
                     } else {
-                        $response->registered = $this->registerParticipant($meetingId,$request->email, $name);
+                        $response->registered = $this->registerParticipant($meetingId, $request->email, $name);
                         if ($response->registered) {
                             $invite = $this->getMeetingInvitation($meetingId);
                             if ($invite) {
-                                $response->zoomId   = $invite->meetingId ;
-                                $response->zoomHref = $invite->url ;
-                                $response->zoomPwd  = $invite->passCode ;
+                                $response->zoomId = $invite->meetingId;
+                                $response->zoomHref = $invite->url;
+                                $response->zoomPwd = $invite->passCode;
                             }
-                        }
-                        else {
+                        } else {
                             $this->addErrorMessage('Unable to get meeting invitation');
                             return;
                         }
@@ -92,6 +93,7 @@ class CheckMeetingRegistrationCommand extends TServiceCommand
         } else {
             $response->emailError = true;
         }
+
 
         $this->setReturnValue($response);
     }

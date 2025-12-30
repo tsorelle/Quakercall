@@ -5,6 +5,8 @@
             <h2 class="mt-5">Welcome to Quaker Call to Action <br>National Meeting</h2>
             <h3 data-bind="text: messageText"></h3>
         </div>
+        <div data-bind="visible:timeForMeeting() == 0">
+
         <div  data-bind="visible: !ready()" >
             <form id="joinmeeting-form" >
                 <label class="control-label" for="email">Your registration email address:</label>
@@ -32,7 +34,7 @@
                 Passcode: <span data-bind="text: zoomPasscode"></span>
             </p>
         </div>
-
+        </div>
     </div>
     <div data-bind="visible: fatalError" id="errorDisplay" style="margin-top:10ex">
         <h4>Sorry we are not able to complete your request.</h4>

@@ -16,6 +16,7 @@ namespace Peanut {
     }
 
     interface IJoinMeetingResponse {
+        meetingAvailable: boolean;
         registered : boolean;
         message : string;
         nameError: boolean;
@@ -35,11 +36,12 @@ namespace Peanut {
 
     // JoinMeeting view model
     export class JoinMeetingViewModel  extends Peanut.ViewModelBase {
+        timeForMeeting = ko.observable(-1);
         ready = ko.observable(false);
         emailAddress = ko.observable('');
         emailError = ko.observable(false)
         participantName = ko.observable('');
-        meetingId = ko.observable('');
+        meetingId = ko.observable('2026-01');
         zoomUrl = ko.observable('#');
         zoomId = ko.observable('');
         zoomPasscode = ko.observable('');
@@ -71,6 +73,14 @@ namespace Peanut {
             me.application.loadResources([
                 '@pnut/ViewModelHelpers.js'
             ], () => {
+                if (me.timeForMeeting() == -1) {
+                    me.messageText('The meeting is not ready to start. Please check back later')
+                }
+                else {
+                    if (me.timeForMeeting() == 1) {
+                        me.messageText('Sorry this meeting has concluded.')
+                    }
+                }
                 me.bindDefaultSection();
                 successFunction();
             });
