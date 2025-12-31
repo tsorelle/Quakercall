@@ -170,14 +170,14 @@ class JotFormManager
                 $result->state = $_POST['endorser-address']['state'] ?? '';
                 $result->postalcode = $_POST['endorser-address']['postal'] ?? '';
                 $result->country = $_POST['endorser-address']['country'] ?? '';
-            }
-            else {
-                $result->address1 = '';
-                $result->address2 = '';
-                $result->city = '';
-                $result->state = '';
-                $result->postalcode = '';
-                $result->country = '';
+            } else {
+                // probably testing
+                $result->address1 = $_POST['addr_line1'] ?? '';
+                $result->address2 = $_POST['addr_line2'] ?? '';
+                $result->city = $_POST['city'] ?? '';
+                $result->state = $_POST['state'] ?? '';
+                $result->postalcode = $_POST['postal'] ?? '';
+                $result->country = $_POST['country'] ?? '';
             }
 
             $result->email = $_POST['endorser-email'] ?? '';
