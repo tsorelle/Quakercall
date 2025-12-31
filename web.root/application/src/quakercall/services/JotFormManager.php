@@ -87,6 +87,10 @@ class JotFormManager
 
             $result = new stdClass();
             $meetingCode = $_POST['meetingid'] ?? '';
+            if (empty($meetingCode)) {
+                // probably accidental repost or someone hacking
+                exit('Registration already processed. Please return to <a href="https://quakercall.net">Home page</a>');
+            }
             // throw new \Exception("Something went wrong while processing the request.");
             $result->formId = $_POST['formID'] ?? '';
             $result->meetingId = $instance->getMeetingId($meetingCode);
