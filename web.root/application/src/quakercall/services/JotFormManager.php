@@ -134,6 +134,81 @@ class JotFormManager
         return [];
     }
 
+    public static function processEndorsement()
+    {
+        error_reporting(E_WARNING);
+        ini_set('display_errors', 1);
+        // print "<pre>Process Form\n</pre>";
+
+        global $_POST;
+
+        try {
+            $instance = new JotFormManager();
+            // print "<pre>Make inst\n</pre>";
+
+            $result = new stdClass();
+
+            $result->formId = $_POST['formID'] ?? '';
+            $result->submissionDate = DATE('Y-m-d');
+            $result->submissionId = $_POST['submission_id'] ?? '';
+            $result->formKey = $_POST['formkey'] ?? '';
+            $result->ipAddress = $_POST['ip'] ?? '';
+            if (isset($_POST['firstname'])) {
+                // received from test form
+                $result->firstName = $_POST['firstname'] ?? '';
+                $result->lastName = $_POST['lastname'] ?? '';
+            } else {
+                $result->firstName = $_POST['endorser-name']['first'] ?? '';
+                $result->lastName = $_POST['endorser-name']['last'] ?? '';
+
+            }
+            $result->comments = $_POST['comments'] ?? '';
+            if (isset($_POST['endorser-address'])) {
+                $result->address1 = $_POST['endorser-address']['addr_line1'] ?? '';
+                $result->address2 = $_POST['endorser-address']['addr_line2'] ?? '';
+                $result->city = $_POST['endorser-address']['city'] ?? '';
+                $result->state = $_POST['endorser-address']['state'] ?? '';
+                $result->postalcode = $_POST['endorser-address']['postal'] ?? '';
+                $result->country = $_POST['endorser-address']['country'] ?? '';
+            }
+            else {
+                $result->address1 = '';
+                $result->address2 = '';
+                $result->city = '';
+                $result->state = '';
+                $result->postalcode = '';
+                $result->country = '';
+            }
+
+            $result->email = $_POST['endorser-email'] ?? '';
+            $result->location = $_POST['location'] ?? '';
+            $result->phone = $_POST['phonenumber'] ?? '';
+            if (isset($_POST['religion'])) {
+                if (is_array($_POST['religion'])) {
+                    $result->religion = $_POST['religion']['other'] ?? '';
+                } else {
+                    $result->religion = $_POST['religion'] ?? '';
+                }
+            } else {
+                $result->religion = '';
+            }
+            $result->meeting = $_POST['friendsmeeting'] ?? '';
+            $result->found = $_POST['how-found'] ?? '';
+
+
+            $result->testmode = $_POST['testmode'] ?? '';
+
+            if ($result->testmode !== 'yes') {
+                // print "Posting Test Mode\n";
+                $instance->postEndorsement($result);
+            }
+        } catch (\Exception $e) {
+            self::logException($e);
+            exit ('An unexpected error has occurred and was reported to the administrator.  Please try again later.');
+        }
+        return $result;
+    }
+
     public function getMeetingId($meetingCode)
     {
         $meetingRepo = $this->getMeetingRepository();
@@ -267,5 +342,9 @@ class JotFormManager
 
         self::logErrorMessage("Missing data: $message");
         return false;
+    }
+
+    private function postEndorsement(stdClass $result)
+    {
     }
 }
