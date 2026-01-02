@@ -1,5 +1,6 @@
 <?php
-
+// Version in use for Jan 25 registrations
+// Consolidate and replace with EndorsementsFormManager after jan 25
 namespace Application\quakercall\services;
 
 
@@ -126,6 +127,7 @@ class JotFormManager
                 // print "Posting Test Mode\n";
                 $instance->postRegistration($result);
             }
+            $result->meetingInfo = $instance->getMeetingInfo($result->meetingId);
             return $result;
         } catch (\Exception $e) {
             self::logException($e);
@@ -217,6 +219,25 @@ class JotFormManager
             throw new \Exception("Meeting not found for code '$meetingCode'");
         }
         return $id;
+    }
+
+    public function getMeetingInfo($meetingId)
+    {
+        try {
+            $meetingRepo = $this->getMeetingRepository();
+            $info = $meetingRepo->get($meetingId);
+            $result = '';
+            if ($info) {
+                $date = (new \DateTime($info->meetingDate))->format('F j, Y');
+                $result = sprintf("<br>%s<br>%s %s", $info->theme, $date, $info->meetingTime);
+            }
+            return $result;
+        }
+        catch (\Exception $e) {
+            self::logException($e);
+            return '';
+        }
+
     }
 
     public function postRegistration($request) {

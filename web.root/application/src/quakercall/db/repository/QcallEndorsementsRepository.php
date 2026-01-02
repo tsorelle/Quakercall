@@ -13,6 +13,11 @@ use \Tops\db\TEntityRepository;
 
 class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
 {
+    public function getEndorsement(int $contactId)
+    {
+        return $this->getSingleEntity('contactID = ?',[$contactId] );
+    }
+
     protected function getTableName() {
         return 'qcall_endorsements';
     }
@@ -30,13 +35,14 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
         return array(
         'id'=>PDO::PARAM_INT,
         'submissionDate'=>PDO::PARAM_STR,
+        'submissionId'=>PDO::PARAM_INT,
         'contactId'=>PDO::PARAM_INT,
+        'name'=>PDO::PARAM_STR,
         'email'=>PDO::PARAM_STR,
         'address'=>PDO::PARAM_STR,
         'comments'=>PDO::PARAM_STR,
-        'endorserType'=>PDO::PARAM_STR,
         'howFound'=>PDO::PARAM_STR,
-        'submissionId'=>PDO::PARAM_STR,
+        'religion'=>PDO::PARAM_STR,
         'ipAddress'=>PDO::PARAM_STR,
         'createdby'=>PDO::PARAM_STR,
         'createdon'=>PDO::PARAM_STR,

@@ -2,6 +2,11 @@
 $result = \Application\quakercall\services\JotFormManager::processForm();
 ?>
 <h2>Thanks for your registration</h2>
+<?php
+    if (!empty($result->meetingInfo)) {
+        print('<h4>'.$result->meetingInfo.'</h4>');
+    }
+    ?>
 <p>On the day of the meeting, go to this address to sign in and receive the Zoom video conference link:<br>
     <a href="https://qcall.2quakers.net/meeting">https://qcall.2quakers.net/meeting</a>
 </p>
