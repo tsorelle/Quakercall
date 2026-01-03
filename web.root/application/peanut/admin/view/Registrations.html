@@ -43,12 +43,18 @@
 
                     </table>
                     <div class="row">
-                        <div class="col-md-1">
+                        <div class="col-md-12">
                             Page <span data-bind="text:currentPage"></span> of <span data-bind="text:maxPages"></span>
                         </div>
-                        <div class="col-md-11">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
                             <a href="#" data-bind="visible:prevEntries,click:getPrevious" style="margin-right:10px">< Previous page</a>
+                            <span data-bind="visible:!prevEntries()" style="color: gray">< Previous page</span>
+                        </div>
+                        <div class="col-md-10">
                             <a href="#" data-bind="visible:moreEntries,click:getNext">Next page ></a>
+                            <span data-bind="visible:!moreEntries()" style="color: gray">Next page ></span>
                         </div>
                     </div>
                 </div>
