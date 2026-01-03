@@ -8,10 +8,24 @@
 
 // Module
 namespace Peanut {
+    interface ICurrentMeetingInfo {
+        id : any;
+        meetingCode : string;
+        dateOfMeeting : string;
+        meetingTime : string;
+        theme : string;
+        presenter : string;
+        zoomMeetingId : string;
+        zoomUrl : string;
+        zoomPasscode : string;
+        ready : any
+    }
+
     interface IJoinMeetingRequest {
         meetingId: string;
         email : string;
         name? : string;
+        subscribe: boolean;
         action: string;
     }
 
@@ -25,6 +39,7 @@ namespace Peanut {
         zoomId : string;
         zoomHref :string;
         zoomPwd: string;
+        subscribed: boolean;
     }
 
     interface IMeetingAlertMessage {
@@ -36,6 +51,9 @@ namespace Peanut {
 
     // JoinMeeting view model
     export class JoinMeetingViewModel  extends Peanut.ViewModelBase {
+        meetingTheme = ko.observable('');
+        meetingDate = ko.observable('');
+        meetingTime = ko.observable('');
         timeForMeeting = ko.observable(-1);
         ready = ko.observable(false);
         emailAddress = ko.observable('');
@@ -51,6 +69,8 @@ namespace Peanut {
         registrationConfirmed = ko.observable(false);
         fatalError = ko.observable(false);
         fatalErrorTest = ko.observable(false);
+        notSubscribed = ko.observable(false);
+        joinEmail = ko.observable(true);
 
         action = 'check';
 
@@ -73,16 +93,44 @@ namespace Peanut {
             me.application.loadResources([
                 '@pnut/ViewModelHelpers.js'
             ], () => {
-                if (me.timeForMeeting() == -1) {
-                    me.messageText('The meeting is not ready to start. Please check back later')
-                }
-                else {
-                    if (me.timeForMeeting() == 1) {
-                        me.messageText('Sorry this meeting has concluded.')
+                me.services.executeService('GetCurrentMeeting',null,
+                    function(serviceResponse: Peanut.IServiceResponse) {
+                        if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                            let response : ICurrentMeetingInfo = serviceResponse.Value;
+                            me.meetingDate(response.dateOfMeeting);
+                            me.meetingTheme(response.theme);
+                            me.meetingTime(response.meetingTime);
+                            // me.needsName(!response.registered);
+                            me.timeForMeeting(response.ready)
+                            if (me.timeForMeeting() == 1) {
+                                me.messageText('The meeting is not ready to start. Please check back later')
+                            }
+                            else {
+                                if (me.timeForMeeting() == -1) {
+                                    me.messageText('Sorry this meeting has concluded.')
+                                }
+                                else {
+                                    me.zoomId(response.zoomMeetingId);
+                                    me.zoomPasscode(response.zoomPasscode);
+                                    me.zoomUrl(response.zoomUrl);
+                                    // me.ready(true);
+                                }
+                            }
+                        }
+                        else {
+                            let debug = serviceResponse;
+                            me.fatalError(true);
+                        }
                     }
-                }
-                me.bindDefaultSection();
-                successFunction();
+                ).fail(function () {
+                    let trace = me.services.getErrorInformation();
+                    me.fatalError(true);
+                }).always(() => {
+                    me.hideWaiter();
+                    me.bindDefaultSection();
+                    successFunction();
+                });
+
             });
         }
 
@@ -94,7 +142,8 @@ namespace Peanut {
                 meetingId : me.meetingId(),
                 email : me.emailAddress(),
                 name: me.participantName(),
-                action: me.action
+                subscribe: me.joinEmail(),
+                action: me.action,
             }
 
             me.application.hideServiceMessages();
@@ -126,6 +175,7 @@ namespace Peanut {
                                 me.messageText('To register for the meeting, enter your name and click "Continue"')
                                 me.action = 'register'
                                 me.needsName(true);
+                                me.notSubscribed(!response.subscribed);
                             }
                         }
                     }

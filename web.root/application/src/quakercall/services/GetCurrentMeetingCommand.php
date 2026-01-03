@@ -1,0 +1,19 @@
+<?php
+
+namespace Application\quakercall\services;
+
+use Application\quakercall\db\QcallDataManager;
+use Application\quakercall\db\repository\QcallMeetingsRepository;
+use Tops\services\TServiceCommand;
+
+class GetCurrentMeetingCommand extends TServiceCommand
+{
+
+    protected function run()
+    {
+        // $meetingId = $this->getRequest();
+        $repository = new QcallMeetingsRepository();
+        $current = $repository->getCurrentMeeting();
+        $this->setReturnValue($current);
+    }
+}

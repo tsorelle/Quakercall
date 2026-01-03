@@ -3,6 +3,9 @@ var Peanut;
     class JoinMeetingViewModel extends Peanut.ViewModelBase {
         constructor() {
             super(...arguments);
+            this.meetingTheme = ko.observable('');
+            this.meetingDate = ko.observable('');
+            this.meetingTime = ko.observable('');
             this.timeForMeeting = ko.observable(-1);
             this.ready = ko.observable(false);
             this.emailAddress = ko.observable('');
@@ -17,6 +20,8 @@ var Peanut;
             this.registrationConfirmed = ko.observable(false);
             this.fatalError = ko.observable(false);
             this.fatalErrorTest = ko.observable(false);
+            this.notSubscribed = ko.observable(false);
+            this.joinEmail = ko.observable(true);
             this.action = 'check';
             this.fromAddress = ko.observable('');
             this.fromName = ko.observable('');
@@ -33,7 +38,8 @@ var Peanut;
                     meetingId: me.meetingId(),
                     email: me.emailAddress(),
                     name: me.participantName(),
-                    action: me.action
+                    subscribe: me.joinEmail(),
+                    action: me.action,
                 };
                 me.application.hideServiceMessages();
                 me.application.showWaiter('Please wait...');
@@ -60,6 +66,7 @@ var Peanut;
                                 me.messageText('To register for the meeting, enter your name and click "Continue"');
                                 me.action = 'register';
                                 me.needsName(true);
+                                me.notSubscribed(!response.subscribed);
                             }
                         }
                     }
@@ -152,16 +159,39 @@ var Peanut;
             me.application.loadResources([
                 '@pnut/ViewModelHelpers.js'
             ], () => {
-                if (me.timeForMeeting() == -1) {
-                    me.messageText('The meeting is not ready to start. Please check back later');
-                }
-                else {
-                    if (me.timeForMeeting() == 1) {
-                        me.messageText('Sorry this meeting has concluded.');
+                me.services.executeService('GetCurrentMeeting', null, function (serviceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                        let response = serviceResponse.Value;
+                        me.meetingDate(response.dateOfMeeting);
+                        me.meetingTheme(response.theme);
+                        me.meetingTime(response.meetingTime);
+                        me.timeForMeeting(response.ready);
+                        if (me.timeForMeeting() == 1) {
+                            me.messageText('The meeting is not ready to start. Please check back later');
+                        }
+                        else {
+                            if (me.timeForMeeting() == -1) {
+                                me.messageText('Sorry this meeting has concluded.');
+                            }
+                            else {
+                                me.zoomId(response.zoomMeetingId);
+                                me.zoomPasscode(response.zoomPasscode);
+                                me.zoomUrl(response.zoomUrl);
+                            }
+                        }
                     }
-                }
-                me.bindDefaultSection();
-                successFunction();
+                    else {
+                        let debug = serviceResponse;
+                        me.fatalError(true);
+                    }
+                }).fail(function () {
+                    let trace = me.services.getErrorInformation();
+                    me.fatalError(true);
+                }).always(() => {
+                    me.hideWaiter();
+                    me.bindDefaultSection();
+                    successFunction();
+                });
             });
         }
     }

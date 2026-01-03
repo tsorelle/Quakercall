@@ -19,6 +19,16 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         return $count > 0;
     }
 
+    public function subscribe($contact)
+    {
+        if ($contact && !empty($contact->email)) {
+            if (!$this->isSubscribed($contact->email)) {
+                $contact->subscribed = 1;
+                $this->update($contact);
+            }
+        }
+    }
+
     protected function getTableName() {
         return 'qcall_contacts';
     }
@@ -72,4 +82,6 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
     public function findByFullname($fullname) {
         return $this->getSingleEntity("CONCAT(firstName,' ',lastname) ==?", [$fullname]);
     }
+
+
 }

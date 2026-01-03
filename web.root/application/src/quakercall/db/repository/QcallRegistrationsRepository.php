@@ -25,6 +25,35 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
+    public function isRegistered(mixed $meetingId, string $email) : bool
+    {
+        $sql =
+            'SELECT COUNT(*) '.
+            'FROM qcall_registrations r '.
+            'JOIN qcall_contacts c ON r.contactId = c.id '.
+            'WHERE r.meetingId = ? AND c.email = ?';
+
+        $stmt = $this->executeStatement($sql,[$meetingId, $email]);
+        $result = $stmt->fetch();
+        $count = (empty($result) ?  0 : $result[0]);
+        return $count > 0;
+    }
+    public function confirm($meetingId, string $email, $participantName=null)
+    {
+        $params = [$meetingId, $email];
+        $sql =
+            'UPDATE qcall_registrations r '.
+            'JOIN qcall_contacts c ON r.contactId = c.id '.
+            "SET confirmed = 1, r.changedOn = NOW(), r.changedBy = 'system' ".
+            'WHERE r.meetingId=? AND c.email=? ';
+        if ($participantName != null) {
+            $sql .= ' AND r.participantName=?';
+            $params = [$meetingId, $email,$participantName];
+        }
+        $stmt = $this->executeStatement($sql, $params);
+        return $stmt->rowCount() > 0;
+    }
+
     protected function getTableName() {
         return 'qcall_registrations';
     }

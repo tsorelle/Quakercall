@@ -2,6 +2,8 @@
 
 namespace Application\quakercall\db;
 
+use Application\quakercall\db\entity\QcallContact;
+use Application\quakercall\db\entity\QcallRegistration;
 use Application\quakercall\db\repository\QcallContactsRepository;
 use Application\quakercall\db\repository\QcallEndorsementsRepository;
 use Application\quakercall\db\repository\QcallGroupendorsementsRepository;
@@ -30,6 +32,78 @@ class QcallDataManager
             $this->contactRepo = new QcallContactsRepository();
         }
         return $this->contactRepo;
+    }
+
+    public function getMeetingByCode($meetingCode)
+    {
+        return $this->getMeetingsRepo()->getMeetingByCode($meetingCode);
+    }
+
+    public function registerParticipant(string $participantName, string $email, $meetingId, $subscribe=false, $confirmed=true)
+    {
+        $regRepo = $this->getRegistrationsRepository();
+
+        $contact = $this->findContact($email,$participantName);
+        if ($contact) {
+            $contactId = $contact->id;
+            if ($subscribe) {
+                $this->subscribe($contact);
+            }
+        }
+        else {
+            $contactId = $this->createBasicContact($participantName,$email,$subscribe);
+        }
+
+        $registration = $regRepo->getByParticipant($contactId,$meetingId);
+        if ($registration === false) {
+            $registration = new QcallRegistration();
+            $registration->contactId = $contactId;
+            $registration->participant = $participantName;
+            $registration->submissionDate = date("Y-m-d");
+            $registration->active = 1;
+            $registration->confirmed = 1;
+            $regRepo->insert($registration);
+        }
+        else {
+            $registration->active = 1;
+            $registration->confirmed = 1;
+            $regRepo->update($registration);
+        }
+        return true;
+    }
+
+    public function isRegistered($meetingId, string $email): bool
+    {
+        return $this->getRegistrationsRepository()->isRegistered($meetingId, $email);
+    }
+
+    public function confirmRegistration($meetingId, string $email)
+    {
+        return $this->getRegistrationsRepository()->confirm($meetingId, $email);
+    }
+
+    /**
+     * @param QcallContact $contact
+     * @return void
+     */
+    public function makeSortCode($firstName,$lastName): string
+    {
+        $hasFirst = !empty($firstName);
+        if (!empty($lastName)) {
+            $sortcode = $lastName;
+            if ($hasFirst) {
+                $sortcode .= ',';
+            }
+        }
+        if ($hasFirst) {
+            $sortcode .= $firstName;
+        }
+        return strtolower($sortcode);
+    }
+
+    public function isSubscribed(string $email)
+    {
+        return $this->getContactsRepo()->isSubscribed($email);
     }
 
     protected function getEndorsementsRepo() {
@@ -80,6 +154,65 @@ class QcallDataManager
     public function getMeetingsList()
     {
         return $this->getMeetingsRepo()->getMeetingsList();
+    }
+
+    public function getCurrentMeeting() {
+        return $this->getMeetingsRepo()->getCurrentMeeting();
+    }
+
+    private function findContact(string $email, string $participantName)
+    {
+        $contacts = $this->getContactsRepo()->getAllByEmail($email);
+        $fullname = strtolower($participantName);
+        if ($contacts) {
+            foreach ($contacts as $contact) {
+                if (strtolower($contact->fullname) == $fullname) {
+                    return $contact;
+                }
+            }
+        }
+        return false;
+    }
+
+    private function splitName(string $participantName)
+    {
+        $result = new \stdClass();
+        $parts = explode(' ', $participantName);
+        $result->last = array_pop($parts);
+        $suffix = strtolower( preg_replace('/[[:punct:]]/', '', $result->last) );
+
+        if ($suffix=='jr' || $suffix=='sr' || $suffix=='md' || $suffix=='ii' || $suffix=='iii') {
+            $result->last = array_pop($parts);
+        }
+        $result->first = implode(' ', $parts);
+        return $result;
+    }
+
+    private function createBasicContact(string $participantName, string $email,$subscribed=false)
+    {
+        $contactRepo = $this->getContactsRepo();
+        $alreadySubscribed = $contactRepo->isSubscribed($email);
+        if ($alreadySubscribed) {
+            $subscribed = false;
+        }
+
+        $contact = new QcallContact();
+        $contact->fullname = $participantName;
+        $contact->email = $email;
+        $name = $this->splitName($participantName);
+        $contact->lastName = $name->last;
+        $contact->firstName = $name->first;
+        $contact->sortcode = $this->makeSortCode($contact->firstName,$contact->lastName);
+        $contact->subscribed = $subscribed;
+        $contact->bounced = 0;
+        $contact->active = 1;
+        $contact->source = 'registrations';
+        return $contactRepo->insert($contact);
+    }
+
+    private function subscribe($contact)
+    {
+        $this->getContactsRepo()->subscribe($contact);
     }
 
 }

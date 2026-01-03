@@ -29,6 +29,17 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
+    public function getCurrentMeeting() {
+        $sql =
+            'SELECT id, meetingCode, '.
+            "DATE_FORMAT( meetingDate, '%M %e, %Y') as dateOfMeeting, ".
+            'meetingTime, theme, presenter, zoomMeetingId, zoomUrl, zoomPasscode, '.
+            'SIGN(DATEDIFF(meetingDate, CURDATE())) AS ready '.
+            'FROM qcall_meetings ORDER BY meetingDate DESC LIMIT 0,1 ';
+        $stmt = $this->executeStatement($sql);
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    }
+
     public function meetingReady(string $meetingCode) {
         $meeting = $this->getMeetingByCode($meetingCode);
         if ($meeting) {

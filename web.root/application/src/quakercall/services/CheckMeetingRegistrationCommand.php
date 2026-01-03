@@ -2,6 +2,8 @@
 
 namespace Application\quakercall\services;
 
+use Application\quakercall\db\entity\QcallMeeting;
+use Application\quakercall\db\QcallDataManager;
 use Application\quakercall\db\repository\QcallMeetingsRepository;
 use Tops\mail\TEmailValidator;
 use Tops\services\TServiceCommand;
@@ -17,30 +19,49 @@ use Tops\services\TServiceCommand;
     }
 
     interface IJoinMeetingResponse {
+        meetingAvailable: boolean;
         registered : boolean;
-        error : string;
+        message : string;
+        nameError: boolean;
+        emailError: boolean;
+        denied : boolean;
         zoomId : string;
         zoomHref :string;
         zoomPwd: string;
+        subscribed: boolean;
     }
 
  */
 
+
+
 class CheckMeetingRegistrationCommand extends TServiceCommand
 {
-
-    private function checkRegistration($meetingId,$email)
+    private QcallDataManager $dataManager;
+    private function getDataManager()
     {
-        return false;
+        if (!isset($this->dataManager)) {
+            $this->dataManager = new QcallDataManager();
+        }
+        return $this->dataManager;
     }
-    private function registerParticipant($meetingId,$email, $name) {
-        return true;
+
+    private $meeting;
+    private string $email;
+
+/*    private function checkRegistration()
+    {
+        return $this->getDataManager()->isRegistered($this->email);
     }
-    private function checkEmail($email) {
-        if (empty($email)) {
+    private function registerParticipant($name) {
+        return $this->getDataManager()->registerParticipant($name,$this->email,$this->meeting->id,true);
+    }*/
+
+    private function checkEmail() {
+        if (empty($this->email)) {
             return false;
         }
-        $validation = TEmailValidator::Validate($email);
+        $validation = TEmailValidator::Validate($this->email);
         return ($validation->isValid);
     }
 
@@ -59,51 +80,55 @@ class CheckMeetingRegistrationCommand extends TServiceCommand
         $response->emailError = false;
         $response->nameError = false;
         $response->denied = false;
+        $response->subscribed = false;
 
         $request = $this->getRequest();
-        $email = $request->email ?? '';
-        $meetingId = $request->meetingId ?? '';
+        $this->email = $request->email ?? '';
+        $meetingCode = $request->meetingCode ?? '';
+        $subscribe  = $request->subscribe ?? false;
+        if (empty($meetingCode)) {
+            $meeting = $this->getDataManager()->getCurrentMeeting();
+            if (empty($meeting)) {
+                $this->addErrorMessage('No meeting is current.');
+                return;
+            }
+            $this->meeting = $meeting;
+        }
+        else {
+            $this->meeting = $this->getDataManager()->getMeetingByCode($meetingCode);
+        }
 
-
-        if ($this->checkEmail($email)) {
+        if ($this->checkEmail()) {
             switch ($request->action) {
                 case 'register':
                     $name = trim($request->name ?? '');
                     if (empty($name)) {
                         $response->nameError = true;
                     } else {
-                        $response->registered = $this->registerParticipant($meetingId, $request->email, $name);
-                        if ($response->registered) {
-                            $invite = $this->getMeetingInvitation($meetingId);
-                            if ($invite) {
-                                $response->zoomId = $invite->meetingId;
-                                $response->zoomHref = $invite->url;
-                                $response->zoomPwd = $invite->passCode;
-                            }
-                        } else {
-                            $this->addErrorMessage('Unable to get meeting invitation');
-                            return;
-                        }
+                        $response->registered = $this->getDataManager()->registerParticipant($name,$this->email,$this->meeting->id,$subscribe);
                     }
                     break;
                 default:
-                    $isRegistered = $this->checkRegistration($meetingId, $email);
+                    $isRegistered = $this->getDataManager()->isRegistered($this->meeting->id, $this->email);
+                    if ($isRegistered) {
+                        $this->getDataManager()->confirmRegistration($this->meeting->id, $this->email);
+                    }
+                    $response->registered = $isRegistered;
+                    $response->subscribed = $this->getDataManager()->isSubscribed($this->email);
                     break;
             }
         } else {
             $response->emailError = true;
         }
-
+        if ($response->registered) {
+            $response->zoomId = $this->meeting->zoomMeetingId;
+            $response->zoomHref = $this->meeting->zoomUrl;
+            $response->zoomPwd = $this->meeting->zoomPasscode;
+        }
 
         $this->setReturnValue($response);
     }
 
-    private function getMeetingInvitation(string $meetingId)
-    {
-        $result = new \stdClass();
-        $result->meetingId =  '861 4198 4369';
-        $result->url 		= 'https://us02web.zoom.us/j/86141984369?pwd=UmhhLzEwZnVxS2RLbmRQb2YycXU1Zz09';
-        $result->passCode  = 'banjo';
-        return $result;
-    }
+
+
 }
