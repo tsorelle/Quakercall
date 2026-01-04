@@ -1,5 +1,5 @@
 <?php
-$result = \Application\quakercall\services\JotFormManager::processEndorsement();
+$result = \Application\quakercall\services\EndorsementsFormManager::processEndorsement();
 ?>
 <h3>Thank you for your endorsement.</h3>
 
