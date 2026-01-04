@@ -1,26 +1,28 @@
 <?php
-// Version in use for Jan 25 registrations
-// Consolidate and replace with EndorsementsFormManager after jan 25
+
 namespace Application\quakercall\services;
 
+// get new endorsements from jotforms where submissiondate > 2025-12-06
 
 
 use Application\quakercall\db\entity\QcallContact;
+use Application\quakercall\db\entity\QcallEndorsement;
 use Application\quakercall\db\entity\QcallError;
 use Application\quakercall\db\entity\QcallRegistration;
 use Application\quakercall\db\repository\QcallContactsRepository;
+use Application\quakercall\db\repository\QcallEndorsementsRepository;
 use Application\quakercall\db\repository\QcallErrorsRepository;
 use Application\quakercall\db\repository\QcallMeetingsRepository;
 use Application\quakercall\db\repository\QcallRegistrationsRepository;
 use stdClass;
 use Tops\sys\TStrings;
 
-class JotFormManager
+class EndorsementsFormManager
 {
     private static QcallErrorsRepository $errorsRepo;
 
 
-    private static function postError(QcallError $error,$meetingId=null,$formId=null)
+    private static function postError(QcallError $error, $meetingId = null, $formId = null)
     {
         if (!isset(self::$errorsRepo)) {
             self::$errorsRepo = new QcallErrorsRepository();
@@ -30,13 +32,15 @@ class JotFormManager
         $error->meetingId = $_POST['meetingid'] ?? '';
         self::$errorsRepo->insert($error);
     }
+
     private static function logErrorMessage($message)
     {
         $error = new QcallError();
         $error->message = $message;
         self::postError($error);
     }
-    private static function logException ( \Exception $exception)
+
+    private static function logException(\Exception $exception)
     {
         // $formId = $_POST['formID'] ?? '';
         $error = new QcallError();
@@ -50,7 +54,9 @@ class JotFormManager
 
         self::postError($error);
     }
-    private     $contactRepository;
+
+    private $contactRepository;
+
     private function getContactRepository()
     {
         if (!$this->contactRepository) {
@@ -58,8 +64,11 @@ class JotFormManager
         }
         return $this->contactRepository;
     }
-    private     $registrationRepository;
-    private function getRegistrationRepository() {
+
+    private $registrationRepository;
+
+    private function getRegistrationRepository()
+    {
         if (!$this->registrationRepository) {
             $this->registrationRepository = new QcallRegistrationsRepository();
         }
@@ -67,7 +76,9 @@ class JotFormManager
     }
 
     private $meetingsRepository;
-    private function getMeetingRepository() {
+
+    private function getMeetingRepository()
+    {
         if (!$this->meetingsRepository) {
             $this->meetingsRepository = new QcallMeetingsRepository();
         }
@@ -83,7 +94,7 @@ class JotFormManager
         global $_POST;
 
         try {
-            $instance = new JotFormManager();
+            $instance = new EndorsementsFormManager();
             // print "<pre>Make inst\n</pre>";
 
             $result = new stdClass();
@@ -127,7 +138,6 @@ class JotFormManager
                 // print "Posting Test Mode\n";
                 $instance->postRegistration($result);
             }
-            $result->meetingInfo = $instance->getMeetingInfo($result->meetingId);
             return $result;
         } catch (\Exception $e) {
             self::logException($e);
@@ -145,7 +155,7 @@ class JotFormManager
         global $_POST;
 
         try {
-            $instance = new JotFormManager();
+            $instance = new EndorsementsFormManager();
             // print "<pre>Make inst\n</pre>";
 
             $result = new stdClass();
@@ -183,8 +193,7 @@ class JotFormManager
             }
 
             $result->email = $_POST['endorser-email'] ?? '';
-            $result->location = $_POST['location'] ?? '';
-            $result->phone = $_POST['phonenumber'] ?? '';
+            $result->howFound = $_POST['how-found'] ?? '';
             if (isset($_POST['religion'])) {
                 if (is_array($_POST['religion'])) {
                     $result->religion = $_POST['religion']['other'] ?? '';
@@ -221,26 +230,8 @@ class JotFormManager
         return $id;
     }
 
-    public function getMeetingInfo($meetingId)
+    public function postRegistration($request)
     {
-        try {
-            $meetingRepo = $this->getMeetingRepository();
-            $info = $meetingRepo->get($meetingId);
-            $result = '';
-            if ($info) {
-                $date = (new \DateTime($info->meetingDate))->format('F j, Y');
-                $result = sprintf("<br>%s<br>%s %s", $info->theme, $date, $info->meetingTime);
-            }
-            return $result;
-        }
-        catch (\Exception $e) {
-            self::logException($e);
-            return '';
-        }
-
-    }
-
-    public function postRegistration($request) {
         if (!$this->validRequest($request)) {
             exit('Sorry, Invalid Request');
         }
@@ -250,22 +241,20 @@ class JotFormManager
         $participantName = $this->concatName($request);
         $request->fullname = $participantName;
 
-        $contact = $this->findContact($email,$participantName);
+        $contact = $this->findContact($email, $participantName);
         if ($contact) {
             $contactId = $contact->id;
-        }
-        else {
+        } else {
             $contactId = $this->createBasicContact($request);
         }
         $meetingId = $request->meetingId;
-        $registration = $regRepo->getByParticipant($contactId,$meetingId);
+        $registration = $regRepo->getByParticipant($contactId, $meetingId);
         if ($registration === false) {
             $mode = 'insert';
             $registration = new QcallRegistration();
             $registration->contactId = $contactId;
             $registration->participant = $participantName;
-        }
-        else {
+        } else {
             $mode = 'update';
         }
 
@@ -281,27 +270,27 @@ class JotFormManager
 
         if ($mode == 'insert') {
             $regRepo->insert($registration);
-        }
-        else {
+        } else {
             $regRepo->update($registration);
         }
     }
 
-    private function concatName($request) {
+    private function concatName($request)
+    {
         $result = '';
         if (!empty($request->firstName)) {
-            $result.= $request->firstName;
+            $result .= $request->firstName;
         }
         if (!empty($request->lastName)) {
             if (!empty($result)) {
-                $result.= ' ';
+                $result .= ' ';
             }
-            $result.= $request->lastName;
+            $result .= $request->lastName;
         }
         return $result;
     }
 
-    private function findContact($email,$fullname)
+    private function findContact($email, $fullname)
     {
         $contacts = $this->getContactRepository()->getAllByEmail($email);
         $fullname = strtolower($fullname);
@@ -315,14 +304,16 @@ class JotFormManager
         return false;
     }
 
-    private function createBasicContact($request)
+    private function createRelatedContact($request,$source='registrations')
     {
+        // todo: replace createBasicContact after Jan 25
         $contactRepo = $this->getContactRepository();
         $alreadySubscribed = $contactRepo->isSubscribed($request->email);
         $contact = new QcallContact();
-        $contact->firstName = $request->firstName;
-        $contact->lastName = $request->lastName;
-        $contact->fullname = $request->fullname;
+        $contact->assignFromObject($request);
+        if (empty($contact->fullname)) {
+            $contact->fullname = trim( $contact->firstName . ' ' . $contact->lastName);
+        }
         $sortcode = '';
         $hasFirst = !empty($request->firstName);
         if (!empty($contact->lastName)) {
@@ -334,13 +325,11 @@ class JotFormManager
         if ($hasFirst) {
             $sortcode .= $request->firstName;
         }
-        $contact->sortcode = strtolower($sortcode);
-        $contact->email = $request->email;
-        $contact->phone = $request->phone;
+        $contact->sortcode = trim(strtolower($sortcode));
         $contact->subscribed = !$alreadySubscribed;
         $contact->bounced = 0;
         $contact->active = 1;
-        $contact->source = 'registrations';
+        $contact->source = $source;
 
         return $contactRepo->insert($contact);
     }
@@ -348,17 +337,20 @@ class JotFormManager
     private function validRequest($request)
     {
         $message = '';
-/*        $meetingId = $request->meetingId ?? 'Not found.';
-        $formId = $request->formId ?? 'Not found.';*/
+        /*        $meetingId = $request->meetingId ?? 'Not found.';
+                $formId = $request->formId ?? 'Not found.';*/
 
-/*        if (empty($request->firstName) && empty($request->lastName)) {
-            $message .= 'Name ';
+        if (!(isset($request->firstName) || isset($request->lastName))) {
+            $message .= 'Name';
         }
-        if (empty($request->email)) {
+        if (!isset($request->email)) {
             $message .= 'email ';
-        };*/
-        if (empty($request->submissionId)) {
-            $message .= 'submissionId ';
+        };
+        if (!isset($request->meetingId)) {
+            $message .= 'meetingId ';
+        }
+        if (!isset($request->formId)) {
+            $message .= 'formId ';
         }
         if (empty($message)) {
             return true;
@@ -368,7 +360,70 @@ class JotFormManager
         return false;
     }
 
-    private function postEndorsement(stdClass $result)
+    private function validEndorsementRequest($request)
     {
+        $message = '';
+
+
+        if (empty($request->firstName) && empty($request->lastName)) {
+            $message .= 'Name ';
+        }
+        if (empty($request->email)) {
+            $message .= 'email ';
+        };
+        if (empty($request->submissionId)) {
+            $message .= 'submissionId ';
+        }
+        if (empty($message)) {
+            return true;
+        }
+
+        self::logErrorMessage("Missing data: $message");
+        return false;
+
+    }
+
+    private function postEndorsement(stdClass $request)
+    {
+        if (!$this->validEndorsementRequest($request)) {
+            exit('Sorry, Invalid Request');
+        }
+
+        $endorsementRepo = new QcallEndorsementsRepository();
+        $contactsRepo = new QcallContactsRepository();
+
+        $email = $request->email;
+        $endorserName = $this->concatName($request);
+        $request->fullname = $endorserName;
+
+        $contact = $this->findContact($email,$endorserName);
+        if ($contact) {
+            $contactId = $contact->id;
+            $contact->assignFromObject($request);
+            $contactsRepo->update($contact);
+            $endorsement = $endorsementRepo->getEndorsement($contactId);
+        }
+        else {
+            $contactId = $this->createRelatedContact($request,'endorsements');
+            $endorsement = false;
+        }
+
+
+        if ($endorsement === false) {
+            $endorsement = new QcallEndorsement();
+            $endorsement->assignFromObject($request);
+            $endorsement->contactId = $contactId;
+            $endorsement->name = $endorserName;
+            $endorsement->active = 1;
+            $result = $endorsementRepo->insert($endorsement);
+        }
+        else {
+            $endorsement->assignFromObject($request);
+            $result = $endorsementRepo->update($endorsement);
+        }
+
+        return $result;
+
+
     }
 }
