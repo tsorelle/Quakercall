@@ -8,10 +8,12 @@ namespace Application\quakercall\services;
 use Application\quakercall\db\entity\QcallContact;
 use Application\quakercall\db\entity\QcallEndorsement;
 use Application\quakercall\db\entity\QcallError;
+use Application\quakercall\db\entity\QcallGroupendorsement;
 use Application\quakercall\db\entity\QcallRegistration;
 use Application\quakercall\db\repository\QcallContactsRepository;
 use Application\quakercall\db\repository\QcallEndorsementsRepository;
 use Application\quakercall\db\repository\QcallErrorsRepository;
+use Application\quakercall\db\repository\QcallGroupendorsementsRepository;
 use Application\quakercall\db\repository\QcallMeetingsRepository;
 use Application\quakercall\db\repository\QcallRegistrationsRepository;
 use stdClass;
@@ -165,6 +167,7 @@ class EndorsementsFormManager
             $result->submissionId = $_POST['submission_id'] ?? '';
             $result->formKey = $_POST['formkey'] ?? '';
             $result->ipAddress = $_POST['ip'] ?? '';
+
             if (isset($_POST['firstname'])) {
                 // received from test form
                 $result->firstName = $_POST['firstname'] ?? '';
@@ -230,52 +233,8 @@ class EndorsementsFormManager
         return $id;
     }
 
-    public function postRegistration($request)
-    {
-        if (!$this->validRequest($request)) {
-            exit('Sorry, Invalid Request');
-        }
-        $regRepo = $this->getRegistrationRepository();
 
-        $email = $request->email;
-        $participantName = $this->concatName($request);
-        $request->fullname = $participantName;
-
-        $contact = $this->findContact($email, $participantName);
-        if ($contact) {
-            $contactId = $contact->id;
-        } else {
-            $contactId = $this->createBasicContact($request);
-        }
-        $meetingId = $request->meetingId;
-        $registration = $regRepo->getByParticipant($contactId, $meetingId);
-        if ($registration === false) {
-            $mode = 'insert';
-            $registration = new QcallRegistration();
-            $registration->contactId = $contactId;
-            $registration->participant = $participantName;
-        } else {
-            $mode = 'update';
-        }
-
-        $registration->meetingId = $request->meetingId;
-        $registration->submissionDate = date("Y-m-d");
-        $registration->location = $request->location;
-        $registration->religion = $request->affiliation;
-        $registration->affiliation = $request->meeting;
-        $registration->submissionId = $request->submissionId;
-        $registration->ipAddress = $request->ipAddress;
-        $registration->active = 1;
-        $registration->confirmed = 0;
-
-        if ($mode == 'insert') {
-            $regRepo->insert($registration);
-        } else {
-            $regRepo->update($registration);
-        }
-    }
-
-    private function concatName($request)
+    private static function concatName($request)
     {
         $result = '';
         if (!empty($request->firstName)) {
@@ -365,12 +324,12 @@ class EndorsementsFormManager
         $message = '';
 
 
-        if (empty($request->firstName) && empty($request->lastName)) {
+/*        if (empty($request->firstName) && empty($request->lastName)) {
             $message .= 'Name ';
         }
         if (empty($request->email)) {
             $message .= 'email ';
-        };
+        };*/
         if (empty($request->submissionId)) {
             $message .= 'submissionId ';
         }
@@ -393,7 +352,7 @@ class EndorsementsFormManager
         $contactsRepo = new QcallContactsRepository();
 
         $email = $request->email;
-        $endorserName = $this->concatName($request);
+        $endorserName = self::concatName($request);
         $request->fullname = $endorserName;
 
         $contact = $this->findContact($email,$endorserName);
@@ -426,4 +385,146 @@ class EndorsementsFormManager
 
 
     }
-}
+
+    public function postOrgEndorsement($request) {
+        if (!$this->validEndorsementRequest($request)) {
+            exit('Sorry, Invalid Request');
+        }
+        $endorsementRepo = new QcallGroupendorsementsRepository();
+        $contactsRepo = new QcallContactsRepository();
+        $contact = $contactsRepo->findByOrganization($request->organizationName);
+        if ($contact) {
+            $contactId = $contact->id;
+            $contact->assignFromObject($request);
+            $contactsRepo->update($contact);
+            $endorsement = $endorsementRepo->getEndorsement($contactId);
+        }
+        else {
+            $contactId = $this->createRelatedContact($request,'group-endorsements');
+            $endorsement = false;
+        }
+
+        if ($endorsement === false) {
+            $endorsement = new QcallGroupendorsement();
+            $endorsement->assignFromObject($request);
+            $endorsement->contactId = $contactId;
+            $endorsement->organizationName = $request->fullname;
+            $endorsement->active = 1;
+            $endorsement->approved = 0;
+            $result = $endorsementRepo->insert($endorsement);
+        }
+        else {
+            $endorsement->assignFromObject($request);
+            $endorsement->approved = 0;
+            $result = $endorsementRepo->update($endorsement);
+        }
+
+        return $result;
+
+
+    }
+
+    public static function processOrgEndorsement()
+    {
+        // error_reporting(E_WARNING,E_ALL);
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        // print "<pre>Process Form\n</pre>";
+
+        global $_POST;
+
+        try {
+            $instance = new EndorsementsFormManager();
+            // print "<pre>Make inst\n</pre>";
+
+            $result = new stdClass();
+
+            $result->formId = $_POST['formID'] ?? '';
+            $result->submissionDate = DATE('Y-m-d');
+            $result->submissionId = $_POST['submission_id'] ?? '';
+            $result->formKey = $_POST['formkey'] ?? '';
+            $result->ipAddress = $_POST['ip'] ?? '';
+            $result->testmode = $_POST['testmode'] ?? '';
+
+
+            // for endorsement
+            $result->organizationName = $_POST['organizationname'] ?? '';
+            $result->organization = $_POST['organizationname'] ?? '';
+
+            if (empty($_POST['attachcopy'])) {
+                $result->attachments = '';
+            }
+            else {
+                $attachments = $_POST['attachcopy'] ?? '';
+                if (is_array($attachments)) {
+                    $result->attachments = implode(',', $attachments);
+                } else {
+                    $result->attachments = $attachments;
+                }
+            }
+
+            if ((!empty($_POST['contactname'])) && is_array($_POST['contactname'])) {
+                $result->firstName = $_POST['contactname']['first'] ?? '';
+                $result->lastName = $_POST['contactname']['last'] ?? '';
+            } else {
+                // local testing
+                $result->firstName = $_POST['first'] ?? '';
+                $result->lastName = $_POST['last'] ?? '';
+            }
+            
+            $result->fullname = self::concatName($result);
+
+            if ((!empty($_POST['address'])) && is_array($_POST['address'])) {
+                $result->address1 = $_POST['address']['addr_line1'] ?? '';
+                $result->address2 = $_POST['address']['addr_line2'] ?? '';
+                $result->city = $_POST['address']['city'] ?? '';
+                $result->state = $_POST['address']['state'] ?? '';
+                $result->postalcode = $_POST['address']['postal'] ?? '';
+            } else {
+                // local testing
+                $result->address1 = $_POST['addr_line1'] ?? '';
+                $result->address2 = $_POST['addr_line2'] ?? '';
+                $result->city = $_POST['city'] ?? '';
+                $result->state = $_POST['state'] ?? '';
+                $result->postalcode = $_POST['postal'] ?? '';
+            }
+            $result->phone = $_POST['phonenumber'] ?? '';
+            $result->country = $_POST['country'] ?? '';
+
+            $orgType = $_POST['organizationtype'] ?? null;
+            if (empty($orgType)) {
+                $result->organizationType = 'Other';
+                $result->typeId = 9;
+            }
+            else {
+                if (is_array($_POST['organizationtype'])) {
+                    $result->organizationType = $_POST['organizationtype']['other'] ?? '';
+                } else {
+                    $result->organizationType = $orgType;
+                    if (strstr($orgType, 'Meeting')) {
+                        $result->typeId = 1;
+                    }
+                    else if (strstr($orgType, 'Organization')) {
+                        $result->typeId = 2;
+                    }
+                    else {
+                        $result->typeId = 9;
+                    }
+                }
+            }
+
+            $result->email = $_POST['email'] ?? '';
+
+            if ($result->testmode !== 'yes') {
+                // print "Posting Test Mode\n";
+                $instance->postOrgEndorsement($result);
+            }
+            
+        } catch (\Exception $e) {
+            self::logException($e);
+            exit ('An unexpected error has occurred and was reported to the administrator.  Please try again later.');
+        }
+        return $result;
+    } // end processOrEndorsement function
+
+}// end class

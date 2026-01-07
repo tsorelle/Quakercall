@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Organization Endorsement</title>
+</head>
+
+<body>
+    <form action="/forms/orgendorsement" method="post" style="padding-left: 10em">
+        <p><label for='organizationname'>Organization name</label><br><input id="organizationname" name="organizationname"></input></p>
+        <p><label for='organizationtype'>Organization type</label><br><input id="organizationtype" name="organizationtype"></input></p>
+       <ul>
+           <li>Quaker Monthly, Quarterly or Yearly Meeting</li>
+           <li>Quaker Organization</li>
+       </ul>
+        <p>
+            <label for="first">First name:</label><br>
+            <input id="first" name="first"></input>
+        </p>
+        <p>
+            <label for="last">Last name:</label><br>
+            <input id="Last" name="last"></input>
+        </p>
+        <p><label for='email'>Email</label><br><input id="email" name="email"></input></p>
+        <p><label for='phonenumber'>Phone</label><br><input id="phonenumber" name="phonenumber"></input></p>
+        <p><strong>Address</strong></p>
+
+        <p style='padding-left:5rem'><label for='addr_line1'>Address 1</label>   <br><input id='addr_line1' name='addr_line1'></input></p>
+        <p style='padding-left:5rem'><label for='addr_line2'>Address 2</label>   <br><input id='addr_line2' name='addr_line2'></input></p>
+        <p style='padding-left:5rem'><label for='city'      >City</label>        <br><input id='city'       name='city'      ></input></p>
+        <p style='padding-left:5rem'><label for='state'     >State</label>       <br><input id='state'      name='state'     ></input></p>
+        <p style='padding-left:5rem'><label for='postal'    >Postal code</label> <br><input id='postal'     name='postal'    ></input></p>
+        <p style='padding-left:5rem'><label for='country'   >country</label>     <br><input id='country'    name='country'   ></input></p>
+        <br>
+        <p><label for='attachcopy'>Attachments</label><br><input id="attachcopy" name="attachcopy"></input></p>
+
+        <div>
+            <button type="submit">Post</button>
+        </div>
+        <input type="hidden" id="testmode" name="testmode" value="no" />
+        <input type="hidden" id="submission_id" name="submission_id"  value="6426533751222408925" />
+        <input type="hidden" id="formID" 		name="formID" 		 value="253495940891167" />
+        <input type="hidden" id="formkey" 		name="formkey" 		 value="endorsement-group" />
+        <input type="hidden" id="ip" 			name="ip" value="136.60.94.221" />
+    </form>
+</body>
+</html>

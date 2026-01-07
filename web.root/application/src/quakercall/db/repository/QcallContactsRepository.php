@@ -76,6 +76,11 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         return $this->getSingleEntity('email=?', [$email]);
     }
 
+    public function findByOrganization($name)
+    {
+        return $this->getSingleEntity('organization=?', [$name]);
+    }
+
     public function getAllByEmail($email) {
         return $this->getEntityCollection('email=?', [$email]);
     }

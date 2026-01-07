@@ -31,19 +31,26 @@ class QcallGroupendorsementsRepository extends \Tops\db\TEntityRepository
         'id'=>PDO::PARAM_STR,
         'contactId'=>PDO::PARAM_STR,
         'submissionDate'=>PDO::PARAM_STR,
+        'typeId'=>PDO::PARAM_INT,
         'organizationType'=>PDO::PARAM_STR,
-        'name'=>PDO::PARAM_STR,
+        'organizationName'=>PDO::PARAM_STR,
         'address'=>PDO::PARAM_STR,
         'contactName'=>PDO::PARAM_STR,
         'phone'=>PDO::PARAM_STR,
         'email'=>PDO::PARAM_STR,
-        'attachment'=>PDO::PARAM_STR,
+        'attachments'=>PDO::PARAM_STR,
         'submissionId'=>PDO::PARAM_STR,
+        'approved'=>PDO::PARAM_STR,
         'ipAddress'=>PDO::PARAM_STR,
         'createdby'=>PDO::PARAM_STR,
         'createdon'=>PDO::PARAM_STR,
         'changedby'=>PDO::PARAM_STR,
         'changedon'=>PDO::PARAM_STR,
         'active'=>PDO::PARAM_STR);
+    }
+
+    public function getEndorsement(int $contactId)
+    {
+        return $this->getSingleEntity('contactID = ?',[$contactId] );
     }
 }
