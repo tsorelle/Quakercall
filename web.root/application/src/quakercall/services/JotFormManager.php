@@ -368,7 +368,4 @@ class JotFormManager
         return false;
     }
 
-    private function postEndorsement(stdClass $result)
-    {
-    }
 }

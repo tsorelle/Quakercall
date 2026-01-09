@@ -392,7 +392,7 @@ class EndorsementsFormManager
         }
         $endorsementRepo = new QcallGroupendorsementsRepository();
         $contactsRepo = new QcallContactsRepository();
-        $contact = $contactsRepo->findByOrganization($request->organizationName);
+        $contact = $contactsRepo->findOrganizationEndorser($request->organizationName);
         if ($contact) {
             $contactId = $contact->id;
             $contact->assignFromObject($request);
@@ -400,7 +400,7 @@ class EndorsementsFormManager
             $endorsement = $endorsementRepo->getEndorsement($contactId);
         }
         else {
-            $contactId = $this->createRelatedContact($request,'group-endorsements');
+            $contactId = $this->createRelatedContact($request,'org-endorsement');
             $endorsement = false;
         }
 
@@ -408,7 +408,6 @@ class EndorsementsFormManager
             $endorsement = new QcallGroupendorsement();
             $endorsement->assignFromObject($request);
             $endorsement->contactId = $contactId;
-            $endorsement->organizationName = $request->fullname;
             $endorsement->active = 1;
             $endorsement->approved = 0;
             $result = $endorsementRepo->insert($endorsement);
@@ -491,6 +490,21 @@ class EndorsementsFormManager
             $result->phone = $_POST['phonenumber'] ?? '';
             $result->country = $_POST['country'] ?? '';
 
+            $orgType = $_POST['organizationtype'] ?? '';
+            $result->organizationType = $orgType;
+            if (strstr($orgType, 'Meeting')) {
+                $result->typeId = 1;
+            }
+            else if (strstr($orgType, 'Organization')) {
+                $result->typeId = 2;
+            }
+            else {
+                $result->typeId = 0;
+            }
+
+
+            // no longer supporting submissions from non-quaker organizations
+/*
             $orgType = $_POST['organizationtype'] ?? null;
             if (empty($orgType)) {
                 $result->organizationType = 'Other';
@@ -512,6 +526,7 @@ class EndorsementsFormManager
                     }
                 }
             }
+*/
 
             $result->email = $_POST['email'] ?? '';
 

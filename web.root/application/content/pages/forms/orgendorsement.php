@@ -23,6 +23,7 @@ to let us know if any corrections need to be made, or if you have any other ques
     <tr><td>Contact First Name     </td><td><?php print ( 	$result->firstName     );?> </td></tr>
     <tr><td>Contact Last Name      </td><td><?php print ( 	$result->lastName      );?> </td></tr>
     <tr><td>Email         </td><td><?php print (	$result->email         );?> </td></tr>
+    <tr><td>Phone         </td><td><?php print (	$result->phone         );?> </td></tr>
 
     <tr><td>Attachments </td><td>
             <?php
