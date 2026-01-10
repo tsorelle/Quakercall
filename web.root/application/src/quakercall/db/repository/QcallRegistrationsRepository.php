@@ -20,7 +20,7 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
             'location,religion,affiliation, submissionId, '.
             "IF(confirmed=1,'Yes','No') AS confirmed ".
             'FROM `qcall_registrations` WHERE meetingId = ? '.
-            'ORDER BY `submissionDate` DESC';
+            'ORDER BY `submissionDate` DESC, id DESC';
         $stmt = $this->executeStatement($sql, [$meetingId]);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }

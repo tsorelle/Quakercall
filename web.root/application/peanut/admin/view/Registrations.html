@@ -13,20 +13,23 @@
                     </ul>
 
                 </div -->
-                <h4>
+                <h4 data-bind="visible:currentFilter() == 'all'"  >
                    Registrations received for <span data-bind="text:meetingDate"></span> meeting. Count: <span data-bind="text: registrationCount"></span>
+                </h4>
+                <h4 data-bind="visible:currentFilter() == 'confirmed'"  >
+                    Registrations confirmed for <span data-bind="text:meetingDate"></span> meeting. Count: <span data-bind="text: confirmedCount"></span>
                 </h4>
                 <div data-bind="css: {'table-responsive':bootstrapVersion() < 4}">
                     <h4 data-bind="meetingDescription"></h4>
                     <table class="table" data-bind="css: {'table-responsive':bootstrapVersion() > 3}">
                         <thead>
                         <tr>
-                            <th>Received</th>
+                            <th style="min-width: 10em;">Received</th>
                             <th>Participant</th>
                             <th>Location</th>
                             <th>Religion</th>
                             <th>Affiliation</th>
-                            <th>Confirmed</th>
+                            <th><a href="#" data-bind="click:toggleFilter">Confirmed</a></th>
                         </tr>
                         </thead>
                         <tbody data-bind="foreach:registrationList">
