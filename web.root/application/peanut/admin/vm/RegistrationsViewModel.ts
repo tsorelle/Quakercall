@@ -117,19 +117,21 @@ namespace Peanut {
                 me.confirmedRegistrations = me.allRegistrations.filter(item => item.confirmed != 'No');
                 me.confirmedCount(me.confirmedRegistrations.length);
             }
-            this.registrationList([]);
-            this.registrationList(me.confirmedRegistrations);
-            let pageCount = Math.ceil( me.confirmedRegistrations.length / me.itemsPerPage );
-            me.maxPages(pageCount);
-            me.getPage(1);
+            this.pageOne(me.confirmedRegistrations);
         }
 
         showAll = () => {
             let me = this;
             this.currentFilter('all')
-            let pageCount = Math.ceil( me.allRegistrations.length / me.itemsPerPage );
+            this.pageOne(me.allRegistrations);
+        }
+
+        pageOne = (list: IRegistrationListItem[]) => {
             this.registrationList([]);
-            this.registrationList(me.allRegistrations);
+            this.registrationList(list);
+            let pageCount = Math.ceil( list.length / this.itemsPerPage );
+            this.maxPages(pageCount);
+            this.getPage(1);
         }
 
     }
