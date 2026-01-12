@@ -1,0 +1,25 @@
+<div id="grouplist-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
+<div id="grouplist-view-container" style="display: none">
+    <div style="min-height:10ex"><h1 style="text-align: center">Meetings and Friends Organization Endorsements</h1></div>
+
+
+    <h4 style="text-align: center"><span data-bind="text:endorsementCount"></span> received as of <span data-bind="text:asOf"></span></h4>
+        <!-- h4 style="text-align: center">Total: <span data-bind="text:endorsementCount"></span></h4 -->
+        <table class="table" style="width: 100%; font-size: 80%">
+            <thead>
+            <tr>
+                <th>Organization Name</th>
+                <th>City</th>
+                <th>State</th>
+            </tr>
+            </thead>
+            <tbody data-bind="foreach:endorsementList">
+                <tr>
+                    <td  data-bind="text:organizationName"></td>
+                    <td data-bind="text:city"></td>
+                    <td data-bind="text:state"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

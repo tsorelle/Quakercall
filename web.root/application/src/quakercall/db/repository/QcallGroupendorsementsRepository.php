@@ -53,4 +53,25 @@ class QcallGroupendorsementsRepository extends \Tops\db\TEntityRepository
     {
         return $this->getSingleEntity('contactID = ?',[$contactId] );
     }
+
+    public function getGroupendorsementList() {
+        $sql = 'SELECT e.`organizationName`,c.`city`,c.`state` '.
+            'FROM `qcall_groupendorsements` e '.
+            'JOIN qcall_contacts c ON e.`contactId` = c.id '.
+            'WHERE approved = 1 '.
+            'ORDER BY e.`organizationName` ';
+        $stmt = $this->executeStatement($sql);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function getEndorsementCount() {
+        return $this->getCount(false,'approved=1');
+    }
+
+    public function getLastEndorsementDate() {
+        $sql = 'SELECT MAX(e.`submissionDate`) FROM qcall_groupendorsements e WHERE approved=1';
+        return $this->getValue($sql);
+    }
+
+
 }
