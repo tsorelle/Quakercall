@@ -170,7 +170,7 @@ abstract class TEntityRepository extends TPdoQueryManager implements IEntityRepo
         return $stmt->fetch();
     }
 
-    protected function getEntityCollection($where, $params, $includeInactive = false)
+    public function getEntityCollection($where, $params, $includeInactive = false)
     {
         $stmt = $this->executeEntityQuery($where, $params, $includeInactive);
         $result = $stmt->fetchAll();
