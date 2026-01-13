@@ -67,7 +67,8 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
         'createdon'=>PDO::PARAM_STR,
         'changedby'=>PDO::PARAM_STR,
         'changedon'=>PDO::PARAM_STR,
-        'active'=>PDO::PARAM_STR);
+        'active'=>PDO::PARAM_STR,
+        'approved'=>PDO::PARAM_STR);
     }
 
     public function getAllByEmail($email)

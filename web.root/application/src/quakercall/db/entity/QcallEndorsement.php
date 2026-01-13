@@ -21,11 +21,13 @@ class QcallEndorsement  extends \Tops\db\TimeStampedEntity
     public $submissionId;
     public $ipAddress;
     public $active;
+    public $approved;
 
     public function getDtoDataTypes()
     {
         $types = parent::getDtoDataTypes();
         $types['submissionDate'] = \Tops\sys\TDataTransfer::dataTypeDate;
+        $types['approved'] = \Tops\sys\TDataTransfer::dataTypeFlag;
         return $types;
     }
 }

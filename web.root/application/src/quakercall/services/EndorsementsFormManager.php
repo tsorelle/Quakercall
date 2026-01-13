@@ -249,14 +249,27 @@ class EndorsementsFormManager
         return $result;
     }
 
-    private function findContact($email, $fullname)
+    public function findContact($email, $name,$lastName=null )
     {
         $contacts = $this->getContactRepository()->getAllByEmail($email);
-        $fullname = strtolower($fullname);
-        if ($contacts) {
-            foreach ($contacts as $contact) {
-                if (strtolower($contact->fullname) == $fullname) {
-                    return $contact;
+        if (!empty($contacts)) {
+            if ($lastName != null) {
+                $firstName = strtolower($name);
+                $lastName = strtolower($lastName);
+                /** @var QcallContact $contact */
+                foreach ($contacts as $contact) {
+                    if (strtolower($contact->firstName) == $firstName &&
+                        strtolower($contact->lastName) == $lastName) {
+                        return $contact;
+                    }
+                }
+            }
+            else {
+                $fullName = strtolower($name);
+                foreach ($contacts as $contact) {
+                    if (strtolower($contact->fullname) == $fullName) {
+                        return $contact;
+                    }
                 }
             }
         }
@@ -354,6 +367,7 @@ class EndorsementsFormManager
         $email = $request->email;
         $endorserName = self::concatName($request);
         $request->fullname = $endorserName;
+        $request->approved = 0;
 
         $contact = $this->findContact($email,$endorserName);
         if ($contact) {
