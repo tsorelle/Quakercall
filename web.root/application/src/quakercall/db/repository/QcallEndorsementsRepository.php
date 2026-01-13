@@ -20,13 +20,23 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
 
     public function getEndorsementList()
     {
-        $sql = 'SELECT e.`organizationName`,c.`city`,c.`state` '.
+        $sqlHeader = 'SELECT c.`firstName`,c.`lastName`,c.`city`,c.`state` '.
             'FROM `qcall_endorsements` e '.
             'JOIN qcall_contacts c ON e.`contactId` = c.id '.
-            'WHERE approved = 1 '.
-            'ORDER BY e.`organizationName` ';
+            'WHERE approved = 1 AND e.active=1 ';
+
+        $sql = $sqlHeader." AND c.`state` <> '' ";
+        $sql .= 'ORDER BY c.state,c.city,c.`lastName`,c.`firstName`';
+
         $stmt = $this->executeStatement($sql);
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        $withAddress = $stmt->fetchAll(PDO::FETCH_OBJ);
+
+        // list blank addresses last
+        $sql = $sqlHeader." AND c.`state` = '' ";
+        $sql .= 'ORDER BY c.state,c.city,c.`lastName`,c.`firstName`';
+        $stmt = $this->executeStatement($sql);
+        $blankAddress = $stmt->fetchAll(PDO::FETCH_OBJ);
+        return [...$withAddress, ...$blankAddress];
     }
 
     public function getEndorsementCount()
@@ -35,6 +45,10 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
 
     public function getLastEndorsementDate()
     {
+        $sql = 'SELECT submissionDate from qcall_endorsements where active=1 AND approved=1';
+        $stmt = $this->executeStatement($sql);
+        $result = $stmt->fetch(PDO::FETCH_COLUMN);
+        return $result;
     }
 
     protected function getTableName() {

@@ -209,7 +209,7 @@ class EndorsementsFormManager
             $result->meeting = $_POST['friendsmeeting'] ?? '';
             $result->found = $_POST['how-found'] ?? '';
 
-
+            $result->submissionDate = DATE('Y-m-d');
             $result->testmode = $_POST['testmode'] ?? '';
 
             if ($result->testmode !== 'yes') {
