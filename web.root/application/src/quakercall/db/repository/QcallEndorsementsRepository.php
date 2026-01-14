@@ -20,7 +20,11 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
 
     public function getEndorsementList()
     {
-        $sqlHeader = 'SELECT c.`firstName`,c.`lastName`,c.`city`,c.`state` '.
+        $sqlHeader = // 'SELECT c.`firstName`,c.`lastName`,c.`city`,c.`state` '.
+            "SELECT  CONCAT(c.firstName,' ',c.lastName) AS `Name`, ".
+		    "CONCAT(c.`city`, IF(c.`state`='','',' '),c.state, ".
+		    "IF(c.`country`='United States' OR c.`country`='US' OR c.`country` = 'USA','',concat(' ',c.`country`))) ".
+		    'AS Location '.
             'FROM `qcall_endorsements` e '.
             'JOIN qcall_contacts c ON e.`contactId` = c.id '.
             'WHERE approved = 1 AND e.active=1 ';

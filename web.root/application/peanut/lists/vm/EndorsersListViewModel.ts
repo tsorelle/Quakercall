@@ -5,10 +5,8 @@
 namespace Peanut {
 
     interface IEndorsersListItem {
-        firstName : string;
-        lastName : string;
-        city: string;
-        state: string;
+        Name : string;
+        Location: string;
     }
     interface IGetEndorsersListResponse {
         list: IEndorsersListItem[];
