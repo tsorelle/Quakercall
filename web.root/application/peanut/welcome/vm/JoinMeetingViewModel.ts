@@ -93,7 +93,8 @@ namespace Peanut {
             me.application.loadResources([
                 '@pnut/ViewModelHelpers.js'
             ], () => {
-                me.services.executeService('GetCurrentMeeting',null,
+                let meetingId = me.getRequestVar('meeting');
+                me.services.executeService('GetCurrentMeeting',meetingId,
                     function(serviceResponse: Peanut.IServiceResponse) {
                         if (serviceResponse.Result == Peanut.serviceResultSuccess) {
                             let response : ICurrentMeetingInfo = serviceResponse.Value;

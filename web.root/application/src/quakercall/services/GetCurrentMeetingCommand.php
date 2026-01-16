@@ -11,9 +11,14 @@ class GetCurrentMeetingCommand extends TServiceCommand
 
     protected function run()
     {
-        // $meetingId = $this->getRequest();
+        $meetingId = $this->getRequest();
         $repository = new QcallMeetingsRepository();
-        $current = $repository->getCurrentMeeting();
+        if ($meetingId === '696a585072a29') {
+            $current = $repository->getTestMeeting();
+        }
+        else {
+            $current = $repository->getCurrentMeeting();
+        }
         $this->setReturnValue($current);
     }
 }

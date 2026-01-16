@@ -159,7 +159,8 @@ var Peanut;
             me.application.loadResources([
                 '@pnut/ViewModelHelpers.js'
             ], () => {
-                me.services.executeService('GetCurrentMeeting', null, function (serviceResponse) {
+                let meetingId = me.getRequestVar('meeting');
+                me.services.executeService('GetCurrentMeeting', meetingId, function (serviceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
                         let response = serviceResponse.Value;
                         me.meetingDate(response.dateOfMeeting);
