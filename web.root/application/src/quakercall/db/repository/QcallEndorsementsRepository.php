@@ -21,7 +21,8 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
     public function getEndorsementList()
     {
         $sqlHeader = // 'SELECT c.`firstName`,c.`lastName`,c.`city`,c.`state` '.
-            "SELECT  CONCAT(c.firstName,' ',c.lastName) AS `Name`, ".
+            // "SELECT  CONCAT(c.firstName,' ',c.lastName) AS `Name`, ".
+            "SELECT  e.name AS `Name`, ".
 		    "CONCAT(c.`city`, IF(c.`state`='','',' '),c.state, ".
 		    "IF(c.`country`='United States' OR c.`country`='US' OR c.`country` = 'USA','',concat(' ',c.`country`))) ".
 		    'AS Location '.
@@ -49,7 +50,7 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
 
     public function getLastEndorsementDate()
     {
-        $sql = 'SELECT submissionDate from qcall_endorsements where active=1 AND approved=1';
+        $sql = 'SELECT MAX(submissionDate) from qcall_endorsements where active=1 AND approved=1';
         $stmt = $this->executeStatement($sql);
         $result = $stmt->fetch(PDO::FETCH_COLUMN);
         return $result;
