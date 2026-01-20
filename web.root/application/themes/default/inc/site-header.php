@@ -1,5 +1,5 @@
 <header class="p-1 text-dark">
-    <nav id="top-navbar" class="navbar navbar-expand-sm navbar-light bg-light"
+    <nav id="top-navbar" class="navbar navbar-expand-lg navbar-light bg-light"
          aria-label="Top navigation">
         <div class="container-fluid">
             <a class="navbar-brand" href="https://quakercall.net">
