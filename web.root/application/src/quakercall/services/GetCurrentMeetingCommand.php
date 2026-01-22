@@ -17,7 +17,7 @@ class GetCurrentMeetingCommand extends TServiceCommand
             $current = $repository->getTestMeeting();
         }
         else {
-            $current = $repository->getCurrentMeeting();
+            $current = $repository->getCurrentMeeting('2 HOUR');
         }
         $this->setReturnValue($current);
     }

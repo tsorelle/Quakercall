@@ -29,16 +29,33 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
-    public function getCurrentMeeting() {
+    /**
+     * @return \stdClass {
+     *     id, meetingCode
+     *      ready
+     *     meetingTime, theme, presenter, zoomMeetingId, zoomUrl, zoomPasscode,
+     * }
+     *
+     * Ready value indicates that current time is -1 early, 0 on time, 1 concluded
+     * basted on the startTime field.
+     *
+     * $interval establishes the timeframe for admission.  This must be expressed in MySql interval units:
+     * 1 HOUR, 2 HOUR, 30 MINUTES  (not singular, something like 2 HOURS will cause an error)
+     *
+     * The startTime column in the qcall_meetings must be UTC, not local time.
+     *
+     */
+    public function getCurrentMeeting($interval = '3 HOUR') {
         $sql =
             'SELECT id, meetingCode, '.
             "DATE_FORMAT( meetingDate, '%M %e, %Y') as dateOfMeeting, ".
             'meetingTime, theme, presenter, zoomMeetingId, zoomUrl, zoomPasscode, '.
-            'CASE SIGN(TIMESTAMPDIFF(HOUR, startTime,UTC_TIMESTAMP())) '.
+            'CASE SIGN(TIMESTAMPDIFF(MINUTE, startTime,UTC_TIMESTAMP())) '.
             '	WHEN -1 THEN -1 '.
             '	WHEN 0 THEN 0 '.
             '	ELSE  '.
-            '	  IF(SIGN(TIMESTAMPDIFF(HOUR,DATE_ADD(startTime, INTERVAL 3 HOUR), UTC_TIMESTAMP())) > 0, 1, 0) '.
+            '	  IF(SIGN(TIMESTAMPDIFF(HOUR,DATE_ADD(startTime, INTERVAL '.
+                    $interval.'), UTC_TIMESTAMP())) > 0, 1, 0) '.
             'END AS ready '.
             'FROM qcall_meetings ORDER BY meetingDate DESC LIMIT 0,1 ';
         $stmt = $this->executeStatement($sql);
