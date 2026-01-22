@@ -1,13 +1,14 @@
 <div id="joinmeeting-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
-<div id="joinmeeting-view-container" class="row" style="display: none">
+<div id="joinmeeting-view-container" class="" style="display: none;">
     <div data-bind="visible:!fatalError()">
-        <div class="pt-4" id="site-header">
-            <h2 class="mt-5">Welcome to Quaker Call to Action National Meeting</h2>
-            <h3>
-                <span data-bind="text:meetingTheme"></span><br>
-                <span data-bind="text:meetingDate"></span> <span data-bind="text:meetingTime"></span>
-            </h3>
-            <h4 data-bind="text: messageText"></h4>
+        <div class="" id="site-header">
+            <h3 style="color: #0b7f89" class="mt-2">Welcome to Quaker Call to Action National Meeting</h3>
+            <h5>
+                <span data-bind="text:meetingTheme"></span><br><br>
+                    <span data-bind="text:meetingDate"></span> <span data-bind="text:meetingTime"></span>
+            </h5>
+
+            <h5 style="color: black" data-bind="text: messageText"></h5>
         </div>
         <div data-bind="visible:timeForMeeting() == 0">
 
@@ -53,7 +54,8 @@
     <div data-bind="visible: fatalError" id="errorDisplay" style="margin-top:10ex">
         <h4>Sorry we are not able to complete your request.</h4>
     </div>
-    <div id="site-footer" style="padding-left: 5em;padding-top: 2ex; padding-bottom: 1ex">
+    <div id="site-footer-plain" style="padding-left: 2rem;padding-top: 2ex; padding-bottom: 1rem">
+        <hr>
         <p>For assistance please <a href="#" data-bind="click:onShowMessageForm"> contact us here.</a></p>
     </div>
 

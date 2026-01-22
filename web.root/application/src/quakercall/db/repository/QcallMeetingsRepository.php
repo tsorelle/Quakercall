@@ -34,7 +34,12 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
             'SELECT id, meetingCode, '.
             "DATE_FORMAT( meetingDate, '%M %e, %Y') as dateOfMeeting, ".
             'meetingTime, theme, presenter, zoomMeetingId, zoomUrl, zoomPasscode, '.
-            'SIGN(DATEDIFF(meetingDate, CURDATE())) AS ready '.
+            'CASE SIGN(TIMESTAMPDIFF(HOUR, startTime,UTC_TIMESTAMP())) '.
+            '	WHEN -1 THEN -1 '.
+            '	WHEN 0 THEN 0 '.
+            '	ELSE  '.
+            '	  IF(SIGN(TIMESTAMPDIFF(HOUR,DATE_ADD(startTime, INTERVAL 3 HOUR), UTC_TIMESTAMP())) > 0, 1, 0) '.
+            'END AS ready '.
             'FROM qcall_meetings ORDER BY meetingDate DESC LIMIT 0,1 ';
         $stmt = $this->executeStatement($sql);
         return $stmt->fetch(PDO::FETCH_OBJ);

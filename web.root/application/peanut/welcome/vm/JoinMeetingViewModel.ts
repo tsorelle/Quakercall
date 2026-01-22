@@ -102,12 +102,13 @@ namespace Peanut {
                             me.meetingTheme(response.theme);
                             me.meetingTime(response.meetingTime);
                             // me.needsName(!response.registered);
+                            // me.timeForMeeting(0)
                             me.timeForMeeting(response.ready)
-                            if (me.timeForMeeting() == 1) {
+                            if (me.timeForMeeting() == -1) {
                                 me.messageText('The meeting is not ready to start. Please check back later')
                             }
                             else {
-                                if (me.timeForMeeting() == -1) {
+                                if (me.timeForMeeting() == 1) {
                                     me.messageText('Sorry this meeting has concluded.')
                                 }
                                 else {
