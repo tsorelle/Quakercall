@@ -62,6 +62,11 @@ class QcallDataManager
             $registration->submissionDate = date("Y-m-d");
             $registration->active = 1;
             $registration->confirmed = 1;
+            $registration->meetingId = $meetingId;
+            $registration->location = '';
+            $registration->religion = '';
+            $registration->affiliation = '';
+
             $regRepo->insert($registration);
         }
         else {
@@ -203,6 +208,15 @@ class QcallDataManager
         $contact->lastName = $name->last;
         $contact->firstName = $name->first;
         $contact->sortcode = $this->makeSortCode($contact->firstName,$contact->lastName);
+        $contact->phone = '';
+        $contact->organization = '';
+        $contact->title = '';
+        $contact->address1 = '';
+        $contact->address2 = '';
+        $contact->city = '';
+        $contact->state = '';
+        $contact->postalcode = '';
+        $contact->country = '';
         $contact->subscribed = $subscribed;
         $contact->bounced = 0;
         $contact->active = 1;

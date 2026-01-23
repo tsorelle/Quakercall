@@ -16,7 +16,7 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
 {
     public function getMeetingByCode(string $meetingCode)
     {
-        return $this->getSingleEntity('meetingCode',[$meetingCode]);
+        return $this->getSingleEntity('meetingCode=?',[$meetingCode]);
     }
 
     public function getMeetingsList()

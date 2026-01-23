@@ -95,6 +95,7 @@ class CheckMeetingRegistrationCommand extends TServiceCommand
             $this->meeting = $meeting;
         }
         else {
+            // todo: implement multiple meeting support.  This may not work for the purpose
             $this->meeting = $this->getDataManager()->getMeetingByCode($meetingCode);
         }
 

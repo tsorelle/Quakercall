@@ -88,7 +88,7 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
 
     public function getAllByEmail($email, $ignoreOrgEndorsement=true) {
         $where =  ($ignoreOrgEndorsement) ?
-            "email=? AND source <> 'org-endorsement'" :
+            "email=? AND (IFNULL(`source`,'') <> 'org-endorsement')" :
             "email=?";
 
         return $this->getEntityCollection($where, [$email]);
