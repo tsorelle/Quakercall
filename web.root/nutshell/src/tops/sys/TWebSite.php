@@ -30,7 +30,8 @@ class TWebSite
         if (empty($url)) {
             return self::GetBaseUrl();
         }
-        $scheme = strtolower(parse_url($url,4)); // PHP_URL_SCHEME
+        $url = parse_url($url,4);
+        $scheme = strtolower($url); // PHP_URL_SCHEME
         if ($scheme=='http' || $scheme =='https:') {
             return $url;
         }
