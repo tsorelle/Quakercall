@@ -2,47 +2,96 @@
  * Created by Terry on 4/28/2017.
  */
 /// <reference path='../core/Peanut.d.ts' />
-
 namespace Peanut {
 
     export class formProtector {
-        private startTime : number;
-        public start() {
-            // mark start of timer
-            this.startTime = new Date().getTime();
+        private readonly reloadKey = "lastPageLoad";
+        private readonly reloadThresholdMs: number;
+        private startTime: number | null = null;
+        private readonly honeypotId: string;
+
+        constructor(
+            thresholdSeconds: number = 2,
+            honeypotId: string = "security-control"
+        ) {
+            this.reloadThresholdMs = thresholdSeconds * 1000;
+            this.honeypotId = honeypotId;
         }
-        public end = () => {
-            // get milliseconds since start() was invoked.
-            let endtime = new Date().getTime();
-            return (endtime - this.startTime)
+
+        /**
+         * Detects rapid reloads using localStorage.
+         * Returns true if the previous load occurred too recently.
+         */
+        public isRapidReload(): boolean {
+            const now = Date.now();
+            const last = Number(localStorage.getItem(this.reloadKey) || 0);
+
+            localStorage.setItem(this.reloadKey, String(now));
+
+            if (!last) {
+                return false;
+            }
+
+            return (now - last) < this.reloadThresholdMs;
         }
-        public check     = (msec : number = 10000) => {
-            // compare duration to time limit (msec) in milliseconds
-            // return -1 (msecs < duration), 1 (msecs > duration), 0 (equal)
-            let duration = this.end()
-            let dif = duration - msec;
-            if (dif < 0) {
-                return -1;
-            }
-            if (dif > 0) {
-                return 1;
-            }
-            return 0;
+
+        /**
+         * Marks the beginning of user interaction time.
+         */
+        public start(): void {
+            this.startTime = Date.now();
         }
-        public likelyHuman = (humanMsecs = 7000) => {
-            // assuming anything faster that humanMsecs (default 7 seconds) is a likely a robot
-            // adjust for complexity of the form
-            let check = this.check(humanMsecs);
-            if (check > 0) {
-                let input = (<HTMLInputElement> document.getElementById('security-control'));
-                let honey = input ? input.value : '';
-                if (honey.length > 0) {
-                    return false;
-                }
+
+        /**
+         * Returns the number of milliseconds since start() was called.
+         */
+        public getDuration(): number {
+            if (this.startTime === null) {
+                return 0;
             }
+            return Date.now() - this.startTime;
+        }
+
+        /**
+         * Returns true if the user spent at least the given number of milliseconds.
+         */
+        public tookAtLeast(ms: number): boolean {
+            return this.getDuration() >= ms;
+        }
+
+        /**
+         * Returns true if the honeypot field is empty.
+         */
+        private honeypotClear(): boolean {
+            const el = document.getElementById(this.honeypotId) as HTMLInputElement | null;
+            if (!el) {
+                return true; // If the field is missing, fail open rather than break the form.
+            }
+            return el.value.trim().length === 0;
+        }
+
+        /**
+         * Determines whether the user is likely human.
+         * - If the user is too fast → suspicious
+         * - If honeypot is filled → suspicious
+         */
+        public likelyHuman(minHumanMs: number = 7000): boolean {
+            const duration = this.getDuration();
+
+            // Too fast → likely bot
+            if (duration < minHumanMs) {
+                return false;
+            }
+
+            // Honeypot filled → definitely bot
+            if (!this.honeypotClear()) {
+                return false;
+            }
+
             return true;
         }
     }
+
     /**
      * Constants for entity editState
      */

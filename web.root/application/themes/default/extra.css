@@ -26,3 +26,7 @@
 #nutshell-main-section {
     padding-bottom: 10ex;
 }
+
+.security-section {
+    display: none;
+}

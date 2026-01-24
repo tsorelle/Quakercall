@@ -1,36 +1,49 @@
 var Peanut;
 (function (Peanut) {
     class formProtector {
-        constructor() {
-            this.end = () => {
-                let endtime = new Date().getTime();
-                return (endtime - this.startTime);
-            };
-            this.check = (msec = 10000) => {
-                let duration = this.end();
-                let dif = duration - msec;
-                if (dif < 0) {
-                    return -1;
-                }
-                if (dif > 0) {
-                    return 1;
-                }
-                return 0;
-            };
-            this.likelyHuman = (humanMsecs = 7000) => {
-                let check = this.check(humanMsecs);
-                if (check > 0) {
-                    let input = document.getElementById('security-control');
-                    let honey = input ? input.value : '';
-                    if (honey.length > 0) {
-                        return false;
-                    }
-                }
-                return true;
-            };
+        constructor(thresholdSeconds = 2, honeypotId = "security-control") {
+            this.reloadKey = "lastPageLoad";
+            this.startTime = null;
+            this.reloadThresholdMs = thresholdSeconds * 1000;
+            this.honeypotId = honeypotId;
+        }
+        isRapidReload() {
+            const now = Date.now();
+            const last = Number(localStorage.getItem(this.reloadKey) || 0);
+            localStorage.setItem(this.reloadKey, String(now));
+            if (!last) {
+                return false;
+            }
+            return (now - last) < this.reloadThresholdMs;
         }
         start() {
-            this.startTime = new Date().getTime();
+            this.startTime = Date.now();
+        }
+        getDuration() {
+            if (this.startTime === null) {
+                return 0;
+            }
+            return Date.now() - this.startTime;
+        }
+        tookAtLeast(ms) {
+            return this.getDuration() >= ms;
+        }
+        honeypotClear() {
+            const el = document.getElementById(this.honeypotId);
+            if (!el) {
+                return true;
+            }
+            return el.value.trim().length === 0;
+        }
+        likelyHuman(minHumanMs = 7000) {
+            const duration = this.getDuration();
+            if (duration < minHumanMs) {
+                return false;
+            }
+            if (!this.honeypotClear()) {
+                return false;
+            }
+            return true;
         }
     }
     Peanut.formProtector = formProtector;

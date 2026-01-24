@@ -32,8 +32,15 @@ var Peanut;
             this.fromNameError = ko.observable('');
             this.fromAddressError = ko.observable('');
             this.messageText = ko.observable('Please enter your email address below to join the meeting.');
+            this.waiting = true;
             this.onContinue = () => {
                 let me = this;
+                if (me.waiting) {
+                    return null;
+                }
+                if (!me.protector.likelyHuman()) {
+                    return null;
+                }
                 let request = {
                     meetingId: me.meetingId(),
                     email: me.emailAddress(),
@@ -43,6 +50,7 @@ var Peanut;
                 };
                 me.application.hideServiceMessages();
                 me.application.showWaiter('Please wait...');
+                me.waiting = true;
                 me.services.executeService('CheckMeetingRegistration', request, function (serviceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
                         let response = serviceResponse.Value;
@@ -79,6 +87,8 @@ var Peanut;
                     me.fatalError(true);
                 }).always(() => {
                     me.hideWaiter();
+                    me.waiting = false;
+                    me.protector.start();
                 });
             };
             this.onShowError = () => {
@@ -95,11 +105,20 @@ var Peanut;
                 this.fromAddressError('');
             };
             this.onShowMessageForm = () => {
+                if (!this.protector.likelyHuman()) {
+                    return null;
+                }
                 this.clearMessageForm();
                 this.showModal('#message-modal');
             };
             this.onSendMessage = () => {
                 let me = this;
+                if (me.waiting) {
+                    return null;
+                }
+                if (!me.protector.likelyHuman()) {
+                    return null;
+                }
                 let request = {
                     fromAddress: this.fromAddress().trim(),
                     messageBody: this.messageBody().trim(),
@@ -134,6 +153,7 @@ var Peanut;
                 if (!ok) {
                     return;
                 }
+                me.waiting = true;
                 me.clearMessageForm();
                 me.application.hideServiceMessages();
                 me.application.showWaiter('Please wait...');
@@ -149,6 +169,8 @@ var Peanut;
                     me.fatalError(true);
                 }).always(() => {
                     me.hideWaiter();
+                    me.waiting = false;
+                    me.protector.start();
                 });
                 this.hideModal("#message-modal");
             };
@@ -159,7 +181,11 @@ var Peanut;
             me.application.loadResources([
                 '@pnut/ViewModelHelpers.js'
             ], () => {
+                me.protector = new Peanut.formProtector();
                 let meetingId = me.getRequestVar('meeting');
+                if (me.protector.isRapidReload()) {
+                    alert('Click Ok to continue.');
+                }
                 me.services.executeService('GetCurrentMeeting', meetingId, function (serviceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
                         let response = serviceResponse.Value;
@@ -190,7 +216,9 @@ var Peanut;
                     me.fatalError(true);
                 }).always(() => {
                     me.hideWaiter();
+                    me.protector.start();
                     me.bindDefaultSection();
+                    me.waiting = false;
                     successFunction();
                 });
             });

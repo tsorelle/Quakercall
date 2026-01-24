@@ -5,6 +5,8 @@
 // required for all view models:
 /// <reference path='../../../../nutshell/pnut/core/ViewModelBase.ts' />
 /// <reference path='../../../../nutshell/typings/knockout/index.d.ts' />
+/// <reference path='../../../../nutshell/pnut/core/Peanut.d.ts' />
+/// <reference path='../../../../nutshell/pnut/js/ViewModelHelpers.ts' />
 
 // Module
 namespace Peanut {
@@ -86,14 +88,23 @@ namespace Peanut {
         messageText =
             ko.observable('Please enter your email address below to join the meeting.');
 
+        protector: Peanut.formProtector;
+        waiting: boolean = true;
+
         // call this funtions at end of page
         init(successFunction?: () => void) {
             console.log('Init JoinMeeting');
             let me = this;
+
             me.application.loadResources([
                 '@pnut/ViewModelHelpers.js'
             ], () => {
+                me.protector = new Peanut.formProtector();
                 let meetingId = me.getRequestVar('meeting');
+                if (me.protector.isRapidReload()) {
+                    // slow down, might be attack
+                    alert('Click Ok to continue.')
+                }
                 me.services.executeService('GetCurrentMeeting',meetingId,
                     function(serviceResponse: Peanut.IServiceResponse) {
                         if (serviceResponse.Result == Peanut.serviceResultSuccess) {
@@ -129,7 +140,9 @@ namespace Peanut {
                     me.fatalError(true);
                 }).always(() => {
                     me.hideWaiter();
+                    me.protector.start();
                     me.bindDefaultSection();
+                    me.waiting = false;
                     successFunction();
                 });
 
@@ -140,6 +153,12 @@ namespace Peanut {
 
         onContinue = () => {
             let me = this;
+            if (me.waiting) {
+                return null;
+            }
+            if (!me.protector.likelyHuman()) {
+                return null;
+            }
             let request : IJoinMeetingRequest = {
                 meetingId : me.meetingId(),
                 email : me.emailAddress(),
@@ -150,7 +169,7 @@ namespace Peanut {
 
             me.application.hideServiceMessages();
             me.application.showWaiter('Please wait...');
-
+            me.waiting = true;
             me.services.executeService('CheckMeetingRegistration',request,
                 function(serviceResponse: Peanut.IServiceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
@@ -191,6 +210,8 @@ namespace Peanut {
                 me.fatalError(true);
             }).always(() => {
                 me.hideWaiter();
+                me.waiting = false;
+                me.protector.start();
             });
         };
         onShowError = () => {
@@ -208,11 +229,20 @@ namespace Peanut {
             this.fromAddressError('');
         }
         onShowMessageForm = () => {
+            if (!this.protector.likelyHuman()) {
+                return null;
+            }
             this.clearMessageForm();
             this.showModal('#message-modal')
         }
         onSendMessage = () => {
             let me = this;
+            if (me.waiting) {
+                return null;
+            }
+            if (!me.protector.likelyHuman()) {
+                return null;
+            }
             let request = <IMeetingAlertMessage>{
                 fromAddress: this.fromAddress().trim(),
                 messageBody: this.messageBody().trim(),
@@ -253,6 +283,7 @@ namespace Peanut {
                 return;
             }
 
+            me.waiting = true;
 
             //SendAdminAlertCommand
             me.clearMessageForm();
@@ -272,6 +303,8 @@ namespace Peanut {
                 me.fatalError(true);
             }).always(() => {
                 me.hideWaiter();
+                me.waiting = false;
+                me.protector.start();
             });
 
             this.hideModal("#message-modal")
