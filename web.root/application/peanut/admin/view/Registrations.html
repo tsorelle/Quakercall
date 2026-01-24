@@ -19,6 +19,19 @@
                 <h4 data-bind="visible:currentFilter() == 'confirmed'"  >
                     Registrations confirmed for <span data-bind="text:meetingDate"></span> meeting. Count: <span data-bind="text: confirmedCount"></span>
                 </h4>
+                <div class="row">
+                    <div class="col-md-2">
+                        <a href="#" data-bind="visible:prevEntries,click:getPrevious" style="margin-right:10px">< Previous page</a>
+                        <span data-bind="visible:!prevEntries()" style="color: gray">< Previous page</span>
+                    </div>
+                    <div class="col-md-2">
+                        Page <span data-bind="text:currentPage"></span> of <span data-bind="text:maxPages"></span>
+                    </div>
+                    <div class="col-md-8">
+                        <a href="#" data-bind="visible:moreEntries,click:getNext">Next page ></a>
+                    </div>
+                </div>
+
                 <div data-bind="css: {'table-responsive':bootstrapVersion() < 4}">
                     <h4 data-bind="meetingDescription"></h4>
                     <table class="table" data-bind="css: {'table-responsive':bootstrapVersion() > 3}">
@@ -43,23 +56,7 @@
                             <td data-bind="text:confirmed"></td>
                         </tr>
                         </tbody>
-
                     </table>
-                    <div class="row">
-                        <div class="col-md-12">
-                            Page <span data-bind="text:currentPage"></span> of <span data-bind="text:maxPages"></span>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-2">
-                            <a href="#" data-bind="visible:prevEntries,click:getPrevious" style="margin-right:10px">< Previous page</a>
-                            <span data-bind="visible:!prevEntries()" style="color: gray">< Previous page</span>
-                        </div>
-                        <div class="col-md-10">
-                            <a href="#" data-bind="visible:moreEntries,click:getNext">Next page ></a>
-                            <span data-bind="visible:!moreEntries()" style="color: gray">Next page ></span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
