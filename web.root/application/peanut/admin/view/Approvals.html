@@ -1,0 +1,136 @@
+<div id="approvals-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
+<div id="approvals-view-container" class="row" style="display: none">
+    <style>
+        .formDisplayLabel {
+            font-weight: bold;
+        }
+
+        .formDisplayText {
+            padding-bottom: 2rem;
+        }
+    </style>
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-12" data-bind="visible:!newEndorsements()">
+                <h1>No New Endorsements</h1>
+            </div>
+            <div class="col-md-12" data-bind="visible:newEndorsements">
+                <h1>New Individual Endorsements</h1>
+
+                <div class="table-responsive">
+                    <table class="table table-responsive">
+                        <thead>
+                        <tr>
+                            <th>Received</th>
+                            <th>Name</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Country</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody data-bind="foreach:endorsements">
+                        <!-- tr data-bind="css: {danger:(!active())}" -->
+                        <tr>
+                            <!-- td data-bind="text:submissionDate"></td -->
+                            <td data-bind="text:submissionDate"></td>
+                            <td data-bind="text:name"></td>
+                            <td data-bind="text:city"></td>
+                            <td data-bind="text:state"></td>
+                            <td data-bind="text:country"></td>
+                            <td><a href="#" data-bind="click:$parent.view">View</a></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="approval-form">
+        <div class="modal-dialog modal-lg" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div>
+                        <h4 class="modal-title">
+                            <span data-bind="text:form.name"></span>
+                        </h4>
+                    </div>
+                    <button type="button" class="close btn-close"
+                            data-dismiss="modal",
+                            data-bs-dismiss="modal"
+                            aria-label="Close">
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div id="item-info" >
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="formDisplayLabel">Received</div>
+                                    <div class="formDisplayText" data-bind="text:form.submissionDate"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="formDisplayLabel">Email</div>
+                                    <div class="formDisplayText" data-bind="text:form.email"></div>
+                                </div>
+                                <div class="row">
+                                <div class="col-md-6">
+                                    <div class="formDisplayLabel">Religion</div>
+                                    <div class="formDisplayText" data-bind="text:form.religion"></div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="formDisplayLabel">How Found?</div>
+                                    <div class="formDisplayText" data-bind="text:form.howFound"></div>
+                                </div>
+                                </div>
+                            </div>
+
+
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <div class="formDisplayLabel">Address</div>
+                                    <div>
+                                        <div data-bind="text:form.address1"></div>
+                                        <div data-bind="visible:form.address2">
+                                            <span data-bind="text:form.address2"></span>
+                                        </div>
+
+                                        <div>
+                                        <span data-bind="text:form.city" style="padding-right:1em"></span>
+                                        <span data-bind="text:form.state" style="padding-right:1em"></span>
+                                        <span data-bind="text:form.postalcode"></span><br>
+                                        <span data-bind="text:form.country"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row  mb-5" data-bind="visible:form.phone">
+                                <div class="col-12">
+                                    <div class="formDisplayLabel">Phone</div>
+                                    <div class="formDisplayText" data-bind="text:form.phone"></div>
+                                </div>
+                            </div>
+                            <div class="row  mb-4">
+                                <div class="col-12" data-bind="visible:form.comments">
+                                    <div class="formDisplayLabel">Comments</div>
+                                    <div class="formDisplayText" data-bind="text:form.comments"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+
+                <div class="modal-footer">
+                    <span style="padding-right: 3rem">
+                    <button type="button" class="btn btn-primary" data-bind="click:approve">Approve Endorsement</button>
+                        </span>
+                    <a href="#" data-bs-dismiss="modal" data-dismiss="modal">Close</a>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+</div>

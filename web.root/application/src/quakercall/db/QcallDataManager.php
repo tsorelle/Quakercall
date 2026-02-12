@@ -229,4 +229,28 @@ class QcallDataManager
         $this->getContactsRepo()->subscribe($contact);
     }
 
+    public function getEndorsementsForReview() {
+        return $this->getEndorsementsRepo()->getEndorsementsForApproval();
+    }
+
+    public function updateEndorsementStatus($endorsementId, $status)
+    {
+        $repo = $this->getEndorsementsRepo();
+        $endorsement = $repo->getEndorsement($endorsementId);
+        if (!$endorsement) {
+            return false;
+        }
+        if ($status = 1) {
+            $endorsement->approved = 1;
+            $repo->update($endorsement);
+            return true;
+        }
+        $endorsement->active = 0;
+        $repo->update($endorsement);
+        return true;
+    }
+
+    public function getGroupendorsementsForReview() {}
+
+
 }

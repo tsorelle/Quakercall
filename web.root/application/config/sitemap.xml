@@ -23,6 +23,7 @@
 	<admin title="Admin" description="Management utilities" roles="adminitrator,manager">
 		<registrations title="Registrations" description="Manage zoom call registration" roles="administrator,manager" />
 		<contacts title="Contacts" description="Manage contact list" roles="administrator,manager" />
+		<approvals title="New Endorsement" description="Approve new endorsement" roles="administrator,manager" />
 	</admin>
 	<tools title="Tools" description="Utilities for administration" roles="administrator" icon="fas fa-cog">
 		<users title="Users" description="User management" roles="administrator" />

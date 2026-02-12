@@ -6,6 +6,7 @@
  // Deployment NS:
 namespace Application\quakercall\db\repository;
 
+use Application\quakercall\db\entity\QcallEndorsement;
 use \PDO;
 use PDOStatement;
 use Tops\db\TDatabase;
@@ -56,6 +57,20 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
         return $result;
     }
 
+    public function approve($id)
+    {
+        /**
+         * @var $endorsement QcallEndorsement
+         */
+        $endorsement = $this->get($id);
+        if (!$endorsement) {
+            return false;
+        }
+        $endorsement->approved = 1;
+        $this->update($endorsement);
+        return $endorsement;
+    }
+
     protected function getTableName() {
         return 'qcall_endorsements';
     }
@@ -93,6 +108,19 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
     public function getAllByEmail($email)
     {
         return $this->getEntityCollection('email = ?', [$email]);
+    }
+
+    public function getEndorsementsForApproval() {
+        $sql =
+            'SELECT e.id,e.submissionDate,e.submissionId,e.contactId,e.name, '.
+            'e.comments,e.religion,e.howFound,e.ipAddress,c.email,c.phone, '.
+            'c.address1,c.address2,c.city,c.state,c.country,c.postalcode '.
+            'FROM qcall_endorsements e '.
+            'JOIN qcall_contacts c ON e.`contactId` = c.id '.
+            'WHERE (e.`approved` = 0 OR e.`approved` IS NULL) AND e.active = 1  '.
+            'ORDER BY e.submissionDate';
+        $stmt = $this->executeStatement($sql);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
 }
