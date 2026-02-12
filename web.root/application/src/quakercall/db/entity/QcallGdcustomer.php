@@ -30,6 +30,7 @@ class QcallGdcustomer  extends \Tops\db\TimeStampedEntity
     public $importDate;
     public $subscribed;
     public $suppressed;
+    public $suppressedReason;
     public $lastActivity;
     public $lastActivityDate;
     public $lastUpdate;

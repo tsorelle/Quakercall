@@ -15,10 +15,7 @@ class ImportcontactsTest extends TestScript
 {
     private $importDate;
 
-    private function formatSort(
-        // QcallContact
-        QcallGdcustomer
-                                $record)
+    private function formatSort( QcallGdcustomer  $record)
     {
         $result = '';
         if (!empty($record->firstName)) {

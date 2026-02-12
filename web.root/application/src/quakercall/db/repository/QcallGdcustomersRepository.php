@@ -15,8 +15,17 @@ use \Tops\db\TEntityRepository;
 
 class QcallGdcustomersRepository extends \Tops\db\TEntityRepository
 {
+    private $tableName = null;
+
     protected function getTableName() {
-        return 'qcall_gdcustomers';
+        if (!$this->tableName) {
+            return 'qcall_gdcustomers';
+        }
+        return $this->tableName;
+    }
+
+    public function setTableName($tableName) {
+        $this->tableName = $tableName;
     }
 
     protected function getDatabaseId() {
@@ -50,6 +59,7 @@ class QcallGdcustomersRepository extends \Tops\db\TEntityRepository
         'importDate'=>PDO::PARAM_STR,
         'subscribed'=>PDO::PARAM_STR,
         'suppressed'=>PDO::PARAM_STR,
+        'suppressedReason'=>PDO::PARAM_STR,
         'lastActivity'=>PDO::PARAM_STR,
         'lastActivityDate'=>PDO::PARAM_STR,
         'lastUpdate'=>PDO::PARAM_STR,
@@ -58,5 +68,9 @@ class QcallGdcustomersRepository extends \Tops\db\TEntityRepository
         'changedby'=>PDO::PARAM_STR,
         'changedon'=>PDO::PARAM_STR,
         'active'=>PDO::PARAM_STR);
+    }
+    public function truncate() {
+        $sql = 'TRUNCATE TABLE ' . $this->getTableName();
+        $this->executeStatement($sql);
     }
 }
