@@ -9,30 +9,29 @@
 namespace Tops\mail;
 
 
-use Tops\sys\TConfiguration;
 use Tops\sys\TIniSettings;
-use Tops\sys\TWebSite;
 
 class TMailgunConfiguration
 {
     /**
      * @var TMailgunConfiguration
      */
-    private static $instance;
+    private static TMailgunConfiguration $instance;
 
-    public $valid;
-    public $domain;
-    public $apikey;
-    public $validationKey;
-    public $error;
-    public $sendEnabled;
-    public $validationsEnabled;
-    public $smtpEnabled;
-    public $smtpUser;
-    public $smtpPwd;
-    public $options;
+    public bool $valid;
+    public string $domain;
+    public string $apikey;
+    public string $webhookkey;
+    public string $validationKey;
+    public string $error;
+    public bool $sendEnabled;
+    public bool $validationsEnabled;
+    public bool $smtpEnabled;
+    public string $smtpUser;
+    public string $smtpPwd;
+    public array $options;
 
-    public static function GetSettings()
+    public static function GetSettings(): TMailgunConfiguration
     {
         if (!isset(self::$instance)) {
             $config = self::readIni();
@@ -47,7 +46,8 @@ class TMailgunConfiguration
     /**
      * @return TMailgunConfiguration
      */
-    private static function readIni() {
+    private static function readIni(): TMailgunConfiguration
+    {
         $result = new TMailgunConfiguration;
         $result->options = [];
         $result->valid = false;
@@ -63,7 +63,8 @@ class TMailgunConfiguration
         }
 
         $result->sendEnabled = $config->getBoolean('settings','send',true);
-        $result->validationEnabled = $config->getBoolean('settings','validate',true);
+
+        // $result->validationEnabled = $config->getBoolean('settings','validate',true);
 
         $value = $config->getValue('domain','settings');
         if (!$value) {
@@ -78,6 +79,10 @@ class TMailgunConfiguration
             $result->error = 'No authentication keys in Mailgun settings';
             return $result;
         }
+        $result->webhookkey = $config->getValue('webhookkey','settings',
+            // legacy versions use api key as webhook key
+            $apikey);
+
         $result->valid = true;
         if ($apikey)  {
             $result->apikey = $apikey;
@@ -97,7 +102,7 @@ class TMailgunConfiguration
         }
 
         $options = $config->getSection('options');
-        $result->options = $options ? $options : [];
+        $result->options = $options ? : [];
 
         return $result;
     }

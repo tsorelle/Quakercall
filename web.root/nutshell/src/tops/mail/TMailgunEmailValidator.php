@@ -26,7 +26,7 @@ class TMailgunEmailValidator implements IEmailValidator
         if ($enabled) {
             $this->domain = $settings->domain;
             $this->enabled = true;
-            $this->client = new Mailgun($settings->validationKey);
+            $this->client = Mailgun::create($settings->apikey);
         }
     }
 
@@ -69,14 +69,26 @@ class TMailgunEmailValidator implements IEmailValidator
             return $errorResult;
         }
         try {
-            $result = $this->client->get("address/validate", array('address' => $emailAddress));
-            $this->logValidationResult($emailAddress,$result);
-            if(!empty($result->http_response_body->is_valid)) {
+            $response = $this->client->emailValidation()->validate($emailAddress);
+            // Call the validation endpoint
+
+            // Convert to array
+            $result = $response->getData();
+            print_r($result);
+            return;
+
+            $valid = !empty($result['is_valid']);
+
+
+            // $result = $this->client->get("address/validate", array('address' => $emailAddress));
+//            $this->logValidationResult($emailAddress,$result);
+
+/*            if(!empty($result->http_response_body->is_valid)) {
                 return true;
             }
             if (!empty($result->did_you_mean)) {
                 $errorResult->suggestion = $result->did_you_mean;
-            }
+            }*/
 
             $errorResult->enabled = true;
             return $errorResult;
