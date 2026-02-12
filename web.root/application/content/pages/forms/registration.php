@@ -7,10 +7,11 @@ $result = \Application\quakercall\services\JotFormManager::processForm();
         print('<h4>'.$result->meetingInfo.'</h4>');
     }
     ?>
-<p>On the day of the meeting, go to this address to sign in and receive the Zoom video conference link:<br>
+<p>After 6:30 EST on January 25, go to this address to sign in and receive the Zoom video conference link.<br>
     <a href="https://qcall.2quakers.net/meeting">https://qcall.2quakers.net/meeting</a>
 </p>
-<p>We'll send a reminder by email.</p>
+<p>The Join Meeting link can also be found on the front page of our website <a href="https://quakercall.net">https://quakercall.net</a></p>
+
 <p>Use the contact link below if any of the information below is incorrect or if you have any other questions.  Please
     reference your email or the "Submission Id" in the list below.</p>
 
