@@ -14,14 +14,19 @@ class TWebSite
     private static $baseUrl=null;
     public static function GetSiteUrl() {
         global $_SERVER;
+        if (isset($_SERVER['REQUEST_SCHEME'])) {
+            $protocol = $_SERVER['REQUEST_SCHEME'];
+        }
+        else {
+            if(isset($_SERVER['HTTPS'])){
+                $protocol = ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http";
+            }
+            else{
+                $protocol = 'http';
+            }
+        }
         if (!isset($_SERVER['HTTP_HOST'])) {
             return '';
-        }
-        if(isset($_SERVER['HTTPS'])){
-            $protocol = ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http";
-        }
-        else{
-            $protocol = 'http';
         }
         return $protocol . "://" . $_SERVER['HTTP_HOST'];
     }
@@ -30,10 +35,12 @@ class TWebSite
         if (empty($url)) {
             return self::GetBaseUrl();
         }
-        $url = parse_url($url,4);
-        $scheme = strtolower($url); // PHP_URL_SCHEME
-        if ($scheme=='http' || $scheme =='https:') {
-            return $url;
+        $scheme = parse_url($url,4);
+        if (!empty($scheme)) {
+            $scheme = strtolower($url); // PHP_URL_SCHEME
+            if ($scheme=='http' || $scheme =='https:') {
+                return $url;
+            }
         }
         $base = self::GetBaseUrl();
         if (empty($url)) {
