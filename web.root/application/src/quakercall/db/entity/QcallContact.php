@@ -29,6 +29,7 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
     public $importDate;
     public $subscribed;
     public $bounced;
+    public $emailRefused;
     public $active;
 
     public function getDtoDataTypes()

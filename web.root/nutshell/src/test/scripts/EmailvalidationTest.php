@@ -4,7 +4,7 @@ namespace PeanutTest\scripts;
 
 
 use Tops\db\TQuery;
-
+use Tops\mail\TEmailValidator;
 class EmailvalidationTest extends TestScript
 {
     /**
@@ -17,83 +17,45 @@ class EmailvalidationTest extends TestScript
 
     private function validate($email) : bool
     {
-        return $this->domain_has_mx($email);
-    }
-
-    private function domain_has_mx(string $email): bool
-    {
-        $domain = strtolower( substr(strrchr($email, '@'), 1));
-        if( in_array($domain, $this->domains) ){
+        $validation = TEmailValidator::Validate($email);
+        if ($validation->isValid === false) {
+            print $validation->error."\n";
+            return false;
+        }
+        if ($this->domain_has_mx($email)) {
             return true;
         }
-        if (checkdnsrr($domain, 'MX')) {
-            $this->domains[] = $domain;
-            return true;
-        }
+        print("Invalid domain: ".$email."\n");
         return false;
     }
 
-    private function smtp_mailbox_check(string $email): int
-    {
-        list($user, $domain) = explode('@', $email);
 
-        // Get MX records
-        if (!getmxrr($domain, $mxhosts)) {
-            return 0;
-        }
-
-        $mx = $mxhosts[0];
-
-        // Connect to mail server
-        $connection = @fsockopen($mx, 25, $errno, $errstr, 5);
-        if (!$connection) {
-            return 0;
-        }
-
-        stream_set_timeout($connection, 5);
-
-        $read = function() use ($connection) {
-            return fgets($connection, 1024);
-        };
-
-        $write = function($cmd) use ($connection) {
-            fputs($connection, $cmd . "\r\n");
-        };
-
-        $read(); // banner
-        $write("HELO example.com");
-        $read();
-        $write("MAIL FROM:<check@example.com>");
-        $read();
-        $write("RCPT TO:<$email>");
-        $response = $read();
-        $write("QUIT");
-
-        fclose($connection);
-        if (strpos($response, '250') === 0) {
-            return 1;
-        }
-        else if (stripos($response, 'spam') !== 0) {
-            return -1;
-        }
-/*        if ($ok !== 1) {
-           // print "$email failed: $response\n";
-        }*/
-        return 0;
-    }
 
     public function execute()
     {
-        $query = new TQuery();
-        $list = $query->getAll('SELECT email FROM qcall_gdcustomers_leftout');
-        $blocked = [];
-        $failed = [];
+//        $query = new TQuery();
+//        $list = $query->getAll('SELECT distinct email FROM qcall_contacts where active=1');
+//        $blocked = [];
+        $failedCount = 0;
         $okCount = 0;
 
-        foreach ($list as $item) {
-            $ok = $this->validate($item->email);
+        $list = [
+            'terry.sorelle@gmail.com',
+            'Liz Yeats  <liz.yeats@outlook.com>',
+            'invalidmail',
+            'tsorelle@mail.cmxm',
+            ];
+
+
+        /*foreach ($list as $item) {
+            $email = $item->email;
+        */
+        foreach ($list as $email) {
+            $response = TEmailValidator::CheckEmailAddress($email);
+            $ok = $response->valid ?? false;
             if (!$ok) {
-                $failed[] = $item->email;
+                print "Failed: $response->email\n";
+                $failedCount++;
             }
             else {
                 $okCount++;
@@ -101,14 +63,9 @@ class EmailvalidationTest extends TestScript
             // $this->assert($ok,"$item->email failed\n");
         }
 
-        $blockedCount = count($blocked);
-        $failedCount = count($failed);
+        // $blockedCount = count($blocked);
         print "\nOk: $okCount\n";
-        print "\nFailed: ($failedCount\n";
-        foreach ($failed as $email) {
-            print "$email\n";
-        }
-
+        print "\nFailed:$failedCount\n";
         print "Done\n";
 
 /*

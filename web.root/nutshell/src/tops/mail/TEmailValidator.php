@@ -20,6 +20,7 @@ class TEmailValidator
     private $emailAddress = false;
     private $dnsFailed = false;
 
+    private static $domains =[];
     private static $instance;
     public static function getInstance() {
         if (!isset(self::$instance)) {
@@ -92,22 +93,26 @@ class TEmailValidator
         $this->address = '';
     }
 
-    private function parseEmailAddress($emailAddress) {
+    public function parseEmailAddress($emailAddress) {
         $result = new \stdClass();
         $result->name = '';
         $parts = explode('<',$emailAddress);
         if (sizeof($parts) == 2) {
             $result->name = trim($parts[0]);
             $parts = explode('>',$parts[1]);
-            $result->address = trim($parts[0]);
+            $original = $parts[0];
         }
         else {
-            $result->name = '';
-            $result->address = trim($emailAddress);
+            $original = $emailAddress;
         }
-
+        $result->address = preg_replace('/\s+/u', '', $original);
+        $result->changed = ($result->address !== $original);
+        $result->email =  (empty($result->name)) ? $result->address :
+            sprintf("<%s>%s", $result->name, $result->address );
         return $result;
     }
+
+
 
     private function translateResult($resultCode,$failDns,$strict,$emailAddress)
     {
@@ -190,8 +195,55 @@ class TEmailValidator
             $this->emailAddress = $parsed;
         }
         return $isValid;
-
     }
+
+    public static function CheckEmailAddress($emailAddress,$dnsCheck=false)
+    {
+        $instance = self::getInstance();
+        return $instance->checkAddress($emailAddress,$dnsCheck);
+    }
+
+    public function checkAddress($emailAddress,$dnsCheck=false,$failDns= false, $strict = false) {
+        $response = new \stdClass();
+        $response->result = 0;
+        $response->error = '';
+        $response->warnings = array();
+        $response->dnsFailed = false;
+        $response->mxFailed = false;
+        $response->changed = false;
+        $response->valid = true;
+
+        $parsed = $this->parseEmailAddress($emailAddress);
+        $response->changed = $parsed->changed;
+        $response->name = $parsed->name  ?? '';
+        $response->address = $parsed->address ?? '';
+        $response->email = $parsed->email ?? '';
+        $resultCode = TSayersEmailValidator::is_email($parsed->address,$dnsCheck, true);
+        $isValid = $this->translateResult($resultCode,$failDns,$strict,$emailAddress);
+        if ($isValid) {
+            if (!$this->domainHasMx($response->address)) {
+                $response->mxFailed = true;
+                $this->error = "Invalid domain";
+                $isValid = false;
+            }
+        }
+        $response->valid = $isValid;
+        return $response;
+    }
+
+    public function domainHasMx(string $email): bool
+    {
+        $domain = strtolower( substr(strrchr($email, '@'), 1));
+        if( in_array($domain, self::$domains) ){
+            return true;
+        }
+        if (checkdnsrr($domain, 'MX')) {
+            self::$domains[] = $domain;
+            return true;
+        }
+        return false;
+    }
+
 
     public function checkDns($emailAddress) {
         $isvalid =  $this->isValid($emailAddress,true,true);

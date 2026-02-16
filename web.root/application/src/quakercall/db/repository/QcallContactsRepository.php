@@ -64,6 +64,7 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         'importDate'=>PDO::PARAM_STR,
         'subscribed'=>PDO::PARAM_STR,
         'bounced'=>PDO::PARAM_STR,
+        'emailRefused'=>PDO::PARAM_STR,
         'createdby'=>PDO::PARAM_STR,
         'createdon'=>PDO::PARAM_STR,
         'changedby'=>PDO::PARAM_STR,
