@@ -14,8 +14,12 @@ var Peanut;
         init(successFunction) {
             console.log('Init SimpleTest');
             let me = this;
-            me.bindDefaultSection();
-            successFunction();
+            me.application.loadResources([
+                '@lib:fontawesome'
+            ], () => {
+                me.bindDefaultSection();
+                successFunction();
+            });
         }
     }
     Peanut.SimpleTestViewModel = SimpleTestViewModel;

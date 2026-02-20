@@ -66,10 +66,6 @@ namespace Peanut {
                 me.bindDefaultSection();
                 successFunction();
             });
-
-
-            me.bindDefaultSection();
-            successFunction();
         }
 
         showEndorsements = (endorsements: IEndorsementReviewItem[]) => {
@@ -103,8 +99,8 @@ namespace Peanut {
         }
 
         approve = () => {
-            let id = this.form.id();
             let me = this;
+            let id = this.form.id();
             me.services.executeService('ApproveEndorsement',id,
                 function(serviceResponse: Peanut.IServiceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
@@ -119,7 +115,5 @@ namespace Peanut {
                 this.hideModal('approval-form')
             });
         }
-
-
     }
 }

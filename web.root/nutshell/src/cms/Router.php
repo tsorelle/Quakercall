@@ -2,6 +2,7 @@
 namespace Nutshell\cms;
 use Peanut\sys\ViewModelManager;
 use Peanut\users\AccountManager;
+use Tops\sys\TConfiguration;
 use Tops\sys\TPath;
 use Tops\sys\TSession;
 use Tops\sys\TUser;
@@ -93,6 +94,7 @@ class Router
         }
         else {
             $routeData['bscdn'] = 0;
+            $routeData['fasrc'] = TConfiguration::getValue('fontawesome','header');
             self::setSwitchValue($routeData,'siteheader',1);
             self::setSwitchValue($routeData,'sitefooter',1);
             self::setSwitchValue($routeData,'pageheader',1);

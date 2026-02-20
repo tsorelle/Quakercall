@@ -21,6 +21,11 @@
     <div class="col-md-12">
         <div class="row">
             <div class="col-md-12">
+                <div data-bind="visible:status() == 'ok'" class="">
+                    <h3>Welcome <span data-bind="text:userfullname"></span> </h3>
+                    <h5><a data-bind="attr: { href: redirectlink }">Continue to your page.</a> <i class="fas fa-arrow-right"></i> </h5>
+                </div>
+
                 <div id="message-space">
                     <div data-bind="visible:status() == 'ready'" class="signin-message-panel">
                         <form id="signin-form">
@@ -58,10 +63,6 @@
                             <!-- div class="spinner-border ms-auto" role="status" aria-hidden="true"></div -->
                             <span class="fa fa-spinner fa-pulse fa-2x ms-3" style="color:lightgrey"></span>
                         </div>
-                    </div>
-                    <div data-bind="visible:status() == 'ok'" class="signin-message-panel">
-                        <h3>Welcome <span data-bind="text:userfullname"></span> </h3>
-                        <h5><a data-bind="attr: { href: redirectlink }">Continue to your page.</a> <i class="fas fa-arrow-right"></i> </h5>
                     </div>
                     <div data-bind="visible:status() == 'blocked'" class="signin-message-panel">
                         <h3>Sorry</h3>

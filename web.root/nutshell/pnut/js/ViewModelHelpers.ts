@@ -580,6 +580,5 @@ namespace Peanut {
             pos.scrollIntoView({behavior: "smooth"});
         }
 
-
     } // end class Helper
 }  // end namespace

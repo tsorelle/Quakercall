@@ -2,9 +2,156 @@
 <div id="qcontacts-view-container" class="row" style="display: none">
     <div class="col-md-12">
         <div class="row">
+            <div class="col-md-5" style="padding-top: 1.45rem;padding-bottom: 1.45rem;">
+                <div class="input-group">
+                    <input class="form-control" data-bind="textInput:searchName"
+                           autocomplete="none"
+                           data-bind="value:searchName,
+                                valueUpdate:'afterkeydown',
+                                event: {keyup:onSearchEnter}"
+                    type="text" placeholder="Search by name or email address" />
+                    <button class="btn btn-primary" type="button" data-bind="click:findContacts"><i class="fa-sharp fa-solid fa-magnifying-glass"></i></button></div>
+            </div>
+            <div class="col-md-5" style="padding-top: 1.6rem;padding-right: 1.6rem;">
+                <a href="#" data-bind="click:getBounces">Find Bounced Addresses</a></div>
+
+            <div class="col-md-2" style="padding-top: 1.6rem;padding-right: 1.6rem">
+                <a href="#" data-bind="click:newContact">New Contact</a>
+            </div>
+        </div>
+        <div data-bind="visible:showTable">
+            <div class="row">
+                <div class="col-md-6">
+                    Showing <span data-bind="visible:subscribedOnly">subscribers only</span>
+                     <span data-bind="visible:!subscribedOnly()">everyone</span>:
+                    <a href="#" data-bind="click:toggleSubscribedFilter">
+                        <span data-bind="visible:subscribedOnly">
+                            Show all
+                        </span>
+                        <span data-bind="visible:!subscribedOnly()">
+                            Show subscribers only
+                        </span>
+                    </a>
+                </div>
+                <div class="col-md-2">
+                    <a href="#" data-bind="visible:prevEntries,click:getPrevious" style="margin-right:10px">
+                        < Previous&nbsp;page
+                    </a>
+                </div>
+                <div class="col-md-2">
+                    <div data-bind="visible:maxPages() > 1">
+                    Page <span data-bind="text:currentPage"></span> of <span data-bind="text:maxPages"></span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <a href="#" data-bind="visible:moreEntries,click:getNext">
+                         Next&nbsp;page&nbsp;>
+                    </a>
+                </div>
+
+            </div>
+        <div class="row">
             <div class="col-md-12">
-                <h1 data-bind="text:testmessage"></h1>
-                <h2>Work in progress</h2>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th>Edit</th>
+                            <th>Name</th>
+                            <th>Email Address</th>
+                            <th>City</th>
+                            <th>State</th>
+                            <th>Country</th>
+                        </tr>
+                        </thead>
+                        <tbody data-bind="foreach:contacts">
+                        <tr>
+                            <td><a href="#" data-bind="click:$parent.editContact"><i class="fa fa-pencil" aria-hidden="true"></i></a></td>
+                            <td data-bind="text:fullname"></td>
+                            <td data-bind="text:email"></td>
+                            <td data-bind="text:city"></td>
+                            <td data-bind="text:state"></td>
+                            <td data-bind="text:country"></td>
+                        </tr>
+                        <tr></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    <div id="contact-update-modal" class="modal fade" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg"  role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Update Contact</h4><button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-check pb-3"><input id="formCheck-1"  data-bind='checked:form.active' class="form-check-input" type="checkbox" /><label class="form-check-label" for="formCheck-1">Active</label></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check pb-3"><input id="formCheck-2" data-bind='checked:form.subscribed' class="form-check-input" type="checkbox" /><label class="form-check-label" for="formCheck-2">Subscribed</label></div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-check pb-3"><input id="formCheck-3" data-bind='checked:form.bounced' class="form-check-input" type="checkbox" /><label class="form-check-label" for="formCheck-3">Bounced</label></div>
+                            </div>
+                        </div>
+                        <div class="row">
+
+                            <div class="col col-md-6">
+                                <label class="form-label" for="em">Email Address</label>
+                                <span style="color:red" data-bind="visible:form.emailError">&nbsp;A valid email is required</span>
+                                <div data-bind="css: {'has-error': form.emailError}">
+                                <input id="em" name="em" autocomplete="off"
+                                           data-1p-ignore
+                                           data-lpignore="true"
+                                       data-norton="ignore"
+                                       data-bwignore="true"
+                                           data-bind='value:form.email' class="form-control" type="email" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Phone</label>
+                                <input data-bind='value:form.phone' class="form-control" type="text" />
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 pb-2"><label class="form-label" for="first-name-field">First Name</label>
+                                <input data-bind='value:form.firstName' id="first-name-field" class="form-control" type="text" /></div>
+                            <div class="col col-md-6 pb-3"><label class="form-label">Last Name</label>
+                                <input data-bind='value:form.lastName' class="form-control" type="text" required /></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12" style="padding-bottom: 1rem;">
+                                <label class="form-label">Full name</label>
+                                <span style="color:red" data-bind="visible:form.nameError">&nbsp;Name is required</span>
+                                <div class="input-group" data-bind="css: {'has-error': form.nameError}">
+                                    <input data-bind='value:form.fullname' class="form-control" type="text" />
+                                    <button data-bind="click:refreshFullName" title="Refresh full name" class="btn btn-secondary btn-sm" b="button">
+                                        <i class="fa fa-refresh fa-1x" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4"><label class="form-label">City</label>
+                                <input data-bind='value:form.city' class="form-control" type="text" /></div>
+                            <div class="col-md-4"><label class="form-label">State or Province</label>
+                                <input data-bind='value:form.state' class="form-control" type="text" /></div>
+                            <div class="col-md-4"><label class="form-label">Country</label>
+                                <input data-bind='value:form.country' class="form-control" type="text" /></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button>
+                    <button data-bind="click:updateContact" class="btn btn-primary" type="button">Save</button>
+                </div>
             </div>
         </div>
     </div>

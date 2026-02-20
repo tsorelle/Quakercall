@@ -25,6 +25,7 @@
     /** @var int $frontpage */
     /** @var int $specialheader */
     /** @var int $bscdn */
+    /** @var int $fasrc */
 
 ?>
 <head>
@@ -54,7 +55,8 @@
             print $title?? ''
         ?>
     </title>
-    <script src="https://kit.fontawesome.com/e3f06c8db4.js" crossorigin="anonymous"></script>
+    <script src="<?php print $fasrc?>" crossorigin="anonymous"></script>
+
 </head>
 <body>
     <div id="page-top"></div>

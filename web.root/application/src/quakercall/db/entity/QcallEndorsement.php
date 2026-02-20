@@ -22,6 +22,7 @@ class QcallEndorsement  extends \Tops\db\TimeStampedEntity
     public $ipAddress;
     public $active;
     public $approved;
+    public $approvalDate;
 
     public function getDtoDataTypes()
     {

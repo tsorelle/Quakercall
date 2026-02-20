@@ -17,8 +17,12 @@ namespace Peanut {
         init(successFunction?: () => void) {
             console.log('Init SimpleTest');
             let me = this;
-            me.bindDefaultSection();
-            successFunction();
+            me.application.loadResources([
+                '@lib:fontawesome'
+            ], () => {
+                me.bindDefaultSection();
+                successFunction();
+            });
         }
 
 

@@ -59,6 +59,8 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
 
     public function approve($id)
     {
+/*        $sql = 'UPDATE qcall_endorsements SET approved=1 WHERE id=?';
+        $stmt = $this->executeStatement($sql, [$id]);*/
         /**
          * @var $endorsement QcallEndorsement
          */
@@ -67,6 +69,7 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
             return false;
         }
         $endorsement->approved = 1;
+        $endorsement->approvalDate = date('Y-m-d');
         $this->update($endorsement);
         return $endorsement;
     }
@@ -102,6 +105,7 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
         'changedby'=>PDO::PARAM_STR,
         'changedon'=>PDO::PARAM_STR,
         'active'=>PDO::PARAM_STR,
+        'approvalDate'=>PDO::PARAM_STR,
         'approved'=>PDO::PARAM_STR);
     }
 
