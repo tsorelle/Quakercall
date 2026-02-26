@@ -156,7 +156,7 @@ namespace Peanut {
                 request.contact.lastName = request.contact.fullname;
             }
 
-            me.showWaiter('Searching for contacts');
+            me.showWaiter(`Updating contact ${request.contact.fullname}`);
             me.services.executeService('UpdateQContact',request,
                 function(serviceResponse: Peanut.IServiceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
