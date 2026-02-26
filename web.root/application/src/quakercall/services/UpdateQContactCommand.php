@@ -6,23 +6,10 @@ use Application\quakercall\db\entity\QcallContact;
 use Application\quakercall\db\repository\QcallContactsRepository;
 use Tops\mail\TEmailValidator;
 use Tops\services\TServiceCommand;
+use Tops\sys\TUsStates;
 
 class UpdateQContactCommand extends TServiceCommand
 {
-
-    private function  makeSortCode($firstName, $lastName)
-    {
-        $result = trim($firstName);
-        $lastName = trim($lastName);
-        if (!empty($result)) {
-            if (empty($lastName)) {
-                return $result;
-            }
-            $result .= ' ';
-        }
-        return $result.$lastName;
-    }
-
     protected function run()
     {
         $request = $this->getRequest();
@@ -49,19 +36,36 @@ class UpdateQContactCommand extends TServiceCommand
         if ($isNew) {
             $contact = new QcallContact();
             $contact->assignFromObject($request->contact);
-            $contact->sortcode = $this->makeSortCode($request->contact->firstName, $request->contact->lastName);
+            $contact->normalizeStateAndCountry();
+            $contact->assignSortCode();
             $id = $repository->insert($contact);
             if ($id) {
                 $this->addInfoMessage("New contact for ".$request->contact->fullname." was created");
             }
         }
         else {
+            /**
+             * @var QcallContact $contact
+             */
             $contact = $repository->get($request->contact->id);
             if (empty($contact)) {
                 $this->addErrorMessage('Contact not found');
                 return;
             }
+            $city = $request->contact->city ?? '';
+            $state = $request->contact->state ?? '';
+            $country = $request->contact->country ?? '';
+            $changedLocation = ($city != $contact->city || $state != $contact->state || $country != $contact->country);
+
             $contact->assignFromObject($request->contact);
+            $contact->normalizeStateAndCountry();
+            if ($changedLocation) {
+                // we dont need physical address
+                $contact->address1 = '';
+                $contact->address2 = '';
+                $contact->postalcode = '';
+            }
+
             $ok = $repository->update($contact);
             if ($ok) {
                 $this->addInfoMessage("Contact for ".$request->contact->fullname." was updated.");

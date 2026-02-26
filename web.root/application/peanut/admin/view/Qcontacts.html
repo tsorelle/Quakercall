@@ -1,10 +1,11 @@
 <div id="qcontacts-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
 <div id="qcontacts-view-container" class="row" style="display: none">
     <div class="col-md-12">
+        <h1>Contact Email Management</h1>
         <div class="row">
             <div class="col-md-5" style="padding-top: 1.45rem;padding-bottom: 1.45rem;">
                 <div class="input-group">
-                    <input class="form-control" data-bind="textInput:searchName"
+                    <input class="form-control"
                            autocomplete="none"
                            data-bind="value:searchName,
                                 valueUpdate:'afterkeydown',
@@ -19,19 +20,24 @@
                 <a href="#" data-bind="click:newContact">New Contact</a>
             </div>
         </div>
+        <div class="row" data-bind="visible:showNoContacts">
+            <div class="col-md-6">
+               <strong><em>No contacts were found.</em></strong>
+            </div>
+        </div>
         <div data-bind="visible:showTable">
-            <div class="row">
+            <div class="row" data-bind="visible:filterable">
                 <div class="col-md-6">
-                    Showing <span data-bind="visible:subscribedOnly">subscribers only</span>
-                     <span data-bind="visible:!subscribedOnly()">everyone</span>:
-                    <a href="#" data-bind="click:toggleSubscribedFilter">
+                        Showing <span data-bind="visible:subscribedOnly">subscribers only</span>
+                        <span data-bind="visible:!subscribedOnly()">everyone</span>:
+                        <a href="#" data-bind="click:toggleSubscribedFilter">
                         <span data-bind="visible:subscribedOnly">
-                            Show all
+                            Show all <span data-bind="text:totalCount"></span>
                         </span>
-                        <span data-bind="visible:!subscribedOnly()">
+                            <span data-bind="visible:!subscribedOnly()">
                             Show subscribers only
                         </span>
-                    </a>
+                        </a>
                 </div>
                 <div class="col-md-2">
                     <a href="#" data-bind="visible:prevEntries,click:getPrevious" style="margin-right:10px">
@@ -48,7 +54,6 @@
                          Next&nbsp;page&nbsp;>
                     </a>
                 </div>
-
             </div>
         <div class="row">
             <div class="col-md-12">

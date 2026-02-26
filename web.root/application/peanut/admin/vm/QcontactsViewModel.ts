@@ -14,15 +14,19 @@ namespace Peanut {
         // observables
         testmessage = ko.observable('Contacts')
         contacts = ko.observableArray<QuakerCall.IContactItem>();
+        showNoContacts = ko.observable(false)
         allContacts: QuakerCall.IContactItem[];
         visibleContacts: QuakerCall.IContactItem[];
         showTable = ko.observable(false);
         searchName = ko.observable('');
-        subscribedOnly = ko.observable(false)
+        subscribedOnly = ko.observable(false);
+        filterable = ko.observable(true)
         prevEntries = ko.observable(false);
         moreEntries = ko.observable(false);
         itemsPerPage = 10;
         totalItems = 0;
+        totalCount = ko.observable(0);
+        subscriberCount = ko.observable(0);
         currentPage = ko.observable(1);
         maxPages = ko.observable();
         searchTerm = '';
@@ -97,11 +101,13 @@ namespace Peanut {
         showContacts = (contacts: QuakerCall.IContactItem[])=> {
             this.allContacts = [];
             this.showTable(false);
-            if (contacts.length) {
+            let count = contacts.length
+            if (count) {
                 this.allContacts = contacts;
-                this.filterContacts(true);
+                this.initialFilter();
                 this.showTable(true);
             }
+            this.showNoContacts(count < 1)
             this.getPage(1);
 
         }
@@ -168,6 +174,38 @@ namespace Peanut {
 
         }
 
+        initialFilter = () => {
+            let count = this.allContacts.length;
+            this.totalCount(count);
+            let pageCount = 1;
+            let filterable = false;
+            let subscribedOnly = false;
+            if (count > 0) {
+                this.visibleContacts = this.allContacts.filter(c => c.subscribed == 1);
+                let visibleCount = this.visibleContacts.length;
+                if (visibleCount) {
+                    filterable = (count > visibleCount);
+                    subscribedOnly = true;
+                } else {
+                    this.visibleContacts = this.allContacts;
+                }
+                pageCount = Math.ceil(this.visibleContacts.length / this.itemsPerPage);
+                this.filterable(visibleCount !== count);
+                if (visibleCount > 0) {
+                    subscribedOnly =true;
+                } else {
+                    this.visibleContacts = this.allContacts;
+                }
+            }
+            this.showNoContacts(count === 0);
+            let telst = this.showNoContacts();
+            this.filterable(filterable);
+            this.subscribedOnly(subscribedOnly)
+            this.maxPages(pageCount);
+            this.getPage(1);
+        }
+
+
         filterContacts = (subscribedOnly: boolean) => {
             if (!subscribedOnly) {
                 this.visibleContacts = this.allContacts;
@@ -175,6 +213,7 @@ namespace Peanut {
             else {
                 this.visibleContacts = this.allContacts.filter(c => c.subscribed == 1);
             }
+            let total = this.visibleContacts.length;
             let pageCount = Math.ceil( this.visibleContacts.length / this.itemsPerPage );
             this.maxPages(pageCount);
             this.subscribedOnly(subscribedOnly);
@@ -195,12 +234,21 @@ namespace Peanut {
 
         getPage = (pageNumber: number) => {
             let me = this;
-            let startIndex = (pageNumber - 1) * me.itemsPerPage;
-            let page = this.visibleContacts.slice(startIndex, startIndex + me.itemsPerPage)
-            me.contacts(page);
-            this.prevEntries(pageNumber > 1);
-            this.moreEntries(pageNumber < this.maxPages());
-            me.currentPage(pageNumber)
+            if (this.maxPages() > 1) {
+                let startIndex = (pageNumber - 1) * me.itemsPerPage;
+                let page = this.visibleContacts.slice(startIndex, startIndex + me.itemsPerPage)
+                me.contacts(page);
+                this.prevEntries(pageNumber > 1);
+                this.moreEntries(pageNumber < this.maxPages());
+                me.currentPage(pageNumber)
+            }
+            else {
+                me.contacts(this.visibleContacts)
+                this.prevEntries(false);
+                this.moreEntries(false);
+                me.currentPage(1)
+            }
+
         }
 
 

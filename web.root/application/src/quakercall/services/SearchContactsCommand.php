@@ -21,10 +21,17 @@ class SearchContactsCommand extends TServiceCommand
 
         }
         else {
-            $results = $repository->searchByName($searchTerm);
+            if (strpos($searchTerm, '@') !== false) {
+                $results = $repository->searchByEmail($searchTerm);
+            }
+            else {
+
+                $results = $repository->searchByName($searchTerm);
+            }
         }
         if (empty($results)) {
-            $this->addInfoMessage('No contacts found.');
+            // $this->addInfoMessage('No contacts found.');
+            $results = [];
         }
         $this->setReturnValue($results);
     }

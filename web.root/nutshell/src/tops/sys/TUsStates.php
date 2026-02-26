@@ -7,6 +7,11 @@ use Tops\sys\TNameValuePair;
 
 class TUsStates
 {
+    public const ALL = 0;
+    public const STATES = 1;
+    public const TERRITORIES = 2;
+    public const ASSOCIATED= 3;
+
     private static $stateList = [
         // Full name → abbreviation
 
@@ -33,8 +38,9 @@ class TUsStates
     ];
 
     private static array $all;
+    private static array $statesAndTerritories;
 
-    private static $territoriesEtc = [
+    private static $territories = [
         // Territories & Possessions
         'Puerto Rico' => 'PR',
         'Guam' => 'GU',
@@ -42,43 +48,78 @@ class TUsStates
         'American Samoa' => 'AS',
         'Northern Mariana Islands' => 'MP',
 
+    ];
+
+    private static $associatedStates = [
         // Freely Associated States (USPS-recognized)
         'Federated States of Micronesia' => 'FM',
         'Marshall Islands' => 'MH',
         'Palau' => 'PW',
     ];
 
-    public static function getStateList($statesOnly = false)
+    public static function getStateList($include = self::ALL): array
     {
-        if ($statesOnly) {
+        if ($include === self::STATES) {
             return self::$stateList;
         }
+        if ($include === self::TERRITORIES) {
+            if (!isset(self::$statesAndTerritories)) {
+                self::$statesAndTerritories = array_merge(self::$stateList, self::$territories);;
+            }
+            return self::$statesAndTerritories;
+        }
         if (!isset(self::$all)) {
-            self::$all = array_merge(self::$stateList, self::$territoriesEtc);
+            self::$all = array_merge(self::$stateList, self::$territories, self::$associatedStates);
         }
         return self::$all;
     }
 
-    public static function getStateLookup($statesOnly = false)
+    public static function getStateLookup($include = self::STATES)
     {
-        $list = self::getStateList($statesOnly);
+        $list = self::getStateList($include);
         return TNameValuePair::CreateArray($list);
     }
 
-    public static function convertToAbbrevation($text): string
+    /**
+     * @param $state
+     * @return string
+     *
+     * If US State return the two letter postal abbreviation,
+     * otherwise return original value trimmed
+     *
+     */
+    public static function convertToAbbrevation($state): string
     {
-        if ($text === null) {
+        if ($state === null) {
             return '';
         }
-        $trimmed = trim($text);
+        $state = trim($state);
+        // remove white space and punctuation,  Eg. " N.C " = "NC"
+        $stateKey = strtoupper(preg_replace('/[\p{P}\p{S}\p{Z}\s]+/u', '', $state));
+        if (strlen($stateKey) == 2) {
+            $list = self::getStateList();
+            $name = array_search($stateKey, self::getStateList(), true);
+            if ($name !== false) {
+                return $stateKey;
+            }
+        }
         // Normalize input for lookup
-        $normalized = ucwords(strtolower($trimmed));
+        $normalized = ucwords(strtolower($state));
         $normalized = str_replace([' Of ', ' And '], [' of ', ' and '], $normalized);
-
-        $list = self::getStateList();
-        return $list[$normalized] ?? $trimmed;
+        $allStates = self::getStateList();
+        return $allStates[$normalized] ?? $normalized;
     }
 
+    /**
+     * @param $name
+     * @param $default
+     * @return string
+     *
+     * Convert blank input or various forms of united states to 'USA'
+     * otherwise return original value.
+     *
+     * Conversions for provinces and states of other countries not supported...yet.
+     */
     public static function getFullCountryName($name, $default='United States of America'): string {
         if ($name === null) {
             return $default;
@@ -91,13 +132,60 @@ class TUsStates
         return $name;
     }
 
-    public static function getCountryAbbreviation($name, $default='USA'): string {
-        if ($name === null) {
+    /**
+     * @param $state
+     * @param $countryName
+     * @param $default
+     * @return string
+     *
+     * Return $default if $state is blank or matches a state abbreviation, except...
+     * If state abbreviation for an associated state is given return corresponding full name.
+     * Otherwise return $countryName trimmed
+     */
+    public static function getCountryNameForState($state, $countryName = '', $default='United States'): string {
+        $countryName = ($countryName === null) ? '' : trim($countryName);
+        $state = ($state === null) ? '' : trim($state);
+        $stateKey = self::convertToAbbrevation($state);
+        $countryKey = self::normalizeCountryName($countryName, $default);
+        if ($countryKey === $default) {
+            // state should be found in US lookups
+            $key = array_search($stateKey, self::$stateList, true);
+            if ($key !== false) {
+                return $default;
+            }
+            $key = array_search($stateKey, self::$territories, true);
+            if ($key !== false) {
+                return $default;
+            }
+
+            // Associated states are independent countries receiving support from the US under the "Compact of Free Association"
+            //  In these cases, return the full name not "USA".
+            //  E.g. if the state abbreviation is "PW" return "Pelau" not "USA"
+            $key = array_search($stateKey, self::$associatedStates, true);
+            if ($key !== false) {
+                return $key;
+            }
+        }
+        return $countryName;
+    }
+
+    /**
+     * @param $name
+     * @param $default
+     * @return string
+     *
+     * Return $default ('United States') if $name is any form representing United States.
+     * otherwise return original value trimmed
+     */
+    public static function normalizeCountryName($name, $default='United States'): string {
+        $name = trim($name ?? '');
+        if ($name === '') {
             return $default;
         }
-        $name = trim($name);
-        $cmp = strtolower( str_replace('.','',$name));
-        if (empty($name) || $cmp == 'us' || $cmp == 'usa'
+        // strip all white space and punctuation
+        $abr = strtolower(preg_replace('/[\p{P}\p{S}\p{Z}\s]+/u', '', $name));
+        $cmp = strtolower($name);
+        if ($abr == 'us' || $abr == 'usa'
             || $cmp == 'united states' || $cmp == 'united states of america'
             || $cmp == 'estados unidos') {
             return $default;

@@ -29,6 +29,7 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         }
     }
 
+
     protected function getTableName() {
         return 'qcall_contacts';
     }
@@ -70,6 +71,11 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         'changedby'=>PDO::PARAM_STR,
         'changedon'=>PDO::PARAM_STR,
         'active'=>PDO::PARAM_STR);
+    }
+
+    public function searchByEmail($email)
+    {
+        return $this->getEntityCollection('email=?', [$email]);
     }
 
     public function findByEmail($email)
