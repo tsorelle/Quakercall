@@ -49,7 +49,7 @@ class TIniTranslator extends TLanguage
         if (empty($section) || empty($key)) {
             return false;
         }
-        $result = @$section[$key];
+        $result = $section[$key] ?? null;
         return empty($result) ? false : $result;
     }
 
