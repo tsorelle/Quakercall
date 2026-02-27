@@ -60,6 +60,7 @@ class EmailManager
      * @return EmailListsRepository
      */
     private $emailListsRepository;
+
     private function getEmailListsRepository() {
         if (!isset($this->emailListsRepository)) {
             $this->emailListsRepository = new EmailListsRepository();

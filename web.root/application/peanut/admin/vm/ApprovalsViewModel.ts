@@ -1,5 +1,6 @@
 /// <reference path='../../../../nutshell/pnut/core/ViewModelBase.ts' />
 /// <reference path='../../../../nutshell/typings/knockout/index.d.ts' />
+/// <reference path='../../../../nutshell/pnut/js/htmlEditContainer.ts' />
 
 namespace Peanut {
 
@@ -23,7 +24,15 @@ namespace Peanut {
         postalcode: string;
     }
 
+    interface IEndorsementUpdateResponse {
+        endorsements: IEndorsementReviewItem[];
+        messageText: string;
+    }
 
+    interface  IConfirmationMessageRequest {
+        contactId: any;
+        messageText: string;
+    }
 
     export class ApprovalsViewModel extends Peanut.ViewModelBase {
         // observables
@@ -49,22 +58,34 @@ namespace Peanut {
             postalcode: ko.observable('')
         }
 
+        private htmlEditor : Peanut.htmlEditContainer;
+        private editorInitialized = false;
+        public onEditorInit = () => {
+            this.editorInitialized = true;
+        }
+
         init(successFunction?: () => void) {
             let me = this;
             Peanut.logger.write('Approvals Init');
-            me.services.executeService('GetEndorsementsForReview',null,
-                function(serviceResponse: Peanut.IServiceResponse) {
-                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
-                        me.showEndorsements(serviceResponse.Value)
-                    } else {
-                        let debug = serviceResponse;
-                    }
-                }).fail(() => {
-                let trace = me.services.getErrorInformation();
-            }).always(() => {
-                // me.hideWaiter();
-                me.bindDefaultSection();
-                successFunction();
+
+            me.application.loadResources([
+                '@pnut/htmlEditContainer'
+            ], () => {
+                me.htmlEditor =  new Peanut.htmlEditContainer(me);
+                me.services.executeService('GetEndorsementsForReview',null,
+                    function(serviceResponse: Peanut.IServiceResponse) {
+                        if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                            me.showEndorsements(serviceResponse.Value)
+                        } else {
+                            let debug = serviceResponse;
+                        }
+                    }).fail(() => {
+                    let trace = me.services.getErrorInformation();
+                }).always(() => {
+                    // me.hideWaiter();
+                    me.bindDefaultSection();
+                    successFunction();
+                });
             });
         }
 
@@ -74,6 +95,56 @@ namespace Peanut {
             me.newEndorsements(endorsements.length > 0);
 
         }
+
+        editAcknowlegement = (messageText) => {
+            let me = this;
+            if (this.editorInitialized) {
+                this.showContent(messageText);
+            }
+            else {
+                // this.htmlEditor.height = 300;
+                me.htmlEditor.addOptions({height: '20em'})
+
+                this.htmlEditor.initialize('confirmation-editor', () => {
+                    this.editorInitialized = true;
+                    me.showContent(messageText)
+                });
+            }
+        }
+
+        private content = '';
+        private showContent = (content: string) => {
+            this.htmlEditor.setContent(content);
+            this.showModal("confirmation-message-modal")
+        }
+
+
+
+        sendConfirmationMessage = () => {
+            let me = this;
+            let request : IConfirmationMessageRequest = {
+                contactId: this.form.contactId(),
+                messageText: this.htmlEditor.getContent()
+            }
+
+            me.services.executeService('SendEndorserAcknowledgement',request,
+                function(serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                        let response = <IEndorsementUpdateResponse>serviceResponse.Value;
+                    } else {
+                        let debug = serviceResponse;
+                    }
+                }).fail(() => {
+                let trace = me.services.getErrorInformation();
+            }).always(() => {
+                // me.hideWaiter();
+                this.hideModal('approval-form')
+            });
+
+            this.hideModal("confirmation-message-modal")
+        }
+
+
 
         view = (item: IEndorsementReviewItem) => {
             // alert("View "+ item.name)
@@ -104,7 +175,11 @@ namespace Peanut {
             me.services.executeService('ApproveEndorsement',id,
                 function(serviceResponse: Peanut.IServiceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
-                        me.showEndorsements(serviceResponse.Value)
+                        let response = <IEndorsementUpdateResponse>serviceResponse.Value;
+                        me.showEndorsements(response.endorsements);
+                        if (response.messageText) {
+                            me.editAcknowlegement(response.messageText);
+                        }
                     } else {
                         let debug = serviceResponse;
                     }

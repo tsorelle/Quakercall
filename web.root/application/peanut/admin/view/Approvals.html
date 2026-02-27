@@ -133,4 +133,34 @@
         </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
+    <div class="modal" id="confirmation-message-modal" tabindex="-1" role="dialog" aria-labelledby="confirmation-header">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 id="confirmation-header" class="modal-title">Confirmation Message</h4>
+                    <button type="button" class="close btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row" >
+                        <div class="col-md-12">
+                            <div class="form-group pb-2">
+                                <label for="confirmation-editor" class="control-label">Make any changes you like.</label>
+                                <textarea rows="20" class="form-control" id="confirmation-editor"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button data-bind="click:sendConfirmationMessage" class="btn btn-primary" type="button">
+                        Send <i class="far fa-paper-plane"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
