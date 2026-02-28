@@ -41,6 +41,22 @@ if (isset($_SERVER['REQUEST_URI']) && !empty($_SERVER['REQUEST_URI'])) {
         }
     }
     if (!file_exists(DIR_BASE.'/'.$uri)) {
-        header("HTTP/1.0 404 Not Found");
+        $redirect = false;
+        $configFile = __DIR__ . '/../application/config/settings.ini';
+        if (file_exists($configFile)) {
+            $config = parse_ini_file($configFile, true);
+            if (isset($config['site']['redirect404'])) {
+                $redirect = $config['site']['redirect404'];
+            }
+        }
+
+        if ($redirect) {
+            $redirection = sprintf('Location: %s/%s', $redirect, $uri);
+            header($redirection);
+            exit;
+        }
+        else {
+            header("HTTP/1.0 404 Not Found");
+        }
     }
 }
