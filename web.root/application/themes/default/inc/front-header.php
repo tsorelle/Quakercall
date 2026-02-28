@@ -3,7 +3,6 @@
         <div class="row">
             <div class="col-12">
                 <div style="float: left">
-                    <h1>Quaker Call to Action</h1>
                 </div>
                 <!-- img src="/assets/img/banjo_tiny.gif" -->
             </div>
