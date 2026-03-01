@@ -29,6 +29,16 @@
     padding-bottom: 10ex;
 }
 
+.nutshell-vertical-menu .nav-item {
+    font-size: x-large;
+}
+
+.nutshell-vertical-menu .nav-item a:hover{
+    background-color: gainsboro;
+    color: black;
+}
+
+
 .security-section {
     display: none;!important;
 }
