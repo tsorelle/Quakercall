@@ -172,7 +172,7 @@ var PeanutRiddler;
                 me.buttonLabel(params.buttonLabel);
             }
             if (params.icon) {
-                me.buttonicon("fa fa-" + params.icon);
+                me.buttonicon(params.icon);
             }
             else if (params.glyphicon) {
                 me.buttonicon("glyphicon glyphicon-" + params.glyphicon);
