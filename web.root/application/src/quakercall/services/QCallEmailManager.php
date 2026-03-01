@@ -40,7 +40,8 @@ class QCallEmailManager
             return false;
         }
         $recipient = new TEmailAddress($email, $fullName);
-        $sendOk  = TPostOffice::SendMessageFromUs($recipient,'Thank you for your endorsement',$messageText);
+        $sendOk  = TPostOffice::SendMessageFromUs($recipient,'Thank you for your endorsement',
+            $messageText);// ,TPostOffice::ContactMailbox);
         if (!$sendOk) {
             $messageContainer->addInfoMessage('Message failed to send.');
             return false;
