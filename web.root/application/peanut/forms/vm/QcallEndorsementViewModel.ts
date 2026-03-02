@@ -4,12 +4,12 @@
 
 namespace Peanut {
 
-    export class NationalRegistrationViewModel extends Peanut.ViewModelBase {
+    export class QcallEndorsementViewModel extends Peanut.ViewModelBase {
         // observables
 
         init(successFunction?: () => void) {
             let me = this;
-            Peanut.logger.write('NationalRegistration Init');
+            Peanut.logger.write('Registration Init');
             let fd = this.getPageVarialble('formdata');
             me.bindDefaultSection();
             successFunction();

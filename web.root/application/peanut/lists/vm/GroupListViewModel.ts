@@ -23,9 +23,9 @@ namespace Peanut {
         init(successFunction?: () => void) {
             let me = this;
 
-            const box = document.getElementById('page-content');
-            box.style.margin = '0';
-            box.style.maxWidth = '100%';
+            // const box = document.getElementById('page-content');
+            // box.style.margin = '0';
+            // box.style.maxWidth = '100%';
 
             Peanut.logger.write('GroupList Init');
             // let fd = this.getPageVarialble('formdata');

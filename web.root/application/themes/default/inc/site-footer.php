@@ -12,7 +12,9 @@
                 print $signin;
            ?>
         </div>
-        <div class="d-flex justify-content-start"><a href="/contact">Contact us</a> </div>
+        <span class="d-flex justify-content-start"><a href="/contact">Contact us</a> <span style="padding-left: 1rem;padding-right: 1rem" >|</span> <a href="/privacy">Privacy Policy</a>
+
+        </div>
         <!-- span class="text-muted">Place sticky footer content here.</span -->
     </div>
 </footer>

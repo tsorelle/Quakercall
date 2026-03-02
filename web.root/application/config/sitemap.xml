@@ -9,17 +9,17 @@
 	</about -->
 	<!-- help title="Help Pages" icon="fas fa-question-circle" description="help"/ -->
 
-	<tests title="Test Pages" description="Pages for testing." roles="administrator">
-		<simpletest title="Simple Test" description="Basic smoke test" roles="" />
-		<modaltest title="Modal Test" description="Test modal dialogs" roles="" />
-		<servicetest title="Service Test" description="Test remote service call" roles="" />
-		<componentstest title="Component Test" description="Test component loading" roles="" />
-		<messagestest title="Messages Test" description="Dialogs and Waiters" roles="" />
-		<multiselect title="Multiselect Test" description="Demo multiselect component" roles="" />
-		<password title="Password Test" description="Demo change password component" roles="" />
-		<pager title="Pager Test" description="Demo pager component" roles="" />
-		<editor title="Editor Test" description="Demo editor component" roles="" />
-	</tests>
+	<meetings title="National Zoom Meeting" description="Nationwide On-line gathering of Friends and supporters.">
+		<register title="Register for National Meeting" description="Register for the national zoom call" />
+		<signin title="Join the Meeting" description="Sign in and join the zoom meeting" />
+	</meetings>
+	<endorsers title="Endorsers" discription="Organizations and individual who endorse the Call" uri="https://quakercall.org/endorsers/groups">
+		<individualform title="Add your name" description="Endorsement for individuals" />
+		<individuals title="Individual Endorsers" description="Individuals who have endorsed the Call" />
+		<groupform title="Add Your Meeting or Organization" description="Endorsement for groups" />
+		<groups title="Meetings and Quaker Organizations" descriptions="Friends Meetings and Organizations who have endorsed the Call" />
+	</endorsers>
+
 	<admin title="Admin" description="Management utilities" roles="adminitrator,manager">
 		<registrations title="Registrations" description="Manage zoom call registration" />
 		<contacts title="Contacts" description="Manage contact list" />
@@ -37,5 +37,18 @@
 		</email>
 
 	</tools>
+
+	<tests title="Test Pages" description="Pages for testing." roles="administrator">
+		<simpletest title="Simple Test" description="Basic smoke test" roles="" />
+		<modaltest title="Modal Test" description="Test modal dialogs" roles="" />
+		<servicetest title="Service Test" description="Test remote service call" roles="" />
+		<componentstest title="Component Test" description="Test component loading" roles="" />
+		<messagestest title="Messages Test" description="Dialogs and Waiters" roles="" />
+		<multiselect title="Multiselect Test" description="Demo multiselect component" roles="" />
+		<password title="Password Test" description="Demo change password component" roles="" />
+		<pager title="Pager Test" description="Demo pager component" roles="" />
+		<editor title="Editor Test" description="Demo editor component" roles="" />
+	</tests>
+
 	<!-- page title='' uri='' description='' roles='' / -->
 </site-map>

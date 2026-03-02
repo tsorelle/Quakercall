@@ -3,6 +3,7 @@
 namespace Nutshell\cms;
 
 use Tops\sys\IUser;
+use Tops\sys\TConfiguration;
 use Tops\sys\TUser;
 
 class SiteMap
@@ -221,8 +222,9 @@ class SiteMap
         }
         $nav .= 'aria-label="breadcrumb">';
         $crumbs[] = $nav;
+        $homeUrl = TConfiguration::getValue('homeUrl','pages','/');
         $crumbs[] = '  <ol class="breadcrumb">';
-        $crumbs[] = '    <li class="breadcrumb-item"><a href="/">Home</a></li>';
+        $crumbs[] = '    <li class="breadcrumb-item"><a href="'.$homeUrl.'">Home</a></li>';
         for($i = 0; $i<$count; $i++) {
             $item = $items[$i];
             if (!$item) {

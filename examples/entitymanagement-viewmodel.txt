@@ -1,0 +1,346 @@
+/// <reference path='../../../../nutshell/pnut/core/ViewModelBase.ts' />
+/// <reference path='../../../../nutshell/typings/knockout/index.d.ts' />
+/// <reference path='../../../../nutshell/pnut/js/ViewModelHelpers.ts' />
+/// <reference path='../../types/qcall.d.ts' />
+namespace Peanut {
+
+	/* TODO:
+	Replace [[entity]] (match case) with entity name lowercase
+	Replace [[Entity]] (match case) with entity name Mixed case
+    */
+
+	// Item interfaces in types/qcall.d.ts
+    import I[[Entity]]Item = QuakerCall.I[[Entity]]Item;
+
+    interface I[[Entity]]UpdateRequest {
+        [[Entity]]: I[[Entity]]Item;
+        searchTerm: string;
+    }
+
+    export class Q[[Entity]]sViewModel extends Peanut.ViewModelBase {
+        // observables
+        testmessage = ko.observable('[[Entity]]s')
+        [[entity]]s = ko.observableArray<QuakerCall.I[[Entity]]Item>();
+        showNo[[Entity]]s = ko.observable(false)
+        all[[Entity]]s: QuakerCall.I[[Entity]]Item[];
+        visible[[Entity]]s: QuakerCall.I[[Entity]]Item[];
+        showTable = ko.observable(false);
+        searchName = ko.observable('');
+        filterable = ko.observable(true)
+        prevEntries = ko.observable(false);
+        moreEntries = ko.observable(false);
+        itemsPerPage = 10;
+        totalItems = 0;
+        totalCount = ko.observable(0);
+        currentPage = ko.observable(1);
+        maxPages = ko.observable();
+        searchTerm = '';
+
+        form = {
+            id : ko.observable(0),
+            fullname : ko.observable(''),
+            firstName : ko.observable(''),
+            lastName : ko.observable(''),
+            email : ko.observable(''),
+            phone : ko.observable(''),
+            city : ko.observable(''),
+            state : ko.observable(''),
+            country : ko.observable(''),
+            subscribed : ko.observable(false),
+            bounced : ko.observable(false),
+            active : ko.observable(true),
+
+            emailError: ko.observable(false),
+            nameError: ko.observable(false)
+        }
+
+        init(successFunction?: () => void) {
+            let me = this;
+            Peanut.logger.write('Q[[entity]]s Init');
+
+			// if not init data needed
+            me.application.loadResources([
+                '@pnut/ViewModelHelpers.js'
+            ], () => {
+                me.bindDefaultSection();
+                successFunction();
+            });
+
+			// if initial data
+			me.services.executeService('Get[[Entity]]List',null,
+                function(serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                        let response: IGetRegistrationsResponse = serviceResponse.Value;
+						// save full list before filter
+                        me.all[[Entity]]s = response.registrations;
+                        me.[[entity]]List(response.meetings);
+						// if meeting dropdown
+                        me.selectedMeeting(response.selectedMeeting);
+                        me.meetingDate(response.selectedMeeting.meetingDate);
+
+                        me.[[Entity]]Count(response.[[entity]]s.length);
+                        let pageCount = Math.ceil( me.allRegistrations.length / me.itemsPerPage );
+                        me.maxPages(pageCount);
+                        me.getPage(1);
+                    } else {
+                        let debug = serviceResponse;
+                    }
+                }).fail(() => {
+                        let trace = me.services.getErrorInformation();
+                }).always(() => {
+                      // me.hideWaiter();
+                    me.bindDefaultSection();
+                    successFunction();
+                });
+
+
+        }
+
+        clearForm = () => {
+            this.form.id(0);
+            this.form.fullname('');
+            this.form.firstName('');
+            this.form.lastName('');
+            this.form.email('');
+            this.form.phone('');
+            this.form.city('');
+            this.form.state('');
+            this.form.country('');
+            this.form.subscribed(false);
+            this.form.bounced(false);
+            this.form.active(true);
+        }
+
+        clearErrors = () => {
+
+        }
+
+        assignForm = ([[entity]] : I[[Entity]]Item) => {
+            this.form.id([[entity]].id || 0);
+            this.form.fullname([[entity]].fullname);
+            this.form.firstName([[entity]].firstName);
+            this.form.lastName([[entity]].lastName);
+            this.form.email([[entity]].email);
+            this.form.phone([[entity]].phone || '');
+            this.form.city([[entity]].city);
+            this.form.state([[entity]].state);
+            this.form.country([[entity]].country);
+            this.form.subscribed([[entity]].subscribed == 1);
+            this.form.bounced([[entity]].bounced == 1);
+            this.form.active([[entity]].active == 1);
+
+            this.form.emailError(false);
+            this.form.nameError(false)
+        }
+
+        show[[Entity]]s = ([[entity]]s: QuakerCall.I[[entity]]Item[])=> {
+            this.all[[Entity]]s = [];
+            this.showTable(false);
+            let count = [[entity]]s.length
+            if (count) {
+                this.all[[Entity]]s = [[entity]]s;
+                this.initialFilter();
+                this.showTable(true);
+            }
+            this.showNo[[Entity]]s(count < 1)
+            this.getPage(1);
+
+        }
+
+        new[[Entity]] = () => {
+            this.clearForm();
+            this.showModal('[[entity]]-update-modal');
+        }
+
+
+        update[[Entity]] = ()=> {
+            let me = this;
+            let name = this.form.fullname().trim();
+            if (name == '') {
+                this.refreshFullName();
+                name = this.form.fullname().trim();
+            }
+            if (name == '') {
+                this.form.nameError(true);
+                return;
+            }
+
+            let request: I[[Entity]]UpdateRequest = {
+                [[entity]] : {
+                    id: this.form.id(),
+                    subscribed: this.form.subscribed() ? 1 : 0,
+                    active: this.form.active() ? 1 : 0,
+                    bounced: this.form.bounced() ? 1 : 0,
+                    fullname: this.form.fullname().trim(),
+                    firstName: this.form.firstName().trim(),
+                    lastName: this.form.lastName().trim(),
+                    email: this.form.email().trim(),
+                    phone: this.form.phone().trim(),
+                    city: this.form.city().trim(),
+                    state: this.form.state().trim(),
+                    country: this.form.country().trim(),
+                },
+                searchTerm: this.searchTerm
+            }
+
+            if ( !Peanut.Helper.ValidateEmail(this.form.email()) ) {
+                this.form.emailError(true);
+                return;
+            }
+            if (request.[[entity]].firstName == '' && request.[[entity]].lastName == '') {
+                request.[[entity]].lastName = request.[[entity]].fullname;
+            }
+
+            me.showWaiter(`Updating [[entity]] ${request.[[entity]].fullname}`);
+            me.services.executeService('UpdateQ[[Entity]]',request,
+                function(serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                        me.hideModal('[[entity]]-update-modal')
+                        me.show[[Entity]]s(serviceResponse.Value)
+                    } else {
+                        let debug = serviceResponse;
+                    }
+                }).fail(() => {
+                let trace = me.services.getErrorInformation();
+            }).always(() => {
+                me.hideWaiter();
+            });
+
+
+        }
+
+        initialFilter = () => {
+            let count = this.all[[Entity]]s.length;
+            this.totalCount(count);
+            let pageCount = 1;
+            let filterable = false;
+            let subscribedOnly = false;
+            if (count > 0) {
+                this.visible[[Entity]]s = this.all[[Entity]]s.filter(c => c.subscribed == 1);
+                let visibleCount = this.visible[[Entity]]s.length;
+                if (visibleCount) {
+                    filterable = (count > visibleCount);
+                    subscribedOnly = true;
+                } else {
+                    this.visible[[Entity]]s = this.all[[Entity]]s;
+                }
+                pageCount = Math.ceil(this.visible[[Entity]]s.length / this.itemsPerPage);
+                this.filterable(visibleCount !== count);
+                if (visibleCount > 0) {
+                    subscribedOnly =true;
+                } else {
+                    this.visible[[Entity]]s = this.all[[Entity]]s;
+                }
+            }
+            this.showNo[[Entity]]s(count === 0);
+            let telst = this.showNo[[Entity]]s();
+            this.filterable(filterable);
+            this.subscribedOnly(subscribedOnly)
+            this.maxPages(pageCount);
+            this.getPage(1);
+        }
+
+
+        filter[[Entity]]s = (subscribedOnly: boolean) => {
+            if (!subscribedOnly) {
+                this.visible[[Entity]]s = this.all[[Entity]]s;
+            }
+            else {
+                this.visible[[Entity]]s = this.all[[Entity]]s.filter(c => c.subscribed == 1);
+            }
+            let total = this.visible[[Entity]]s.length;
+            let pageCount = Math.ceil( this.visible[[Entity]]s.length / this.itemsPerPage );
+            this.maxPages(pageCount);
+            this.subscribedOnly(subscribedOnly);
+            this.getPage(1);
+        }
+
+        getPrevious = () => {
+            let prev = this.currentPage() -1;
+            this.getPage(prev);
+        }
+
+        getNext = () => {
+            let next = this.currentPage() + 1;
+            this.moreEntries(next < this.maxPages());
+            this.getPage(next);
+        }
+
+
+        getPage = (pageNumber: number) => {
+            let me = this;
+            if (this.maxPages() > 1) {
+                let startIndex = (pageNumber - 1) * me.itemsPerPage;
+                let page = this.visible[[Entity]]s.slice(startIndex, startIndex + me.itemsPerPage)
+                me.[[entity]]s(page);
+                this.prevEntries(pageNumber > 1);
+                this.moreEntries(pageNumber < this.maxPages());
+                me.currentPage(pageNumber)
+            }
+            else {
+                me.[[entity]]s(this.visible[[Entity]]s)
+                this.prevEntries(false);
+                this.moreEntries(false);
+                me.currentPage(1)
+            }
+
+        }
+
+
+        find[[Entity]]s = () => {
+            let searchTerm = this.searchName().trim();
+            if (searchTerm) {
+                this.search[[Entity]]s(searchTerm);
+            }
+        }
+
+        onSearchEnter = (data, event) => {
+            if (event.key === "Enter") {
+                this.find[[Entity]]s();
+            }
+            return true;
+        }
+
+        refreshFullName = () => {
+            let name = this.form.firstName().trim();
+            let last = this.form.lastName().trim();
+            if (name) {
+                if (last) {
+                    name += ' ';
+                }
+            }
+            name += last;
+            this.form.fullname(name)
+
+        }
+
+        edit[[Entity]] = ([[entity]]: I[[Entity]]Item) => {
+            this.assignForm([[entity]]);
+            this.showModal('[[entity]]-update-modal');
+        }
+        search[[Entity]]s = (searchTerm) => {
+            let me = this;
+            me.searchTerm = '';
+            me.showWaiter('Searching for [[entity]]s');
+            me.services.executeService('Search[[Entity]]s',searchTerm,
+                function(serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                        me.show[[Entity]]s(serviceResponse.Value)
+                        me.searchTerm = searchTerm;
+                    } else {
+                        let debug = serviceResponse;
+                    }
+                }).fail(() => {
+                let trace = me.services.getErrorInformation();
+            }).always(() => {
+                me.hideWaiter();
+            });
+
+        }
+
+        toggleFilterExmple = () => {
+            let state = this.subscribedOnly();
+            this.filter[[Entity]]s(!state);
+        }
+    }
+}
