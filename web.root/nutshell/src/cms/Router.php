@@ -99,6 +99,7 @@ class Router
             self::setSwitchValue($routeData,'sitefooter',1);
             self::setSwitchValue($routeData,'pageheader',1);
             self::setSwitchValue($routeData,'frontpage',0);
+            self::setSwitchValue($routeData,'embed',0);
             if ($uri === 'home') {
                 self::setSwitchValue($routeData, 'breadcrumbs', 0);
             }

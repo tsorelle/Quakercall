@@ -26,7 +26,12 @@
     /** @var int $specialheader */
     /** @var int $bscdn */
     /** @var int $fasrc */
+    /** @var int $embed */
 
+// $embed=0;
+if ($embed===1) {
+    $sitefooter = 0;
+}
 ?>
 <head>
     <meta charset="UTF-8">
@@ -57,30 +62,50 @@
     </title>
     <script src="<?php print $fasrc?>" crossorigin="anonymous"></script>
 
+    <?php if ($embed === 1) { ?>
+    <style>
+        #page-content {
+            margin-left: 0;
+            margin-right: 0;
+            max-width: 100%;
+        }
+        #nutshell-main-section {
+            padding-bottom: 0;
+        }
+    </style>
+    <?php }  else { ?>
+    <style>
+        #nutshell-main-section {
+            padding-bottom: 10ex;
+        }
+    </style>
+   <?php } ?>
 </head>
 <body>
     <div id="page-top"></div>
 
     <?php
-    if (!empty($specialheader)) {
-        include $themeIncludePath."/site-header2.php";
-    }
-    if ($siteheader === 1) {
-        include $themeIncludePath."/site-header.php";
-    }
+    if ($embed !== 1) {
+        if (!empty($specialheader)) {
+            include $themeIncludePath."/site-header2.php";
+        }
+        if ($siteheader === 1) {
+            include $themeIncludePath."/site-header.php";
+        }
 
-    if ($frontpage === 1) {
-        include $themeIncludePath . "/front-header.php";
-    }
+        if ($frontpage === 1) {
+            include $themeIncludePath . "/front-header.php";
+        }
 
-    if ($pageheader === 1) {
-        include $themeIncludePath."/page-header.php";
+        if ($pageheader === 1) {
+            include $themeIncludePath."/page-header.php";
+        }
     }
     ?>
 
 
     <!-- main content -->
-    <div  id="nutshell-main-section" style="padding-bottom: 10ex"> <!-- todo: this goes in stylesheet -->
+    <div  id="nutshell-main-section">
         <div class="container" id="page-content">
             <div class="row pagecontent-row">
                 <?php
