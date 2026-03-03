@@ -13,7 +13,8 @@
 		<register title="Register for National Meeting" description="Register for the national zoom call" />
 		<signin title="Join the Meeting" description="Sign in and join the zoom meeting" />
 	</meetings>
-	<endorsers title="Endorsers" discription="Organizations and individual who endorse the Call" uri="https://quakercall.org/endorsers/groups">
+
+	<endorsers title="Endorsers" discription="Organizations and individual who endorse the Call">
 		<individualform title="Add your name" description="Endorsement for individuals" />
 		<individuals title="Individual Endorsers" description="Individuals who have endorsed the Call" />
 		<groupform title="Add Your Meeting or Organization" description="Endorsement for groups" />
