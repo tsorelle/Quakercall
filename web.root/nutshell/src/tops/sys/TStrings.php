@@ -20,15 +20,17 @@ class TStrings
     const pascalCaseFormat = 6;
     const wordFormat = 7;
 
-    public static function ListToArray($value,$seperator=',') {
+    public static function ListToArray($value, $seperator = ',')
+    {
         if (empty($value)) {
             return array();
         }
-        $parts = explode($seperator,$value);
-        return array_map('trim',$parts);
+        $parts = explode($seperator, $value);
+        return array_map('trim', $parts);
     }
 
-    public static function ConvertNameFormat($name,$format,$uppercase = false) {
+    public static function ConvertNameFormat($name, $format, $uppercase = false)
+    {
         $parts = [];
         if ($name == null) {
             return false;
@@ -38,16 +40,13 @@ class TStrings
             return '';
         }
         $singleWord = false;
-        if (strpos($name,'-') !== false) {
-            $parts = explode('-',strtolower($name));
-        }
-        else if (strpos($name,'_') !== false) {
-            $parts = explode('_',strtolower($name));
-        }
-        else if (strpos($name,' ') !== false) {
-            $parts = explode(' ',strtolower($name));
-        }
-        else {
+        if (strpos($name, '-') !== false) {
+            $parts = explode('-', strtolower($name));
+        } else if (strpos($name, '_') !== false) {
+            $parts = explode('_', strtolower($name));
+        } else if (strpos($name, ' ') !== false) {
+            $parts = explode(' ', strtolower($name));
+        } else {
             $singleWord = (lcfirst($name) == strtolower($name));
             if (!$singleWord) {
                 $parts = self::camelCaseExplode($name);
@@ -55,10 +54,10 @@ class TStrings
         }
 
         $glue = '';
-        switch($format) {
+        switch ($format) {
             case self::initialCapFormat :
                 if ($singleWord) {
-                    return  $uppercase ? strtoupper($name) : ucfirst(strtolower($name));
+                    return $uppercase ? strtoupper($name) : ucfirst(strtolower($name));
                 }
                 $glue = ' ';
                 if (!$uppercase) {
@@ -67,88 +66,90 @@ class TStrings
                 break;
             case self::wordCapsFormat :
                 if ($singleWord) {
-                    return  $uppercase ? strtoupper($name) : ucfirst(strtolower($name));
+                    return $uppercase ? strtoupper($name) : ucfirst(strtolower($name));
                 }
                 $glue = ' ';
                 if (!$uppercase) {
                     $len = sizeof($parts);
-                    for ($i = 0; $i<$len;$i++) {
+                    for ($i = 0; $i < $len; $i++) {
                         $parts[$i] = ucfirst($parts[$i]);
                     }
                 }
                 break;
             case self::wordFormat :
                 if ($singleWord) {
-                    return  $uppercase ? strtoupper($name) : strtolower($name);
+                    return $uppercase ? strtoupper($name) : strtolower($name);
                 }
                 $glue = ' ';
                 break;
             case self::keyFormat :
                 if ($singleWord) {
-                    return  $uppercase ? strtoupper($name) : strtolower($name);
+                    return $uppercase ? strtoupper($name) : strtolower($name);
                 }
                 $glue = '_';
                 break;
             case self::dashedFormat :
                 if ($singleWord) {
-                    return  $uppercase ? strtoupper($name) : strtolower($name);
+                    return $uppercase ? strtoupper($name) : strtolower($name);
                 }
                 $glue = '-';
                 break;
             case self::camelCaseFormat :
                 if ($singleWord) {
-                    return  $uppercase ? strtoupper($name) : strtolower($name);
+                    return $uppercase ? strtoupper($name) : strtolower($name);
                 }
                 $len = sizeof($parts);
                 if ($len > 1 && !$uppercase) {
-                    for ($i = 1; $i<$len;$i++) {
+                    for ($i = 1; $i < $len; $i++) {
                         $parts[$i] = ucfirst($parts[$i]);
                     }
                 }
                 break;
             case self::pascalCaseFormat :
                 if ($singleWord) {
-                    return  $uppercase ? strtoupper($name) : ucfirst(strtolower($name));
+                    return $uppercase ? strtoupper($name) : ucfirst(strtolower($name));
                 }
                 if (!$uppercase) {
                     $len = sizeof($parts);
-                    for ($i = 0; $i<$len;$i++) {
+                    for ($i = 0; $i < $len; $i++) {
                         $parts[$i] = ucfirst($parts[$i]);
                     }
                 }
                 break;
         }
-        $result = join($glue,$parts);
+        $result = join($glue, $parts);
         if ($uppercase) {
             $result = strtoupper($result);
         }
         return $result;
     }
 
-    public static function toCamelCase($s,$delimiter='-') {
-        $parts = explode($delimiter,$s);
+    public static function toCamelCase($s, $delimiter = '-')
+    {
+        $parts = explode($delimiter, $s);
         $len = sizeof($parts);
-        for ($i = 0; $i<$len;$i++) {
-            $parts[$i] =  ucfirst($parts[$i]);
+        for ($i = 0; $i < $len; $i++) {
+            $parts[$i] = ucfirst($parts[$i]);
         }
-        return join('',$parts);
+        return join('', $parts);
     }
 
-    public static function toTitle($s,$seperator=false) {
+    public static function toTitle($s, $seperator = false)
+    {
         if ($seperator) {
-            $s = str_replace($seperator,' ',$s);
+            $s = str_replace($seperator, ' ', $s);
         }
-        $parts = explode(' ',$s);
+        $parts = explode(' ', $s);
         $len = sizeof($parts);
-        $keywords = explode(',',TLanguage::text('title-key-words','the,a,of,an,in,and'));
-        for ($i = 0; $i<$len;$i++) {
+        $keywords = explode(',', TLanguage::text('title-key-words', 'the,a,of,an,in,and'));
+        for ($i = 0; $i < $len; $i++) {
             $part = $parts[$i];
-            if ($i>0 && in_array($part,$keywords)) {
+            if ($i > 0 && in_array($part, $keywords)) {
                 continue;
             }
             $parts[$i] = ucfirst($part);
         }
-        return join(' ',$parts);
+        return join(' ', $parts);
     }
 
     /**
@@ -191,16 +192,17 @@ class TStrings
      * should the result be lowercased?
      *
      * @param $example_string :string
-     *		 Example to specify how to deal with multiple uppercase characters.
+     *         Example to specify how to deal with multiple uppercase characters.
      * Can be something like "AA Bc" or "A A Bc" or "AABc".
      *
      * @param $glue :boolean
      * Allows to implode the fragments with sth like "_" or "." or " ".
-     *	 If $glue is FALSE, it will just return an array.
+     *     If $glue is FALSE, it will just return an array.
      *
      * @return :array[int => string] or just string, depending on $glue.
      */
-    public static function camelCaseExplode($string, $lowercase = true, $example_string = 'AA Bc', $glue = false){
+    public static function camelCaseExplode($string, $lowercase = true, $example_string = 'AA Bc', $glue = false)
+    {
         static $regexp_available = array(
             '/([A-Z][^A-Z]+)/',
             '/([A-Z]+[^A-Z]*)/',
@@ -231,20 +233,21 @@ class TStrings
         return is_string($glue) ? implode($glue, $array) : $array;
     }
 
-    public static function getTeaser($text, $length = 100) {
+    public static function getTeaser($text, $length = 100)
+    {
         if (strlen($text) <= $length) {
             return $text;
         }
 
         $text = strip_tags($text);
-        $text = str_replace(["\n","\t"],' ',trim($text));
+        $text = str_replace(["\n", "\t"], ' ', trim($text));
         $cleaned = '';
         while ($text != $cleaned) {
             $cleaned = $text;
-            $text = str_replace('  ',' ',$text);
+            $text = str_replace('  ', ' ', $text);
         }
 
-        $words = explode(' ',$text);
+        $words = explode(' ', $text);
         $total = 0;
         $result = [];
         foreach ($words as $word) {
@@ -254,7 +257,42 @@ class TStrings
                 break;
             }
         }
-        return implode(' ',$result).'...';
+        return implode(' ', $result) . '...';
+    }
+
+    /**
+     * Trim leading punctuation and whitespace and trailing whitespace only
+     *
+     * @param $s
+     * @return string
+     */
+    public static function TrimString($s): string
+    {
+        $s = self::TrimStart($s);
+        return trim($s);
+    }
+
+    public static function TrimPunctuation($s): string {
+        if ($s===null) return '';
+        $s = self::TrimStart($s);
+        return self::TrimEnd($s);
+    }
+    public static function TrimStart(string $s) : string
+    {
+        if ($s === null) {
+            return '';
+        }
+        // Remove leading punctuation/whitespace
+        return preg_replace('/^[\p{P}\p{Z}\s]+/u', '', $s);
+    }
+
+    public static function TrimEnd(string $s)  : string
+    {
+        if ($s === null) {
+            return '';
+        }
+        // Remove trailing punctuation/whitespace
+        return preg_replace('/[\p{P}\p{Z}\s]+$/u', '', $s);
     }
 
 
