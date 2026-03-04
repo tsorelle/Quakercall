@@ -104,4 +104,33 @@ class TWebSite
         }
         return $url;
     }
+
+    public static function GetClientIp(): ?string
+    {
+        $keys = [
+            'HTTP_CF_CONNECTING_IP', // Cloudflare
+            'HTTP_X_FORWARDED_FOR',  // Standard proxy chain
+            'HTTP_X_REAL_IP',        // Nginx
+            'REMOTE_ADDR'            // Always present
+        ];
+
+        foreach ($keys as $key) {
+            if (!empty($_SERVER[$key])) {
+                $ip = $_SERVER[$key];
+
+                // X-Forwarded-For may contain multiple IPs
+                if ($key === 'HTTP_X_FORWARDED_FOR') {
+                    $ip = trim(explode(',', $ip)[0]);
+                }
+
+                if (filter_var($ip, FILTER_VALIDATE_IP)) {
+                    return $ip;
+                }
+            }
+        }
+
+        return '';
+    }
+
+
 }
