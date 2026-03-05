@@ -54,6 +54,8 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
         return $stmt->rowCount() > 0;
     }
 
+
+
     protected function getTableName() {
         return 'qcall_registrations';
     }
@@ -65,6 +67,8 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
     protected function getClassName() {
        return 'Application\quakercall\db\entity\QcallRegistration';
     }
+
+
 
     protected function getFieldDefinitionList()
     {

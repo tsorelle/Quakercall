@@ -61,6 +61,30 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
         $stmt = $this->executeStatement($sql);
         return $stmt->fetch(PDO::FETCH_OBJ);
     }
+    public function getUpcomingMeeting($interval = '3 HOUR')
+    {
+        $sql =
+            'SELECT id, meetingCode, ' .
+            "DATE_FORMAT( meetingDate, '%M %e, %Y') as dateOfMeeting, " .
+            'meetingTime, theme, presenter, image, startTime, ' .
+            'CASE SIGN(TIMESTAMPDIFF(MINUTE, startTime,UTC_TIMESTAMP())) ' .
+            '	WHEN -1 THEN -1 ' .
+            '	WHEN 0 THEN 0 ' .
+            '	ELSE  ' .
+            '	  IF(SIGN(TIMESTAMPDIFF(HOUR,DATE_ADD(startTime, INTERVAL ' .
+            $interval . '), UTC_TIMESTAMP())) > 0, 1, 0) ' .
+            'END AS ready ' .
+            'FROM qcall_meetings  WHERE active=1 ORDER BY meetingDate  DESC LIMIT 0,1 ';
+        $stmt = $this->executeStatement($sql);
+        $result = $stmt->fetch(PDO::FETCH_OBJ);
+        if ($result) {
+            $dt = new DateTime($result->startTime, new \DateTimeZone('UTC'));
+            $dt->setTimezone(new \DateTimeZone('America/New_York'));
+            $result->nyStartTime = $dt->format('F j, Y g:i A T');
+            $result->startDate = $dt->format('Y-m-d');
+        }
+        return $result;
+    }
 
     public function getTestMeeting()
     {
@@ -129,12 +153,14 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
         'meetingCode'=>PDO::PARAM_STR,
         'meetingDate'=>PDO::PARAM_STR,
         'meetingTime'=>PDO::PARAM_STR,
+        'startTime'=>PDO::PARAM_STR,
         'theme'=>PDO::PARAM_STR,
         'presenter'=>PDO::PARAM_STR,
         'zoomMeetingId'=>PDO::PARAM_STR,
         'zoomUrl'=>PDO::PARAM_STR,
         'zoomPasscode'=>PDO::PARAM_STR,
         'meetingType'=>PDO::PARAM_STR,
+        'image'=>PDO::PARAM_STR,
         'createdby'=>PDO::PARAM_STR,
         'createdon'=>PDO::PARAM_STR,
         'changedby'=>PDO::PARAM_STR,

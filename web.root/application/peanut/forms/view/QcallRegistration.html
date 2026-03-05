@@ -1,15 +1,195 @@
-<div id="qcallregistration-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
+<div id="qcallregistration-load-message" xmlns="http://www.w3.org/1999/html"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
 <div id="qcallregistration-view-container" class="row" style="display: none">
-    <div class="col-md-12">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- view model bindings -->
-                <h1>Registration</h1>
-                <h2>National Zoom Meeting</h2>
-                <h2>March 22, 2026</h2>
 
-                <p>Registration will open soon</p>
+    <div id="site-header">
+        <div id="registration-heading">
+            <div class="row">
+                <div  data-bind="css: imagePath() ? 'col-md-10':'col-md-12'">
+                    <h3 style="color: #0b7f89" class="mt-2">Register for Quaker Call to Action National Meeting</h3>
+                    <h4>
+
+                    </h4>
+                    <div data-bind="visible:showDetails()">
+                        <h4><span data-bind="text:meetingDate"></span> <span data-bind="text:meetingTime"></span></h4>
+                        <h5 style="margin-bottom: 0"><span data-bind="text:meetingTheme"></span></h5>
+                        <h5 style="font-size: 1.2rem" data-bind="visible:meetingSubtitle">
+                            <span data-bind="text:meetingSubtitle"></span>
+                        </h5>
+                    </div>
+                </div>
+                <div data-bind="visible:imagePath" class="col-md-2" >
+                    <div class="row">
+                        <div class="col-md-12 text-center" style="padding-right: 2rem;padding-left: 2rem" >
+                            <img style="max-height: 8rem" class="img-fluid"  alt="Speaker" data-bind="attr: { src: imagePath }">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="text-align: center">
+                            <em  style="white-space: nowrap; font-weight: bold; font-size: smaller" data-bind="text:presenterCaption"></em>
+                        </div>
+                    </div>
+
+                </div>
+
+                <h5 style="color: black" data-bind="text: messageText"></h5>
             </div>
+        </div>
+        <div id="registration-form"  data-bind="visible: tab()=='form'" >
+            <!-- todo: use first and last? -->
+            <!-- div class="row">
+                <div class="col-md-6 pb-2"><label class="form-label" for="first-name-field">First Name</label>
+                    <input data-bind='value:form.firstName' id="first-name-field" class="form-control" type="text" /></div>
+                <div class="col col-md-6 pb-3"><label class="form-label">Last Name</label>
+                    <input data-bind='value:form.lastName' class="form-control" type="text" required /></div>
+            </div -->
+            <div class="row">
+                <div class="col-md-12" style="padding-bottom: 1rem;">
+                    <label
+                            class="form-label">Your Name</label>
+                    <span style="color:red" data-bind="visible:form.nameError">&nbsp;Name is required</span>
+                    <input data-bind='value:form.fullname' class="form-control" type="text" required />
+
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col col-md-8">
+                    <label class="form-label" for="em">Email Address</label>
+                    <span style="color:red" data-bind="visible:form.emailError">&nbsp;A valid email is required</span>
+                    <div data-bind="css: {'has-error': form.emailError}">
+                        <input id="em" name="em" autocomplete="off"
+                               data-1p-ignore
+                               data-lpignore="true"
+                               data-norton="ignore"
+                               data-bwignore="true"
+                               data-bind='value:form.email' class="form-control" type="email" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label for="phone" class="form-label">Phone</label>
+                    <input id="phone" data-bind='value:form.phone' class="form-control" type="text" />
+                </div>
+
+            </div>
+            <div  style="padding-bottom: 1rem;" class="row">
+                <div class="col-md-4"><label for="city" class="form-label">City</label>
+                    <input id="city" data-bind='value:form.city' class="form-control" type="text" /></div>
+                <div class="col-md-4"><label for="state" class="form-label">State or Province</label>
+                    <input id="state" data-bind='value:form.state' class="form-control" type="text" /></div>
+                <div class="col-md-4"><label for="country" class="form-label">Country</label>
+                    <input id="country" data-bind='value:form.country' class="form-control" type="text" /></div>
+            </div>
+            <!-- todo:Religious Affiliation -->
+            <div class="row" >
+                <div class="col-md-12">
+                    <div class="mb-4">
+                        <fieldset class="border-0">
+                            <legend class="col-form-label fw-semibold mb-2">
+                                Religious Affiliation
+                            </legend>
+
+                            <!-- Quaker -->
+                            <div class="form-check mb-1">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="religion"
+                                       id="relQuaker"
+                                       value="Quaker"
+                                       data-bind="checked: form.religion">
+                                <label class="form-check-label" for="relQuaker">Quaker</label>
+                            </div>
+                            <!-- Unaffiliated -->
+                            <div class="form-check mb-1">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="religion"
+                                       id="relUnaffiliated"
+                                       value="Unaffiliated"
+                                       data-bind="checked: form.religion">
+                                <label class="form-check-label" for="relUnaffiliated">Unaffiliated</label>
+                            </div>
+                            <!-- Other -->
+                            <div class="form-check">
+                                <input class="form-check-input"
+                                       type="radio"
+                                       name="religion"
+                                       id="relOther"
+                                       value="Other"
+                                       data-bind="checked: form.religion">
+                                <label class="form-check-label" for="relOther">Other</label>
+                            </div>
+
+                            <!-- Indented text field for Other -->
+                            <div class="ms-4 mt-2">
+                                <input type="text"
+                                       class="form-control"
+                                       id="relOtherText"
+                                       placeholder="Please specify"
+                                       data-bind="value: form.religionOther, enable: form.religion() === 'Other', visible: form.religion() === 'Other'"
+                                />
+                            </div>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" style="padding-bottom: 0rem;">
+                <div class="col-md-12">
+                    <label class="form-label">Friends Meeting or Organization</label>
+                    <input data-bind='value:form.organization' class="form-control" type="text" >
+                </div>
+            </div>
+
+            <!-- todo:buttons -->
+            <div class="row">
+                <div class="col-md-12 pt-3">
+                    <button
+                            data-bind="click:submitRegistration"
+                            class="btn btn-primary" type="button">Submit</button>
+                </div>
+            </div>
+
+        </div>
+        <div data-bind="visible: tab()=='done'">
+            <p>The meeting is over.  Watch our website for the next event.</p>
+        </div>
+        <div data-bind="visible: tab() == 'inprogress'">
+            <p>The meeting is in progress.</p>
+            <p><a href="\meeting">Sign in here to join</a> </p>
+        </div>
+
+
+        <div data-bind="visible: tab() == 'thanks'">
+            <h2>Thanks for your registration</h2>
+            <p>After <span data-bind="text:nyStartTime"></span> , go to this address to sign in and receive the Zoom video conference link.<br>
+                <a href="https://quakercall.org/meeting">https://quakercall.org/meeting</a>
+            </p>
+            <p>The Join Meeting link can also be found on the front page of our website
+                <a href="https://quakercall.net">https://quakercall.net</a></p>
+            <p>If you are not sure about the timing, check this
+                <a target="_blank" data-bind="attr: { href: timeLink }"><strong>Date/Time Converter</strong></a>
+                for the time in your locality.</p>
+            <p>Use the contact link below if any of the information below is incorrect or if you have any other questions.  Please
+                reference your email or the "Submission Id" in the list below.</p>
+
+            <table class="table">
+                <tbody>
+                <tr><td>Name      </td><td data-bind="text:result.fullname"></td></tr>
+                <tr><td>Email      </td><td data-bind="text:result.email"></td></tr>
+                <tr><td>Phone  	   </td><td data-bind="text:result.phone"></td></tr>
+                <tr><td>Location   </td><td data-bind="text:result.location"></td></tr>
+                <tr><td>Meeting or Organization</td><td  data-bind="text:result.organization"></td></tr>
+                <tr><td>Submission Id</td><td  data-bind="text:result.submissionId"></td></tr>
+                </tbody>
+            </table>
+            <div class="mt-3">
+                <a href="/contact">Contact the registrar</a>
+            </div>
+        </div>
+
+
+        <div class="security-section">
+            <label for="security-control">Do not fill in this field</label>
+            <input type="text" id="security-control" value="" />
         </div>
     </div>
 </div>

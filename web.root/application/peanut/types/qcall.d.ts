@@ -1,4 +1,18 @@
 declare namespace QuakerCall {
+
+
+    export interface IMeetingInfo {
+        id: any;
+        meetingCode: string;
+        dateOfMeeting: string;
+        meetingTime: string;
+        theme: string;
+        subtitle: string;
+        presenter: string;
+        ready : any;
+    }
+
+
     export interface IContactItem {
         id : any;
         fullname : string;

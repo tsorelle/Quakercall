@@ -2,7 +2,8 @@
 <html lang="en">
 <?php
 // deploy location: web.root/application/content/page.php
-    if (!isset($title)) {
+
+if (!isset($title)) {
         $browserTitle = 'Title';
     }
     if (!isset($theme)) {
@@ -17,6 +18,7 @@
     /** @var int $maincolsize */
     /** @var int $colsize */
     /** @var string $menu */
+    /** @var string $version */
     /** @var string $menutype */
     /** @var string $themeIncludePath */
     /** @var int $siteheader */
@@ -40,7 +42,9 @@ if ($embed===1) {
     <link rel="icon" type="image/x-icon" href="/application/assets/img/favicon.ico">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <?php
-        if ($bscdn === 1) {
+    $version = Tops\sys\TConfiguration::getValue('applicationVersionNumber','peanut','version');
+
+    if ($bscdn === 1) {
             printf(
                 '<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" '.
                 '  rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" '.
@@ -52,7 +56,9 @@ if ($embed===1) {
         printf('<link rel="stylesheet" type="text/css" href="%s/styles.css"/>',$themePath ?? 'Error missing theme path');
         if (isset($extraStyles)) {
             /** @noinspection HtmlUnknownTarget */
-            printf('<link rel="stylesheet" type="text/css" href="%s/extra.css"/>',$themePath ?? 'Error missing theme path');
+            printf('<link rel="stylesheet" type="text/css" href="%s/extra.css%s"/>',
+                    $themePath ?? 'Error missing theme path',
+                    "?v=$version");
         }
     ?>
     <title>

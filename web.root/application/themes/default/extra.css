@@ -55,3 +55,14 @@ h1, h2, h3,h4 {
 body, footer, p {
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 }
+
+#registration-heading {
+    background-color: ivory;
+    border: 1px  brown double;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+#registration-form label {
+    font-weight: 600;
+}

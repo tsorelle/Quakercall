@@ -13,12 +13,14 @@ class QcallMeeting  extends \Tops\db\TimeStampedEntity
     public $meetingCode;
     public $meetingDate;
     public $meetingTime;
+    public $startTime;
     public $theme;
     public $presenter;
     public $zoomMeetingId;
     public $zoomUrl;
     public $zoomPasscode;
     public $meetingType;
+    public $image;
     public $active;
 
     public function getDtoDataTypes()

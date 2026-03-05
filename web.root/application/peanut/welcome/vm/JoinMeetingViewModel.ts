@@ -7,21 +7,17 @@
 /// <reference path='../../../../nutshell/typings/knockout/index.d.ts' />
 /// <reference path='../../../../nutshell/pnut/core/Peanut.d.ts' />
 /// <reference path='../../../../nutshell/pnut/js/ViewModelHelpers.ts' />
+/// <reference path='../../types/qcall.d.ts' />
 
 // Module
 namespace Peanut {
-    interface ICurrentMeetingInfo {
-        id : any;
-        meetingCode : string;
-        dateOfMeeting : string;
-        meetingTime : string;
-        theme : string;
-        presenter : string;
+
+    export interface ICurrentMeetingInfo extends QuakerCall.IMeetingInfo{
         zoomMeetingId : string;
         zoomUrl : string;
         zoomPasscode : string;
-        ready : any
     }
+
 
     interface IJoinMeetingRequest {
         meetingId: string;

@@ -5,20 +5,35 @@ namespace Application\quakercall\services;
 use Application\quakercall\db\QcallDataManager;
 use Application\quakercall\db\repository\QcallMeetingsRepository;
 use Tops\services\TServiceCommand;
+use Tops\sys\TPath;
 
 class GetCurrentMeetingCommand extends TServiceCommand
 {
 
     protected function run()
     {
-        $meetingId = $this->getRequest();
+        $upcoming = $this->getRequest() ?? false;
+
         $repository = new QcallMeetingsRepository();
-        if ($meetingId === '696a585072a29') {
-            $current = $repository->getTestMeeting();
+        if ($upcoming) {
+            $meeting = $repository->getUpcomingMeeting();
         }
         else {
-            $current = $repository->getCurrentMeeting('2 HOUR');
+            $meeting = $repository->getCurrentMeeting('2 HOUR');
         }
-        $this->setReturnValue($current);
+        if($meeting->image) {
+            $path = '/application/assets/img/meeting/'.$meeting->image;
+            $filepath = TPath::fromFileRoot($path);
+            if (file_exists($filepath)) {
+                $meeting->image = $path;
+            }
+            else {
+                $meeting->image = '';
+            }
+        }
+        $titleParts = explode(':', $meeting->theme);
+        $meeting->theme = trim( $titleParts[0]);
+        $meeting->subtitle = count($titleParts) > 1 ? trim($titleParts[1]) : '';
+        $this->setReturnValue($meeting);
     }
 }

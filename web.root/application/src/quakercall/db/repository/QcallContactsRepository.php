@@ -29,6 +29,12 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         }
     }
 
+    public function findByEmailAndName($email, $fullname)
+    {
+        $result = $this->getSingleEntity('email = ? and fullName = ?', [$email, $fullname]);
+        return $result;
+    }
+
 
     protected function getTableName() {
         return 'qcall_contacts';

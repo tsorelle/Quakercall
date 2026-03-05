@@ -9,6 +9,9 @@ use Application\quakercall\db\repository\QcallEndorsementsRepository;
 use Application\quakercall\db\repository\QcallGroupendorsementsRepository;
 use Application\quakercall\db\repository\QcallMeetingsRepository;
 use Application\quakercall\db\repository\QcallRegistrationsRepository;
+use Tops\db\TQuery;
+use Tops\services\IMessageContainer;
+use Tops\sys\TWebSite;
 
 class QcallDataManager
 {
@@ -179,35 +182,33 @@ class QcallDataManager
         return false;
     }
 
-    private function splitName(string $participantName)
+    /**
+     * Use if first and last name is deprecated so only use this for backward compatibility
+     *
+     * @param $firstName
+     * @param $lastName
+     * @param $email
+     * @param $subscribed
+     * @return QcallContact
+     */
+    public function newContactFromFirstAndLastName($firstName,$lastName,$email,$subscribed=1)
     {
-        $result = new \stdClass();
-        $parts = explode(' ', $participantName);
-        $result->last = array_pop($parts);
-        $suffix = strtolower( preg_replace('/[[:punct:]]/', '', $result->last) );
-
-        if ($suffix=='jr' || $suffix=='sr' || $suffix=='md' || $suffix=='ii' || $suffix=='iii') {
-            $result->last = array_pop($parts);
-        }
-        $result->first = implode(' ', $parts);
-        return $result;
+        return $this->makeNewContact("$firstName $lastName",$email,$subscribed);
     }
 
-    private function createBasicContact(string $participantName, string $email,$subscribed=false)
+    /**
+     * @param string $fullName
+     * @param string $email     NOTE: we assume email already cleaned and validated!  Use TEmailValidator before call
+     * @param $subscribed
+     * @return QcallContact
+     */
+    public function makeNewContact(string $fullName, string $email,$subscribed=1)
     {
         $contactRepo = $this->getContactsRepo();
-        $alreadySubscribed = $contactRepo->isSubscribed($email);
-        if ($alreadySubscribed) {
-            $subscribed = false;
-        }
 
         $contact = new QcallContact();
-        $contact->fullname = $participantName;
+        $contact->assignNames($fullName);
         $contact->email = $email;
-        $name = $this->splitName($participantName);
-        $contact->lastName = $name->last;
-        $contact->firstName = $name->first;
-        $contact->sortcode = $this->makeSortCode($contact->firstName,$contact->lastName);
         $contact->phone = '';
         $contact->organization = '';
         $contact->title = '';
@@ -217,11 +218,26 @@ class QcallDataManager
         $contact->state = '';
         $contact->postalcode = '';
         $contact->country = '';
-        $contact->subscribed = $subscribed;
+        $contact->subscribed = $contactRepo->isSubscribed($email) ? 0 : $subscribed;
         $contact->bounced = 0;
         $contact->active = 1;
+        return $contact;
+    }
+
+
+    /**
+     * Use only for backward compatibility
+     *
+     * @param $fullName
+     * @param string $email
+     * @param $subscribed
+     * @return false|string
+     */
+    public function createBasicContact($fullName, string $email,$subscribed=false)
+    {
+        $contact = $this->makeNewContact($fullName,$email,$subscribed);
         $contact->source = 'registrations';
-        return $contactRepo->insert($contact);
+        return ($this->getContactsRepo())->insert($contact);
     }
 
     private function subscribe($contact)
@@ -252,5 +268,83 @@ class QcallDataManager
 
     public function getGroupendorsementsForReview() {}
 
+    public function findRegistration($meetingId, $email, $fullname)
+    {
+        $query = new TQuery();
 
+        $sql =
+            'SELECT r.id '.
+            'FROM `qcall_registrations` r '.
+            'JOIN `qcall_contacts` c ON c.id = r.`contactId` '.
+            'WHERE c.`email` = ? AND r.`meetingId` = ? AND r.`participant` = ?';
+
+        $registrationId = $query->getValue($sql,[$email,$meetingId,$fullname]);
+        if (!$registrationId) {
+            return false;
+        }
+        return ($this->getRegistrationsRepository())->get($registrationId);
+    }
+
+
+    public function PostMeetingRegistration($registrationRequest)
+    {
+        $response = new \stdClass();
+        $regRepo = $this->getRegistrationsRepository();
+        $registration = $this->findRegistration(
+            $registrationRequest->meetingId,
+            $registrationRequest->email,
+            $registrationRequest->name);
+        if ($registration) {
+            $response->error = 'You are already registered for this meeting.';
+            return $response;
+        }
+        /**
+         * @var $registration QcallRegistration
+         */
+        $registration = new QcallRegistration();
+        $contactRepo = $this->getContactsRepo();
+        $contact = $contactRepo->findByEmailAndName($registrationRequest->email, $registrationRequest->name);
+        if ($contact) {
+            $registration->contactId = $contact->id;        }
+        else {
+            $contact = $this->makeNewContact($registrationRequest->name,$registrationRequest->email);
+            $contact->source = 'registrations';
+            $contact->phone = $registrationRequest->phone;
+            $contact->city = $registrationRequest->city ?? '';
+            $contact->state = $registrationRequest->state ?? '';
+            $contact->country = $registrationRequest->country ?? '';
+            $contact->normalizeStateAndCountry();
+            $registration->contactId = $contactRepo->insert($contact);
+            if (empty($registration->contactId)) {
+                $response->error = 'Unable to create contact.';
+                return $response;
+            }
+        }
+        $registration->meetingId = $registrationRequest->meetingId;
+        $registration->participant =  $registrationRequest->name;
+        $registration->submissionDate = (new \DateTime())->format('Y-m-d');
+        $registration->location = $contact->getLocation();
+        $registration->generateSubmissionId();
+        $registration->active = 1;
+        $registration->confirmed = 0;
+        $registration->religion = $registrationRequest->religion;
+        $registration->affiliation = $registrationRequest->organization;
+        $registration->ipAddress = TWebSite::GetClientIp();
+        $registrationId = $regRepo->insert($registration);
+        if (!$registrationId)
+        {
+            $response->error = 'Cannot post the registration.';
+            return $response;
+        }
+        $response->fullname = $registration->participant;
+        $response->phone = $contact->phone;
+        $response->location = $contact->getLocation();
+        $response->email = $contact->email;
+        $response->organization = $registration->affiliation;
+        $response->submissionId = $registration->submissionId;
+        $response->registrationId = $registrationId;
+        $response->contactId = $registration->contactId;
+        $response->religion = $registration->religion;
+        return $response;
+    }
 }
