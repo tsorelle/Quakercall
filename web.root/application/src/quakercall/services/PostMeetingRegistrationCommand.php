@@ -16,6 +16,7 @@ use Tops\services\TServiceCommand;
  * city : string;
  * state: string;
  * country: string;
+ * postalCode: string;
  * phone: string;
  * organization: string;
  * religion: string;

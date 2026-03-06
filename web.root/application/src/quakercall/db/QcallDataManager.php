@@ -303,16 +303,36 @@ class QcallDataManager
          */
         $registration = new QcallRegistration();
         $contactRepo = $this->getContactsRepo();
+        /**
+         * @var QcallContact $contact
+         */
         $contact = $contactRepo->findByEmailAndName($registrationRequest->email, $registrationRequest->name);
+        $poCode = $registrationRequest->postalCode ?? '';
+        $phone = $registrationRequest->phone ?? '';
+
         if ($contact) {
-            $registration->contactId = $contact->id;        }
+            $registration->contactId = $contact->id;
+            $changed = false;
+            if ($phone !== '' && $contact->phone !== $phone) {
+                $contact->phone = $phone;
+                $changed = true;
+            }
+            if ($poCode !== '' && $contact->postalcode !== $poCode) {
+                $contact->postalcode = $poCode;
+                $changed = true;
+            }
+            if ($changed) {
+                $contactRepo->update($contact);
+            }
+        }
         else {
             $contact = $this->makeNewContact($registrationRequest->name,$registrationRequest->email);
             $contact->source = 'registrations';
-            $contact->phone = $registrationRequest->phone;
+            $contact->phone = $registrationRequest->phone ?? '';
             $contact->city = $registrationRequest->city ?? '';
             $contact->state = $registrationRequest->state ?? '';
             $contact->country = $registrationRequest->country ?? '';
+            $contact->postalcode = $registrationRequest->postalCode ?? '';
             $contact->normalizeStateAndCountry();
             $registration->contactId = $contactRepo->insert($contact);
             if (empty($registration->contactId)) {
@@ -324,7 +344,7 @@ class QcallDataManager
         $registration->participant =  $registrationRequest->name;
         $registration->submissionDate = (new \DateTime())->format('Y-m-d');
         $registration->location = $contact->getLocation();
-        $registration->generateSubmissionId();
+        $registration->generateSubmissionId($contact->id);
         $registration->active = 1;
         $registration->confirmed = 0;
         $registration->religion = $registrationRequest->religion;

@@ -71,17 +71,18 @@
 
             </div>
             <div  style="padding-bottom: 1rem;" class="row">
-                <div class="col-md-4"><label for="city" class="form-label">City</label>
+                <div class="col-md-3"><label for="city" class="form-label">City</label>
                     <input id="city" data-bind='value:form.city' class="form-control" type="text" /></div>
-                <div class="col-md-4"><label for="state" class="form-label">State or Province</label>
+                <div class="col-md-3"><label for="state" class="form-label">State or Province</label>
                     <input id="state" data-bind='value:form.state' class="form-control" type="text" /></div>
-                <div class="col-md-4"><label for="country" class="form-label">Country</label>
+                <div class="col-md-3"><label for="postal-code" class="form-label">Postal Code</label>
+                    <input id="postal-code" data-bind='value:form.postalCode' class="form-control" type="text" /></div>
+                <div class="col-md-3"><label for="country" class="form-label">Country</label>
                     <input id="country" data-bind='value:form.country' class="form-control" type="text" /></div>
             </div>
-            <!-- todo:Religious Affiliation -->
+            <!-- Religious Affiliation -->
             <div class="row" >
-                <div class="col-md-12">
-                    <div class="mb-4">
+                    <div class="col-md-4">
                         <fieldset class="border-0">
                             <legend class="col-form-label fw-semibold mb-2">
                                 Religious Affiliation
@@ -128,15 +129,19 @@
                                 />
                             </div>
                         </fieldset>
-                    </div>
-                </div>
-            </div>
 
-            <div class="row" style="padding-bottom: 0rem;">
-                <div class="col-md-12">
-                    <label class="form-label">Friends Meeting or Organization</label>
-                    <input data-bind='value:form.organization' class="form-control" type="text" >
-                </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="col-md-12">
+                            <label class="form-label">Friends Meeting or Organization</label>
+                            <input data-bind='value:form.organization' class="form-control" type="text" >
+                        </div>
+                        <div>
+                        <p class="mt-4">
+                            <a href="#" data-bind="click:showPrivacyModal">
+                                How will Quaker Call use your information?</a>
+                        </p>
+                    </div>
             </div>
 
             <!-- todo:buttons -->
@@ -144,7 +149,7 @@
                 <div class="col-md-12 pt-3">
                     <button
                             data-bind="click:submitRegistration"
-                            class="btn btn-primary" type="button">Submit</button>
+                            class="btn btn-primary" type="button">Submit your registration</button>
                 </div>
             </div>
 
@@ -186,6 +191,28 @@
             </div>
         </div>
 
+        <div id="privacy-modal" class="modal">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">How we use your information</h4><button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>The information you provide to Quaker Call is used for future communication with you and to
+                            help us understand more about the constituency the Call to Action has reached.</p>
+                        <p>By submitting this form, we assume that you have granted us permission add you to our email list
+                            which will be used to notify you of other upcoming events and resources for non-violent action.
+                            You may unsubscribe at any time by clicking the link in any message your receive.</p>
+                        <p>We will not share your personal information with any other organizations or individuals
+                            nor will we expose your personal information such as email address, phone number or postal address
+                            to anonymous visitors to our websites.</p>
+                        <p>Only your name and email address are required to register for our events.</p>
+
+                    </div>
+                    <div class="modal-footer"><button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button></div>
+                </div>
+            </div>
+        </div>
 
         <div class="security-section">
             <label for="security-control">Do not fill in this field</label>

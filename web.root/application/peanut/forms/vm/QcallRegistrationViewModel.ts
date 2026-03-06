@@ -13,6 +13,7 @@ namespace Peanut {
         state: string;
         country: string;
         phone: string;
+        postalCode: string;
         organization: string;
         religion: string;
     }
@@ -53,6 +54,7 @@ namespace Peanut {
             phone : ko.observable(''),
             city : ko.observable(''),
             state : ko.observable(''),
+            postalCode : ko.observable(''),
             country : ko.observable(''),
             organization : ko.observable(''),
             subscribed : ko.observable(false),
@@ -161,6 +163,7 @@ namespace Peanut {
                 city: me.form.city().trim(),
                 name: me.form.fullname().trim(),
                 country: me.form.country().trim(),
+                postalCode: me.form.postalCode().trim(),
                 email: me.form.email().trim(),
                 organization: me.form.organization().trim(),
                 phone: me.form.phone().trim(),
@@ -211,6 +214,8 @@ namespace Peanut {
 
         }
 
-
+        showPrivacyModal = () => {
+            this.showModal('privacy-modal')
+        }
     }
 }
