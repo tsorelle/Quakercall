@@ -106,7 +106,12 @@ namespace Peanut {
                         if (serviceResponse.Result == Peanut.serviceResultSuccess) {
                             let response : ICurrentMeetingInfo = serviceResponse.Value;
                             me.meetingDate(response.dateOfMeeting);
-                            me.meetingTheme(response.theme);
+                            if (response.subtitle) {
+                                me.meetingTheme(response.theme + ': ' + response.subtitle)
+                            }
+                            else {
+                                me.meetingTheme(response.theme);
+                            }
                             me.meetingTime(response.meetingTime);
                             // me.needsName(!response.registered);
                             // me.timeForMeeting(0)
