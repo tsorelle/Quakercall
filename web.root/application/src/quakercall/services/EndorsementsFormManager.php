@@ -342,10 +342,11 @@ class EndorsementsFormManager
         }
         if (empty($request->email)) {
             $message .= 'email ';
-        };*/
+        };
         if (empty($request->submissionId)) {
             $message .= 'submissionId ';
         }
+*/
         if (empty($message)) {
             return true;
         }
