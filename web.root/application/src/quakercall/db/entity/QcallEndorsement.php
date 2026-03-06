@@ -18,6 +18,7 @@ class QcallEndorsement  extends \Tops\db\TimeStampedEntity
     public $comments;
     public $religion;
     public $howFound;
+    public $affiliation;
     public $submissionId;
     public $ipAddress;
     public $active;

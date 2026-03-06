@@ -1,12 +1,230 @@
-<div id="qcallendorsement-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
+<div id="qcallendorsement-load-message" xmlns="http://www.w3.org/1999/html"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
 <div id="qcallendorsement-view-container" class="row" style="display: none">
-    <div class="col-md-12">
+
+<div id="site-header">
+    <div class="form-heading" data-bind="visible: tab()=='form'">
+        <div class="row" >
+            <div  class="col-md-12">
+                <h3 style="color: #0b7f89" class="mt-2">Individual endorsement</h3>
+                <p>
+                    <strong>Yes! I endorse the Urgent Call. Please add my name to the list of supporters!</strong>
+                </p>
+                <p>If you wish to submit an endorsement on behalf of your Friends meeting or Friends organization.
+                You'll please visit our <a target="_blank" href="/endorsers/groupform">Organizational Endorsement Form</a>
+                </p>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="endorsement-form"  class="qcall-form" data-bind="visible: tab()=='form'" >
+        <!-- todo: use first and last? -->
+        <!-- div class="row">
+            <div class="col-md-6 pb-2"><label class="form-label" for="first-name-field">First Name</label>
+                <input data-bind='value:form.firstName' id="first-name-field" class="form-control" type="text" /></div>
+            <div class="col col-md-6 pb-3"><label class="form-label">Last Name</label>
+                <input data-bind='value:form.lastName' class="form-control" type="text" required /></div>
+        </div -->
+        <div class="row">
+            <div class="col-md-12" style="padding-bottom: 1rem;">
+                <label
+                        class="form-label">Your Name</label>
+                <span style="color:red" data-bind="visible:form.nameError">&nbsp;Name is required</span>
+                <input placeholder="Your full name please." data-bind='value:form.fullname' class="form-control" type="text" required />
+
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col col-md-8">
+                <label class="form-label" for="em">Email Address</label>
+                <span style="color:red" data-bind="visible:form.emailError">&nbsp;A valid email is required</span>
+                <div data-bind="css: {'has-error': form.emailError}">
+                    <input placeholder="Your email address" id="em" name="em" autocomplete="off"
+                           data-1p-ignore
+                           data-lpignore="true"
+                           data-norton="ignore"
+                           data-bwignore="true"
+                           data-bind='value:form.email' class="form-control" type="email" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label for="phone" class="form-label">Phone</label>
+                <input id="phone" data-bind='value:form.phone' class="form-control" type="text" />
+            </div>
+        </div>
+        <div  style="padding-bottom: 1rem;" class="row">
+            <!-- address 1 -->
+            <div class="col-md-12">
+                <label class="form-label" for="address-1">Address:</label>
+                <span style="color:red" data-bind="visible:form.addressError">Please give us your state or province and other address information.</span>
+                <div data-bind="css: {'has-error': form.addressError}">
+                    <input id="address-1" placeholder="Street Address" data-bind='value:form.address1' class="form-control" type="text" />
+                </div>
+            </div>
+        </div>
+        <div  style="padding-bottom: 1rem;" class="row">
+            <!-- address 2 -->
+            <div class="col-md-12">
+                <label class="form-label" for="address-2">Address 2:</label>
+                <input id="address-2" placeholder="Street Address Line 2" data-bind='value:form.address2' class="form-control" type="text" />
+            </div>
+        </div>
+        <div  style="padding-bottom: 1rem;" class="row">
+            <div class="col-md-3"><label for="city" class="form-label">City</label>
+                <input placeholder="City" id="city" data-bind='value:form.city' class="form-control" type="text" /></div>
+            <div class="col-md-3"><label for="state" class="form-label">State or Province</label>
+                <input  id="state" data-bind='value:form.state' class="form-control" type="text" /></div>
+            <div class="col-md-3"><label for="postal-code" class="form-label">Postal Code</label>
+                <input id="postal-code" data-bind='value:form.postalCode' class="form-control" type="text" /></div>
+            <div class="col-md-3"><label for="country" class="form-label">Country</label>
+                <input id="country" data-bind='value:form.country' class="form-control" type="text" /></div>
+        </div>
+        <!-- Religious Affiliation -->
+        <div class="row" >
+            <div class="col-md-4">
+                <fieldset class="border-0">
+                    <legend class="col-form-label fw-semibold mb-2">
+                        Religious Affiliation
+                    </legend>
+
+                    <!-- Quaker -->
+                    <div class="form-check mb-1">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="religion"
+                               id="relQuaker"
+                               value="Quaker"
+                               data-bind="checked: form.religion">
+                        <label class="form-check-label" for="relQuaker">Quaker</label>
+                    </div>
+                    <!-- Unaffiliated -->
+                    <div class="form-check mb-1">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="religion"
+                               id="relUnaffiliated"
+                               value="Unaffiliated"
+                               data-bind="checked: form.religion">
+                        <label class="form-check-label" for="relUnaffiliated">Unaffiliated</label>
+                    </div>
+                    <!-- Other -->
+                    <div class="form-check">
+                        <input class="form-check-input"
+                               type="radio"
+                               name="religion"
+                               id="relOther"
+                               value="Other"
+                               data-bind="checked: form.religion">
+                        <label class="form-check-label" for="relOther">Other</label>
+                    </div>
+
+                    <!-- Indented text field for Other -->
+                    <div class="ms-4 mt-2">
+                        <input type="text"
+                               class="form-control"
+                               id="relOtherText"
+                               placeholder="Please specify"
+                               data-bind="value: form.religionOther, enable: form.religion() === 'Other', visible: form.religion() === 'Other'"
+                        />
+                    </div>
+                </fieldset>
+
+            </div>
+            <div class="col-md-8">
+                <label class="form-label">How did you hear about Quaker Call?</label>
+                <input data-bind='value:form.hearAbout' class="form-control" type="text" >
+            </div>
+        </div>
         <div class="row">
             <div class="col-md-12">
-                <!-- view model bindings -->
-                <h1>Endorsement</h1>
-                <p>Temporarily Unavailable</p>
+                <label class="form-label">Friends Meeting or Organization</label>
+                <input data-bind='value:form.organization' class="form-control" type="text" >
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <label class="control-label" for="edit-comments">
+                    Comments</label>
+                <textarea class="form-control" id="edit-comments" data-bind="value:form.comments"></textarea>
+            </div>
+        </div>
+        <div class="row">
+            <p class="mt-4">
+                <a href="#" data-bind="click:showPrivacyModal">
+                    How will Quaker Call use your information?</a>
+            </p>
+        </div>
+
+        <!-- todo:buttons -->
+        <div class="row">
+            <div class="col-md-4 pt-3">
+                <button
+                        data-bind="click:submitEndorsement"
+                        class="btn btn-primary" type="button">Submit your endorsement</button>
+            </div>
+            <div class="col-md-6 pt-3">
+                <div id="form-warning" class="alert alert-danger alert-dismissible fade show  d-none" role="alert">
+                    Some information is missing
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div data-bind="visible: tab() == 'thanks'">
+        <h2>Thanks for your endorsement</h2>
+        <p>Use the contact link below if any of the information below is incorrect or if you have any other questions.  Please
+            reference your email address or the "Submission Id" in the list below.</p>
+
+        <table class="table">
+            <tbody>
+            <tr><td>Name      </td><td data-bind="text:result.fullname"></td></tr>
+            <tr><td>Email      </td><td data-bind="text:result.email"></td></tr>
+            <tr><td>Phone  	   </td><td data-bind="text:result.phone"></td></tr>
+            <tr><td>Location   </td><td data-bind="text:result.location"></td></tr>
+            <tr><td>Meeting or Organization</td><td  data-bind="text:result.organization"></td></tr>
+            <tr><td>Submission Id</td><td  data-bind="text:result.submissionId"></td></tr>
+            </tbody>
+        </table>
+        <div class="mt-3">
+            <a href="/contact">Contact Quaker Call</a>
+        </div>
+    </div>
+
+    <div id="privacy-modal" class="modal  modal-xl">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">How we use your information</h4><button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        As an endorser of the Call, you will be listed on our website.
+                        Your name, city and state will be listed,
+                        but no other personal information will be displayed.
+                        See <a target="_blank" href="/endorsers/individuals">our endorser list for examples.</a>.
+                    </p>
+                    <p>The information you provide to Quaker Call is used for future communication with you and to
+                        help us understand more about the constituency the Call to Action has reached.</p>
+                    <p>By submitting this form, we assume that you have granted us permission add you to our email list
+                        which will be used to notify you of other events and resources for non-violent action.
+                        You may unsubscribe at any time by clicking the link in any message your receive.</p>
+                    <p>We will not share your personal information with any other organizations or individuals
+                        nor will we expose your personal information such as email address, phone number or postal address
+                        to anonymous visitors to our websites.</p>
+
+                </div>
+                <div class="modal-footer"><button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button></div>
             </div>
         </div>
     </div>
+
+    <div class="security-section">
+        <label for="security-control">Do not fill in this field</label>
+        <input type="text" id="security-control" value="" />
+    </div>
+</div>
+</div>
 </div>

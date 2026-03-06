@@ -1,6 +1,27 @@
 declare namespace QuakerCall {
 
 
+    interface IQcallFormResponse {
+        fullname : string;
+        phone : string;
+        location : string;
+        email : string;
+        organization : string;
+        submissionId : string;
+    }
+
+    interface IQcallFormRequest {
+        name : string;
+        email : string;
+        city : string;
+        state: string;
+        country: string;
+        phone: string;
+        postalCode: string;
+        organization: string;
+        religion: string;
+    }
+
     export interface IMeetingInfo {
         id: any;
         meetingCode: string;

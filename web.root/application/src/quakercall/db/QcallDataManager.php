@@ -3,6 +3,7 @@
 namespace Application\quakercall\db;
 
 use Application\quakercall\db\entity\QcallContact;
+use Application\quakercall\db\entity\QcallEndorsement;
 use Application\quakercall\db\entity\QcallRegistration;
 use Application\quakercall\db\repository\QcallContactsRepository;
 use Application\quakercall\db\repository\QcallEndorsementsRepository;
@@ -268,6 +269,24 @@ class QcallDataManager
 
     public function getGroupendorsementsForReview() {}
 
+    public function findEndorsement($email, $fullname)
+    {
+        $query = new TQuery();
+
+        $sql =
+            'SELECT r.id '.
+            'FROM `qcall_endorsements` r '.
+            'JOIN `qcall_contacts` c ON c.id = r.`contactId` '.
+            'WHERE c.`email` = ? AND r.`name` = ?';
+
+        $id = $query->getValue($sql,[$email,$fullname]);
+        if (!$id) {
+            return false;
+        }
+        return ($this->getEndorsementsRepo())->get($id);
+    }
+
+
     public function findRegistration($meetingId, $email, $fullname)
     {
         $query = new TQuery();
@@ -285,6 +304,107 @@ class QcallDataManager
         return ($this->getRegistrationsRepository())->get($registrationId);
     }
 
+    public function generateSubmissionId($extra='qc')
+    {
+        $requestTime = $_SERVER['REQUEST_TIME'] ?? '';
+        return $extra.$requestTime;
+    }
+
+    public function postEndorsement($endorsementRequest)
+    {
+        $response = new \stdClass();
+        $endorsementRepo = $this->getEndorsementsRepo();
+        $endorsement = $this->findEndorsement(
+            $endorsementRequest->email,
+            $endorsementRequest->name);
+        if ($endorsement) {
+            $response->error = 'You have already endorsed the call.';
+            return $response;
+        }
+        /**
+         * @var $endorsement QcallEndorsement
+         */
+        $endorsement = new QcallEndorsement();
+        $contactRepo = $this->getContactsRepo();
+        /**
+         * @var QcallContact $contact
+         */
+        $contact = $contactRepo->findByEmailAndName($endorsementRequest->email, $endorsementRequest->name);
+        $poCode = $endorsementRequest->postalCode ?? '';
+        $state = $endorsementRequest->state ?? '';
+        $phone = $endorsementRequest->phone ?? '';
+
+        if ($contact) {
+            $endorsement->contactId = $contact->id;
+            $changed = false;
+            if ($phone !== '' && $contact->phone !== $phone) {
+                $contact->phone = $phone;
+                $changed = true;
+            }
+            if ($state !== $contact->state) {
+                $contact->state = $endorsementRequest->state;
+                $changed = true;
+            }
+
+            if ($poCode !== $contact->postalcode) {
+                $contact->address1 = $endorsementRequest->address1 ?? '';
+                $contact->address2 = $endorsementRequest->address2 ?? '';
+                $contact->city = $endorsementRequest->city ?? '';
+                $contact->country = $endorsementRequest->country ?? '';
+                $contact->postalcode = $poCode;
+                $changed = true;
+            }
+            if ($changed) {
+                $contactRepo->update($contact);
+            }
+        }
+        else {
+            $contact = $this->makeNewContact($endorsementRequest->name,$endorsementRequest->email);
+            $contact->source = 'endorsements';
+            $contact->phone = $registrationRequest->phone ?? '';
+            $contact->address1 = $registrationRequest->address1 ?? '';
+            $contact->address2 = $registrationRequest->address2 ?? '';
+            $contact->city = $registrationRequest->city ?? '';
+            $contact->state = $registrationRequest->state ?? '';
+            $contact->country = $registrationRequest->country ?? '';
+            $contact->postalcode = $registrationRequest->postalCode ?? '';
+            $contact->normalizeStateAndCountry();
+            $endorsement->contactId = $contactRepo->insert($contact);
+            if (empty($endorsement->contactId)) {
+                $response->error = 'Unable to create contact.';
+                return $response;
+            }
+        }
+        $endorsement->name =  $endorsementRequest->name;
+        $endorsement->submissionDate = (new \DateTime())->format('Y-m-d');
+        $endorsement->email = $endorsementRequest->email;
+        $endorsement->address =  $contact->getLocation();
+        $endorsement->comments = $endorsementRequest->comments;
+        $endorsement->submissionId = $this->generateSubmissionId($contact->id);
+        $endorsement->religion = $endorsementRequest->religion;
+        $endorsement->affiliation = $endorsementRequest->organization;
+        $endorsement->howFound = $endorsementRequest->howFound;
+        $endorsement->ipAddress = TWebSite::GetClientIp();
+        $endorsement->approved = 0;
+        $endorsement->active = 1;
+        $endorsementId = $endorsementRepo->insert($endorsement);
+        if (!$endorsementId)
+        {
+            $response->error = 'Cannot post the endorsement.';
+            return $response;
+        }
+        $response->fullname = $endorsement->name;
+        $response->phone = $contact->phone;
+        $response->location = $endorsement->address;
+        $response->email = $contact->email;
+        $response->organization = $endorsement->affiliation;
+        $response->submissionId = $endorsement->submissionId;
+        $response->endorsemenId = $endorsementId;
+        $response->contactId = $endorsement->contactId;
+        $response->religion = $endorsement->religion;
+
+        return $response;
+    }
 
     public function PostMeetingRegistration($registrationRequest)
     {

@@ -99,6 +99,7 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
         'comments'=>PDO::PARAM_STR,
         'howFound'=>PDO::PARAM_STR,
         'religion'=>PDO::PARAM_STR,
+        'affiliation'=>PDO::PARAM_STR,
         'ipAddress'=>PDO::PARAM_STR,
         'createdby'=>PDO::PARAM_STR,
         'createdon'=>PDO::PARAM_STR,
