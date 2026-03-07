@@ -11,7 +11,6 @@ namespace PeanutTest\scripts;
 
 // use Peanut\QnutYearlymeeting\db\model\repository\FeetypesRepository;
 
-use Peanut\QnutYearlymeeting\db\ScymRegistrationsManager;
 
 class SmoketestTest extends TestScript
 {
