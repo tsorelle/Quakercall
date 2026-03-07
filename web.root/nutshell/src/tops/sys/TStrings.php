@@ -272,6 +272,16 @@ class TStrings
         return trim($s);
     }
 
+    public static function StripPunctuation($s,$tolower=true): string {
+        if ($s===null) return '';
+        $result = preg_replace('/[[:punct:]]+/', '', $s);
+        return $tolower ? strtolower($result) : $result;
+    }
+
+    public static function IsEmpty($s): string {
+        return $s===null || trim($s) === '';
+    }
+
     public static function TrimPunctuation($s): string {
         if ($s===null) return '';
         $s = self::TrimStart($s);
@@ -295,5 +305,70 @@ class TStrings
         return preg_replace('/[\p{P}\p{Z}\s]+$/u', '', $s);
     }
 
+    public static function stripTitles(string $name): string
+    {
+        if ($name === null) {
+            return '';
+        }
+        // Titles to remove (prefixes and suffixes)
+        $titles = [
+            'mr','mrs','ms','miss','mx',
+            'dr','prof','rev','fr',
+            'sr','sra','jr',
+            'ii','iii','iv'
+        ];
+
+        // Build regex that matches titles with optional trailing period
+        // Example: \b(?:mr\.?|mrs\.?|dr\.?)\b
+        $parts = array_map(fn($t) => $t . '\.?', $titles);
+        $pattern = '/\b(?:' . implode('|', $parts) . ')\b/i';
+
+        // Remove titles but leave other periods intact
+        $clean = preg_replace($pattern, '', $name);
+
+        // Collapse extra whitespace
+        $clean = preg_replace('/\s+/u', ' ', $clean);
+        // Remove leading punctuation/whitespace
+        $clean = preg_replace('/^[\p{P}\p{Z}\s]+/u', '', $clean);
+        // Remove trailing punctuation/whitespace
+        return preg_replace('/[\p{P}\p{Z}\s]+$/u', '', $clean);
+    }
+
+
+    public static function SplitName(string $fullName)
+    {
+        $result = new \stdClass();
+        $result->lastName = '';
+        $result->firstName = '';
+        $result->middleName = '';
+        $simpleName = self::stripTitles($fullName);
+        if ($simpleName !== '') {
+            $parts = explode(' ', $simpleName);
+            $result->lastName = array_pop($parts);
+            $count = count($parts);
+            if ($count > 0) {
+                $result->firstName = array_shift($parts);
+            }
+            if ($count > 0) {
+                $result->middleName = implode(' ', $parts);
+            }
+        }
+        return $result;
+    }
+
+    public static function ConcatName(string $first, string $last, string $middle = null)
+    {
+        $a = [];
+        if (!empty($first)) {
+            $a[] = trim($first);
+        }
+        if (!empty($last)) {
+            $a[] = trim($last);
+        }
+        if (!empty($middle)) {
+            $a[] = trim($middle);
+        }
+        return implode(' ', $a);
+    }
 
 }

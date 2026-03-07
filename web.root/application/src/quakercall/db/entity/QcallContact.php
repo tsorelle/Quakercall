@@ -15,6 +15,7 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
     public $id;
     public $firstName;
     public $lastName;
+    public $middleName;
     public $email;
     public $phone;
     public $organization;
@@ -61,13 +62,10 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
 
     public function assignSortCode()
     {
-        $current = trim( $this->sortcode ?? '');
-        if ($current) {
-            return;
-        }
-        $result = strtolower( trim($this->lastName ?? ''));
-        $first = strtolower(trim($this->firstName ?? ''));
-        $middle = strtolower( trim($this->middleName ?? ''));
+        $result = TStrings::StripPunctuation($this->lastName);
+        $first = TStrings::StripPunctuation($this->firstName);
+        $middle = TStrings::StripPunctuation($this->middleName);
+
         if ($result !== '' && $first !== '') {
             $result .= ',';
         }
@@ -75,10 +73,10 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
         {
             $result .= $first;
             if ($middle !== '') {
-                $result .= ' '.$middle;
+                $result .= ',';
             }
         }
-        $this->sortcode = $result;
+        $this->sortcode = $result.$middle;;
     }
 
     public function getLocation() {
@@ -101,40 +99,8 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
      * Remove common title prefixes/suffixes from a name string,
      * but preserve middle initials and other legitimate periods.
      */
-    function stripTitles(string $name): string
-    {
-        // Titles to remove (prefixes and suffixes)
-        $titles = [
-            'mr','mrs','ms','miss','mx',
-            'dr','prof','rev','fr',
-            'sr','sra','jr',
-            'ii','iii','iv'
-        ];
-
-        // Build regex that matches titles with optional trailing period
-        // Example: \b(?:mr\.?|mrs\.?|dr\.?)\b
-        $parts = array_map(fn($t) => $t . '\.?', $titles);
-        $pattern = '/\b(?:' . implode('|', $parts) . ')\b/i';
-
-        // Remove titles but leave other periods intact
-        $clean = preg_replace($pattern, '', $name);
-
-        // Collapse extra whitespace
-        $clean = preg_replace('/\s+/u', ' ', $clean);
-        // Remove leading punctuation/whitespace
-        $clean = TStrings::TrimStart($clean);
-        // Remove trailing punctuation/whitespace
-        return TStrings::TrimEnd($clean);
-    }
 
 
-    public function splitName(string $fullName)
-    {
-        $simpleName = $this->stripTitles($fullName);
-        $parts = explode(' ', $simpleName);
-        $this->lastName = array_pop($parts);
-        $this->firstName = count($parts) > 0 ? $parts[0] : '';
-    }
 
 
     /**
@@ -157,7 +123,7 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
      * @param $last
      * @return bool  false if no input, otherwise true
      */
-    public function assignNames($lastOrFull,$first = null,$last = null) : bool {
+    public function assignNames($lastOrFull,$first = null,$last = null, $middle = null) : bool {
         if ($lastOrFull == null) {
             // nothing is assigned
             return false;
@@ -168,6 +134,8 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
             return false;
         }
 
+        $this->middleName = trim($middle ?? '');
+
         if ($last !== null) {
             $this->lastName = $last;
             $this->firstName = $first;
@@ -176,21 +144,17 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
         else if ($first !== null) {
                 $this->firstName = $first;
                 $this->lastName = $lastOrFull;
-                $this->fullname = "$first $lastOrFull";
+                $this->fullname = TStrings::ConcatName($first,$lastOrFull,$this->middleName);
         }
         else {
-            $simpleName = $this->stripTitles($lastOrFull);
-            $parts = explode(' ', $simpleName);
-            $this->lastName = array_pop($parts);
-            $this->firstName = count($parts) > 0 ? $parts[0] : '';
+            // $simpleName = TStrings::stripTitles($lastOrFull);
+            $parsed = TStrings::SplitName($lastOrFull);
+            $this->lastName = $parsed->lastName;
+            $this->firstName = $parsed->firstName;
+            $this->middleName = $parsed->middleName;
             $this->fullname = $lastOrFull;
         }
-        if (empty($this->firstName)) {
-            $this->sortcode = $this->lastName;
-        }
-        else {
-            $this->sortcode = "$this->lastName,$this->firstName";
-        }
+        $this->assignSortCode();
         return true;
     }
 }

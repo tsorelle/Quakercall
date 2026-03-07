@@ -54,6 +54,7 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         'id'=>PDO::PARAM_INT,
         'firstName'=>PDO::PARAM_STR,
         'lastName'=>PDO::PARAM_STR,
+        'middleName'=>PDO::PARAM_STR,
         'email'=>PDO::PARAM_STR,
         'phone'=>PDO::PARAM_STR,
         'organization'=>PDO::PARAM_STR,
