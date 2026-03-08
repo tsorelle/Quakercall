@@ -106,6 +106,7 @@ class TEmailValidator
             $original = $emailAddress;
         }
         $result->address = preg_replace('/\s+/u', '', $original);
+        $result->address = strtolower($result->address);
         $result->changed = ($result->address !== $original);
         $result->email =  (empty($result->name)) ? $result->address :
             sprintf("<%s>%s", $result->name, $result->address );
@@ -212,6 +213,8 @@ class TEmailValidator
         $response->mxFailed = false;
         $response->changed = false;
         $response->valid = true;
+
+
 
         $parsed = $this->parseEmailAddress($emailAddress);
         $response->changed = $parsed->changed;

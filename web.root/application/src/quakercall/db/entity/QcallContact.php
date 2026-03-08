@@ -76,7 +76,7 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
                 $result .= ',';
             }
         }
-        $this->sortcode = $result.$middle;;
+        $this->sortcode = strtolower( $result.$middle);
     }
 
     public function getLocation() {
