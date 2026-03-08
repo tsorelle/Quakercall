@@ -47,6 +47,11 @@ class GetRegistrationListCommand extends TServiceCommand
         $result->meetings = $meetings;
         $result->registrations = $manager->getMeetingRegistrationList($meetings);
         $result->selectedMeeting = empty($meetings) ? null : $meetings[0];
+        $meetingId = $meetings[0]->id;
+        $repo = $manager->getRegistrationsRepository();
+        $result->affiliations = $repo->getAffiliationsSummary($meetingId);
+        $result->locations = $repo->getLocationsSummary($meetingId);
+        $result->religions = $repo->getReligionsSummary($meetingId);
 
         $this->setReturnValue($result);
     }

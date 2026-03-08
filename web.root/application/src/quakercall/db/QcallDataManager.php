@@ -23,7 +23,7 @@ class QcallDataManager
 
     private QcallRegistrationsRepository $registrationsRepo;
 
-    protected function getRegistrationsRepository() {
+    public function getRegistrationsRepository() {
         if (!isset($this->registrationsRepo)) {
             $this->registrationsRepo = new QcallRegistrationsRepository();
         }

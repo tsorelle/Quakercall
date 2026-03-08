@@ -1,6 +1,81 @@
 <div id="registrations-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
 <div id="registrations-view-container" class="row" style="display: none">
-    <div class="col-md-12">
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            <a class="nav-link" data-bind="css: { active: tab() === 'registrations'}, click:showRegistrationsList" href="#">Registrations</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bind="css: { active: tab() === 'locations'}, click:showLocationsList" href="#">Locations</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bind="css: { active: tab() === 'religions'}, click:showReligionsList" href="#">Religions</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-bind="css: { active: tab() === 'affiliations'}, click:showAffiliationsList" href="#">Affiliation</a>
+        </li>
+    </ul>
+    <div class="col-md-12" data-bind="visible:tab() == 'locations'">
+        <div class="row">
+            <div class="col-md-6" >
+                <h4>Locations</h4>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>State</th>
+                        <th>Country</th>
+                        <th>Count</th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach:locationsList">
+                    <td data-bind="text:state"></td>
+                    <td data-bind="text:country"></td>
+                    <td data-bind="text:count"></td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" data-bind="visible:tab() == 'affiliations'">
+        <div class="row">
+            <div class="col-md-6" >
+                <h4>Affiliations</h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Affiliation</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach:affiliationsList">
+                        <td data-bind="text:affiliation"></td>
+                        <td data-bind="text:count"></td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12" data-bind="visible:tab() == 'religions'">
+        <div class="row">
+            <div class="col-md-6" >
+                <h4>Religions</h4>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Religions</th>
+                        <th>Count</th>
+                    </tr>
+                    </thead>
+                    <tbody data-bind="foreach:religionsList">
+                    <td data-bind="text:religion"></td>
+                    <td data-bind="text:count"></td>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12" data-bind="visible:tab() == 'registrations'">
         <div class="row">
             <div class="col-md-12">
                 <!-- div class="dropdown mb-2">
@@ -47,9 +122,6 @@
 
                     </div>
                 </div>
-
-
-
 
                 <div data-bind="css: {'table-responsive':bootstrapVersion() < 4}">
                     <h4 data-bind="meetingDescription"></h4>

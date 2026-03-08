@@ -60,6 +60,40 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
         return $stmt->rowCount() > 0;
     }
 
+    public function getLocationsSummary($meetingId)
+    {
+        $sql = 'SELECT c.`state`,c.`country`, COUNT(*) AS `count` '.
+            'FROM qcall_registrations r '.
+            'JOIN qcall_contacts c ON r.contactId = c.id '.
+            'WHERE meetingId = ? '.
+            'GROUP BY c.`country`,c.`state` ';
+
+        $stmt = $this->executeStatement($sql,[$meetingId]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function getAffiliationsSummary($meetingId)
+    {
+        $sql = "SELECT IF(r.`affiliation` = '','(not specified)',affiliation) AS affiliation , COUNT(*) AS `count` ".
+            'FROM qcall_registrations r '.
+            'JOIN qcall_contacts c ON r.contactId = c.id '.
+            'WHERE meetingId = ? '.
+            'GROUP BY r.affiliation ';
+        $stmt = $this->executeStatement($sql,[$meetingId]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function getReligionsSummary($meetingId)
+    {
+        $sql = 'SELECT religion, COUNT(*) as `count`'.
+            'FROM qcall_registrations r '.
+            'JOIN qcall_contacts c ON r.contactId = c.id '.
+            'WHERE meetingId = ? '.
+            'GROUP BY r.religion ';
+
+        $stmt = $this->executeStatement($sql,[$meetingId]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
 
 
     protected function getTableName() {

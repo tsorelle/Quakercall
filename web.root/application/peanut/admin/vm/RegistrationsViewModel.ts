@@ -28,17 +28,40 @@ namespace Peanut {
         dateSort:       string;
     }
 
+    interface ISummaryListItem {
+        count: number;
+    }
+    interface IAffiliationListItem extends ISummaryListItem {
+        affiliation: string;
+    }
+    interface IReligionListItem extends ISummaryListItem {
+        religion: string;
+    }
+    interface ILocationListItem extends ISummaryListItem {
+        state: string;
+        country: string;
+    }
+
     export interface IGetRegistrationsResponse {
         meetings: IMeetingListItem[];
         registrations: IRegistrationListItem[];
         selectedMeeting: IMeetingListItem;
+        affiliations: IAffiliationListItem[];
+         religions: IReligionListItem[];
+         locations: ILocationListItem[];
     }
 
 
     export class RegistrationsViewModel extends Peanut.ViewModelBase {
         // observables
+        tab = ko.observable('registrations');
+
         meetingList = ko.observableArray<IMeetingListItem>([]);
         registrationList = ko.observableArray<IRegistrationListItem>([]);
+        affiliationsList = ko.observableArray<IAffiliationListItem>([]);
+        religionsList = ko.observableArray<IReligionListItem>([]);
+        locationsList = ko.observableArray<ILocationListItem>([]);
+
         meetingDescription = ko.observable<string>();
         selectedMeeting = ko.observable<IMeetingListItem>();
         meetingDate = ko.observable('');
@@ -69,10 +92,14 @@ namespace Peanut {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
                         let response: IGetRegistrationsResponse = serviceResponse.Value;
                         me.registrations = response.registrations;
+                        me.affiliationsList(response.affiliations);
+                        me.religionsList(response.religions);
+                        me.locationsList(response.locations);
                         me.allRegistrations = [...response.registrations];
                         me.meetingList(response.meetings);
                         me.selectedMeeting(response.selectedMeeting);
                         me.meetingDate(response.selectedMeeting.meetingDate);
+
                         me.registrationCount(response.registrations.length);
                         let pageCount = Math.ceil( me.allRegistrations.length / me.itemsPerPage );
                         me.maxPages(pageCount);
@@ -164,6 +191,20 @@ namespace Peanut {
             }
             me.pageOne(me.allRegistrations);
         }
+
+        showRegistrationsList = () => {
+            this.tab('registrations');
+        }
+        showAffiliationsList = () => {
+            this.tab('affiliations');
+        }
+        showReligionsList = () => {
+            this.tab('religions');
+        }
+        showLocationsList = () => {
+            this.tab('locations');
+        }
+
 
     }
 }
