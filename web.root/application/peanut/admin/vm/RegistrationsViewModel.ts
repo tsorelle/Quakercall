@@ -23,6 +23,9 @@ namespace Peanut {
         affiliation:    string;
         submissionId:   any;
         confirmed:      string;
+        sortCode:       string;
+        sortName:       string;
+        dateSort:       string;
     }
 
     export interface IGetRegistrationsResponse {
@@ -49,7 +52,13 @@ namespace Peanut {
         maxPages = ko.observable();
         // filterConfirmed = ko.observable(false);
         currentFilter = ko.observable('all');
+        sort = ko.observable('Most recent');
+        sortOptions = ko.observableArray<string>(
+            ['Received','Most recent','Participant']
+            // ,'Location','Religion','Affiliation']
+        );
 
+        private registrations: IRegistrationListItem[] = [];
         private  allRegistrations : IRegistrationListItem[] = [];
         private  confirmedRegistrations : IRegistrationListItem[] = null;
         init(successFunction?: () => void) {
@@ -59,7 +68,8 @@ namespace Peanut {
                 function(serviceResponse: Peanut.IServiceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
                         let response: IGetRegistrationsResponse = serviceResponse.Value;
-                        me.allRegistrations = response.registrations;
+                        me.registrations = response.registrations;
+                        me.allRegistrations = [...response.registrations];
                         me.meetingList(response.meetings);
                         me.selectedMeeting(response.selectedMeeting);
                         me.meetingDate(response.selectedMeeting.meetingDate);
@@ -132,6 +142,27 @@ namespace Peanut {
             let pageCount = Math.ceil( list.length / this.itemsPerPage );
             this.maxPages(pageCount);
             this.getPage(1);
+        }
+
+        applySort = (sortColumn: string) => {
+            let me = this;
+            this.sort(sortColumn);
+
+            switch (sortColumn) {
+                case 'Received':
+                    me.allRegistrations.sort((a,
+                       b) => (a.dateSort || '').localeCompare(b.dateSort || ''));
+
+                    break;
+                case 'Participant':
+                    me.allRegistrations.sort((a,
+                       b) => (a.sortCode || '').localeCompare(b.sortCode || ''));
+                    break
+                case 'Most recent':
+                    me.allRegistrations = [...me.registrations];
+                    break;
+            }
+            me.pageOne(me.allRegistrations);
         }
 
     }

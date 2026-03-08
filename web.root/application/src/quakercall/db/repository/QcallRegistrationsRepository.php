@@ -15,12 +15,18 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
 {
     public function getRegistrationList(mixed $meetingId) : array
     {
+
         $sql =
-            'SELECT id,participant,contactId,meetingId, submissionDate, '.
-            'location,religion,affiliation, submissionId, '.
-            "IF(confirmed=1,'Yes','No') AS confirmed ".
-            'FROM `qcall_registrations` WHERE meetingId = ? '.
-            'ORDER BY `submissionDate` DESC, id DESC';
+            'SELECT r.id, participant, contactId,meetingId, submissionDate, '.
+            'location,religion,affiliation,submissionId, '.
+            "IF(confirmed=1,'Yes','No') AS confirmed, ".
+            'c.`sortCode`, '.
+            "LOWER( CONCAT(submissionDate,',',sortCode)) AS dateSort ".
+            'FROM `qcall_registrations` r '.
+            'JOIN qcall_contacts c ON r.`contactId` = c.`id` '.
+            'WHERE meetingId = ? '.
+            'ORDER BY `submissionDate` DESC, sortcode ';
+
         $stmt = $this->executeStatement($sql, [$meetingId]);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }

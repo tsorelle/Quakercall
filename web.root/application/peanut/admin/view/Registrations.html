@@ -19,7 +19,7 @@
                 <h4 data-bind="visible:currentFilter() == 'confirmed'"  >
                     Registrations confirmed for <span data-bind="text:meetingDate"></span> meeting. Count: <span data-bind="text: confirmedCount"></span>
                 </h4>
-                <div class="row" data-bind="visible:maxPages() > 1">
+                <div class="row"> <!-- data-bind="visible:maxPages() > 1"> -->
                     <div class="col-md-2">
                         <a href="#" data-bind="visible:prevEntries,click:getPrevious" style="margin-right:10px"><&nbsp;Previous page</a>
                     </div>
@@ -27,10 +27,27 @@
                         Page <span data-bind="text:currentPage"></span> of <span data-bind="text:maxPages"></span>
                     </div>
                     <!-- div class="col-md-8" -->
-                    <div class="col-md-6">
+                    <div class="col-md-2">
                         <a href="#" data-bind="visible:moreEntries,click:getNext">Next&nbsp;page&nbsp;></a>
                     </div>
+                    <div class="col-md-2">
+                        Order: <span data-bind="text:sort"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="dropdown mb-2">
+                            <a href="#" class="dropdown-toggle" id="dropdownMenu1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                Sort <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1" data-bind="foreach:sortOptions">
+                                <!-- li><a href="#" data-bind="click:applyLogFilter"><span data-bind="text:$data"></span></a></li -->
+                                <li><a class="dropdown-item"  href="#" data-bind="click:$parent.applySort"><span data-bind="text:$data"></span></a></li>
+                            </ul>
+
+                        </div>
+
+                    </div>
                 </div>
+
 
 
 
