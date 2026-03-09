@@ -21,6 +21,7 @@ class QcallContactTest extends TestCase
     }
     public function testNormalizeStateAndCountry()
     {
+        $this->doStateCountryTest('CA','United States','California','USA');
         $this->doStateCountryTest('NC', 'United States', 'N.C.','United States');
         $this->doStateCountryTest('NC', 'United States', 'North Carolina','');
         $this->doStateCountryTest('NC', 'United States', 'North Carolina',' U. S.');

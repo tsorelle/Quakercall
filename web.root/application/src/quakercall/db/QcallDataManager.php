@@ -429,6 +429,8 @@ class QcallDataManager
         $contact = $contactRepo->findByEmailAndName($registrationRequest->email, $registrationRequest->name);
         $poCode = $registrationRequest->postalCode ?? '';
         $phone = $registrationRequest->phone ?? '';
+        $state = $registrationRequest->state ?? '';
+        $country = $registrationRequest->country ?? '';
 
         if ($contact) {
             $registration->contactId = $contact->id;
@@ -439,6 +441,10 @@ class QcallDataManager
             }
             if ($poCode !== '' && $contact->postalcode !== $poCode) {
                 $contact->postalcode = $poCode;
+                $changed = true;
+            }
+            $contact->normalizeStateAndCountry();
+            if ($state !== $contact->state || $country !== $contact->country) {
                 $changed = true;
             }
             if ($changed) {
