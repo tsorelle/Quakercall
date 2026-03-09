@@ -96,14 +96,6 @@ class QcallContact  extends \Tops\db\TimeStampedEntity
     }
 
     /**
-     * Remove common title prefixes/suffixes from a name string,
-     * but preserve middle initials and other legitimate periods.
-     */
-
-
-
-
-    /**
      * In this contact system use first and last names only for sort and search purposes,
      * and for backward compatibility and compatibility with external systems (e.g. Godaddy Marketing)
      * that require it.

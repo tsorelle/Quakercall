@@ -111,6 +111,62 @@ class TUsStatesTest extends TestCase
 
     }
 
+    public function testGetFullStateName()
+    {
+        $tests = [
+            'TX' => 'Texas',
+            'AK' => 'Alaska',
+            'NY' => 'New York',
+            'WY' => 'Wyoming',
+            'DC' => 'District of Columbia',
+            'MT' => 'Montana',
+            '' => '',
+            NULL => ''
+        ];
+
+        foreach ($tests as $abbr => $name) {
+            $actual = TUsStates::getFullStateName($abbr);
+            $this->assertEquals($name, $actual);
+        }
+
+        foreach ($tests as $abbr => $name) {
+            $actual = TUsStates::getFullStateName($abbr, 'United States');
+            $this->assertEquals($name, $actual);
+        }
+
+        foreach ($tests as $abbr => $name) {
+            $actual = TUsStates::getFullStateName($abbr, 'usa');
+            $this->assertEquals($name, $actual);
+        }
+
+        foreach ($tests as $abbr => $name) {
+            $actual = TUsStates::getFullStateName($abbr, 'u.s.');
+            $this->assertEquals($name, $actual);
+        }
+
+
+        $foreign = [
+            'Santiago' => 'Santiago del Estero',
+            'San Salvador' => 'El Salvador',
+            'London' => 'United Kingdom',
+            'Brazzaville' => 'Republic of Congo',
+        ];
+        foreach ($foreign as $state => $country) {
+            $actual = TUsStates::getFullStateName($state,$country);
+            $this->assertEquals($state, $actual);
+        }
+
+        $notAbbreviated = [
+           'Texas',
+           'Alaska',
+           'Lousianna',
+            'Somewhere else'
+        ];
+        foreach ($notAbbreviated as $state) {
+            $actual = TUsStates::getFullStateName($state);
+            $this->assertEquals($state, $actual);
+        }
+    }
 
     // passed: 2/24/2026
     public function testGetFullCountryName()

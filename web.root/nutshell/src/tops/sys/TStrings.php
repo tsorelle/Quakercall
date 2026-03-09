@@ -305,6 +305,10 @@ class TStrings
         return preg_replace('/[\p{P}\p{Z}\s]+$/u', '', $s);
     }
 
+    /**
+     * Remove common title prefixes/suffixes from a name string,
+     * but preserve middle initials and other legitimate periods.
+     */
     public static function stripTitles(string $name): string
     {
         if ($name === null) {

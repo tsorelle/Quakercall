@@ -10,6 +10,7 @@ use \PDO;
 use PDOStatement;
 use Tops\db\TDatabase;
 use \Tops\db\TEntityRepository;
+use Tops\sys\TUsStates;
 
 class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
 {
@@ -62,14 +63,24 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
 
     public function getLocationsSummary($meetingId)
     {
-        $sql = 'SELECT c.`state`,c.`country`, COUNT(*) AS `count` '.
+        $sql = "SELECT ifnull(c.`state`,'') as `state`, ifnull(c.`country`,'') as `country`, COUNT(*) AS `count` ".
             'FROM qcall_registrations r '.
             'JOIN qcall_contacts c ON r.contactId = c.id '.
             'WHERE meetingId = ? '.
             'GROUP BY c.`country`,c.`state` ';
 
         $stmt = $this->executeStatement($sql,[$meetingId]);
-        return $stmt->fetchAll(PDO::FETCH_OBJ);
+        $results = $stmt->fetchAll(PDO::FETCH_OBJ);
+        foreach ($results as $result) {
+            $result->state = TUsStates::getFullStateName($result->state, $result->country);
+            if ($result->state == '') {
+                $result->state = '(not specified)';
+            }
+        }
+        usort($results, function ($a, $b) {
+            return strcmp($a->state, $b->state);
+        });
+        return $results;
     }
 
     public function getAffiliationsSummary($meetingId)

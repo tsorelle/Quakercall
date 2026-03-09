@@ -132,6 +132,40 @@ class TUsStates
         return $name;
     }
 
+    private static $reverseList;
+    private static $reverseIncludes = self::STATES;
+    public static function getReverseLookupList($include = self::TERRITORIES): array
+    {
+        if (!isset(self::$reverseList) || self::$reverseIncludes != $include) {
+            self::$reverseList = array_flip(self::getStateList($include));
+            self::$reverseIncludes = $include;
+        }
+        return self::$reverseList;
+    }
+
+    public static function findStateName($abbreviation,$include = self::TERRITORIES): string
+    {
+        $list = self::getReverseLookupList($include);
+        return $list[$abbreviation] ?? $abbreviation;
+    }
+
+    public static function getFullStateName($abbreviation,$country=''): string
+    {
+        $abbreviation = ($abbreviation === null) ? '' : trim($abbreviation);
+        if (strlen($abbreviation) == 2) {
+            $country = ($country === null) ? '' : strtolower(trim($country));
+            $country = str_replace('.','',$country);
+            if ($country == 'us' || $country == 'usa' || $country == 'united states' || $country == 'united states of america'
+                || $country == 'estados unidos' || $country === '') {
+                $key = strtoupper(trim($abbreviation));
+                if (strlen($key) == 2) {
+                    $name = self::findStateName($key);
+                }
+            }
+        }
+        return $abbreviation;
+    }
+
     /**
      * @param $state
      * @param $countryName
