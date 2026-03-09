@@ -106,6 +106,23 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
+    public function getRegistrationListForDownload(mixed $meetingId)
+    {
+        $sql =
+            'SELECT r.id, participant, contactId,meetingId, submissionDate, '.
+            'location,religion,affiliation,submissionId, '.
+            "IF(confirmed=1,'Yes','No') AS confirmed, ".
+            'c.email,c.phone,c.address1,c.address2,c.city,c.state,c.country,c.postalcode, '.
+            'c.`sortCode`, '.
+            "LOWER( CONCAT(submissionDate,',',sortCode)) AS dateSort ".
+            'FROM `qcall_registrations` r '.
+            'JOIN qcall_contacts c ON r.`contactId` = c.`id` '.
+            'WHERE meetingId = ? '.
+            'ORDER BY `submissionDate` DESC, sortcode ';
+        $stmt = $this->executeStatement($sql,[$meetingId]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
 
     protected function getTableName() {
         return 'qcall_registrations';

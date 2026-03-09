@@ -27,9 +27,11 @@
                     </tr>
                     </thead>
                     <tbody data-bind="foreach:locationsList">
+                    <tr>
                     <td data-bind="text:state"></td>
                     <td data-bind="text:country"></td>
                     <td data-bind="text:count"></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -48,8 +50,10 @@
                         </tr>
                     </thead>
                     <tbody data-bind="foreach:affiliationsList">
+                    <tr>
                         <td data-bind="text:affiliation"></td>
                         <td data-bind="text:count"></td>
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -67,8 +71,8 @@
                     </tr>
                     </thead>
                     <tbody data-bind="foreach:religionsList">
-                    <td data-bind="text:religion"></td>
-                    <td data-bind="text:count"></td>
+                    <tr><td data-bind="text:religion"></td>
+                    <td data-bind="text:count"></td></tr>
                     </tbody>
                 </table>
             </div>
@@ -149,6 +153,15 @@
                         </tbody>
                     </table>
                 </div>
+                <form id='down-form' action="/peanut/service/download" method="post">
+                    <input id="download-registations-service"
+                           name="serviceCode" type="hidden" value="DownloadRegistrationsList">
+
+                    <fieldset class="download-form">
+                        <button type="submit" class="btn btn-link">Download list</button>
+                    </fieldset>
+                </form>
+
             </div>
         </div>
     </div>

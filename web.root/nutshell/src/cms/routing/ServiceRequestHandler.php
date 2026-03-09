@@ -4,6 +4,7 @@ namespace Nutshell\cms;
 
 use Peanut\PeanutTasks\TaskManager;
 use Peanut\users\AccountManager;
+use Tops\services\DownloadServiceFactory;
 use Tops\services\ServiceFactory;
 use Tops\sys\TConfiguration;
 use Tops\sys\TUser;
@@ -65,5 +66,14 @@ class ServiceRequestHandler
         mail($to,'Exception in site tasks',$content);
         exit ($msg);
     }
+
+    /**
+     * @throws \Exception
+     */
+    public function getDownload() {
+        DownloadServiceFactory::PrintOutput();
+        exit;
+    }
+
 
 }

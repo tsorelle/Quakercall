@@ -29,6 +29,10 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
+    public function getLatestMeetingId() {
+        return $this->getValue('SELECT id FROM qcall_meetings WHERE active=1 ORDER BY id DESC LIMIT 0,1');
+    }
+
     /**
      * @return \stdClass {
      *     id, meetingCode
