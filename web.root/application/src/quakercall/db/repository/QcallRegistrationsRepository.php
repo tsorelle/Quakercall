@@ -112,8 +112,8 @@ class QcallRegistrationsRepository extends \Tops\db\TEntityRepository
             'SELECT r.id, participant, contactId,meetingId, submissionDate, '.
             'location,religion,affiliation,submissionId, '.
             "IF(confirmed=1,'Yes','No') AS confirmed, ".
-            'c.email,c.phone,c.address1,c.address2,c.city,c.state,c.country,c.postalcode, '.
-            'c.`sortCode`, '.
+            'c.email,c.phone,c.firstName, c.lastName, c.middleName, '.
+            'c.address1,c.address2,c.city,c.state,c.country,c.postalcode,c.`sortCode`, '.
             "LOWER( CONCAT(submissionDate,',',sortCode)) AS dateSort ".
             'FROM `qcall_registrations` r '.
             'JOIN qcall_contacts c ON r.`contactId` = c.`id` '.
