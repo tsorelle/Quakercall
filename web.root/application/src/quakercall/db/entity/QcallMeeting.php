@@ -18,7 +18,9 @@ class QcallMeeting  extends \Tops\db\TimeStampedEntity
     public $presenter;
     public $zoomMeetingId;
     public $zoomUrl;
+    public $invitationUrl;
     public $zoomPasscode;
+    public $phonePasscode;
     public $meetingType;
     public $image;
     public $active;
