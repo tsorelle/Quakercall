@@ -121,5 +121,18 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         return $result;
     }
 
+    public function getEmailRecipients() {
+        $sql =
+            'SELECT '.
+            '`firstName` AS `first_name`, '.
+            '`lastName` AS `last_name`, `email`, '.
+            "IFNULL (`phone`,'') AS `phone` ".
+            'FROM `qcall_contacts` c WHERE `subscribed` =1 AND `active` = 1 '.
+            'AND (bounced = 0 OR bounced IS NULL) '.
+            "AND NOT (firstname = '' AND lastname = '' AND fullname = '') ".
+            'ORDER BY `sortCode`';
 
+        $stmt = $this->executeStatement($sql);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
 }

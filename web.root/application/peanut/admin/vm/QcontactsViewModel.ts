@@ -12,6 +12,7 @@ namespace Peanut {
     }
     export class QcontactsViewModel extends Peanut.ViewModelBase {
         // observables
+        tab = ko.observable('search');
         testmessage = ko.observable('Contacts')
         contacts = ko.observableArray<QuakerCall.IContactItem>();
         showNoContacts = ko.observable(false)
@@ -312,5 +313,18 @@ namespace Peanut {
             let state = this.subscribedOnly();
             this.filterContacts(!state);
         }
+
+        showDownloadPage = () => {
+            let me = this;
+            me.tab('download');
+        }
+
+        showSearchPage = () => {
+            let me = this;
+            me.tab('search');
+        }
+
+
+
     }
 }
