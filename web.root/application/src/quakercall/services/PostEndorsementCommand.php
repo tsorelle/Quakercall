@@ -6,6 +6,8 @@ use Application\quakercall\db\QcallDataManager;
 use Tops\mail\TEmailValidator;
 use Tops\mail\TPostOffice;
 use Tops\services\TServiceCommand;
+use Tops\sys\TConfiguration;
+use Tops\sys\TWebSite;
 
 class PostEndorsementCommand extends TServiceCommand
 {
@@ -39,9 +41,13 @@ class PostEndorsementCommand extends TServiceCommand
             return;
         }
         $date = date('Y-m-d');
-        TPostOffice::SendMessageToUs('friends@quakercall.org',
+        $senderAddress = TPostOffice::GetMailboxAddress('admin');
+        $approvalPage =  TConfiguration::getValue('approvals','pages','/admin/approvals');
+        $approvalPage = TWebSite::ExpandUrl($approvalPage);
+        TPostOffice::SendMessageToUs($senderAddress,
             "New endorsement received on $date",
-            "A new endorsement from $request->name has been submitted.  Please review for approval."
+            "<p>A new endorsement from $request->name has been submitted.  ".
+            "<a href='$approvalPage'>Please review for approval</a>.</p>."
         );
         $this->setReturnValue($result);
     }

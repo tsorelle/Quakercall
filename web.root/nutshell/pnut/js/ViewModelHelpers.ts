@@ -259,6 +259,16 @@ namespace Peanut {
             return host;
         }
 
+        public static isValidUrl(value: string) {
+            try {
+                const url = new URL(value);
+                return url.protocol === 'http:' || url.protocol === 'https:';
+            } catch {
+                return false;
+            }
+        }
+
+
         /**
          * Validates a time of day string, Expected hour and minutes delimited by colon
          * optionally appended with case insensitive 'a','am','p' or 'pm'

@@ -16,7 +16,9 @@ use Tops\sys\TConfiguration;
 use Tops\sys\TPath;
 use Tops\sys\TUser;
 
-
+/**
+ * Not used - experimental
+ */
 class DocumentManager
 {
 

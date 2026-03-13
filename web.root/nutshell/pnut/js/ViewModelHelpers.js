@@ -193,6 +193,15 @@ var Peanut;
             let host = slashes.concat(window.location.hostname);
             return host;
         }
+        static isValidUrl(value) {
+            try {
+                const url = new URL(value);
+                return url.protocol === 'http:' || url.protocol === 'https:';
+            }
+            catch (_a) {
+                return false;
+            }
+        }
         static parseTimeString(ts) {
             if (!ts) {
                 return '';

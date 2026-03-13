@@ -1,11 +1,283 @@
 <div id="qcallgroupendorsement-load-message"><span class="fa fa-spinner fa-pulse fa-2x" style="color:lightgrey"></span></div>
 <div id="qcallgroupendorsement-view-container" class="row" style="display: none">
     <div class="col-md-12">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- view model bindings -->
-                <!-- Use JotForm's JSForm embed code temporarily -->
-                <script type="text/javascript" src="https://form.jotform.com/jsform/260033451934148"></script>
+        <div id="site-header">
+            <div class="form-heading" data-bind="visible: tab()=='form'">
+                <div class="row" >
+                    <div  class="col-md-12">
+                        <h3 style="color: #0b7f89" class="mt-2">Endorsement for Friends Meetings and Quaker Organizations</h3>
+                        <p>
+                            <strong>Yes! We endorse the Call!</strong>
+
+                        </p>
+                        <p>If you wish to submit a personal endorsement,
+                            Please visit our <a target="_blank" href="/endorsers/individualform">Individual Endorsement Form</a>
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+
+            <div id="endorsement-form"  class="qcall-form" data-bind="visible: tab()=='form'" >
+                <div class="row">
+                    <div class="col-md-12" style="padding-bottom: 1rem;">
+                        <div class="mb-3">
+                            <label for="orgType" class="form-label">Type of Friends Organization</label>
+                            <select
+                                    class="form-select"
+                                    id="orgType"
+                                    name="orgType"
+                                    data-bind="value: form.typeId">
+                                <option value="1">Friends Monthly Meeting or Church</option>
+                                <option value="3">Friends Quarterly Meeting</option>
+                                <option value="4">Friends Yearly Meeting</option>
+                                <option value="2">Quaker Organization</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12" style="padding-bottom: 1rem;">
+                        <label  for="organization-name"
+                                class="form-label">Organization or Meeting Name</label>
+                        <span style="color:red" data-bind="visible:form.nameError">&nbsp;Name is required</span>
+                        <input id="organization-name" data-bind='value:form.organizationName' class="form-control" type="text" required />
+
+                    </div>
+                </div>
+
+                <!-- contact name   -->
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label for="authorized-contact" class="form-label">Name of Authorized Contact</label>
+                        <input id="authorized-contact" data-bind='value:form.contactName' class="form-control" type="text" >
+                    </div>
+                </div>
+
+
+                <!-- email and phone -->
+                <div class="row mb-3">
+                    <div class="col col-md-8">
+                        <label class="form-label" for="em">Email Address</label>
+                        <span style="color:red" data-bind="visible:form.emailError">&nbsp;A valid email is required</span>
+                        <div data-bind="css: {'has-error': form.emailError}">
+                            <input placeholder="Contact email address" id="em" name="em" autocomplete="off"
+                                   data-1p-ignore
+                                   data-lpignore="true"
+                                   data-norton="ignore"
+                                   data-bwignore="true"
+                                   data-bind='value:form.email' class="form-control" type="email" />
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input placeholder="Contact Phone" id="phone" data-bind='value:form.phone' class="form-control" type="text" />
+                    </div>
+                </div>
+
+                <!-- address  -->
+                <div  style="padding-bottom: 1rem;" class="row">
+                    <!-- address 1 -->
+                    <div class="col-md-12">
+                        <label class="form-label" for="address-1">Address of organization:</label>
+                        <span style="color:red" data-bind="visible:form.addressError">Please give us your state or province and any other address information.</span>
+                        <div data-bind="css: {'has-error': form.addressError}">
+                            <input id="address-1" placeholder="Street Address" data-bind='value:form.address1' class="form-control" type="text" />
+                        </div>
+                    </div>
+                </div>
+                <div  style="padding-bottom: 1rem;" class="row">
+                    <!-- address 2 -->
+                    <div class="col-md-12">
+                        <input id="address-2" placeholder="Street Address Line 2" data-bind='value:form.address2' class="form-control" type="text" />
+                    </div>
+                </div>
+                <div  style="padding-bottom: 1rem;" class="row">
+                    <div class="col-md-3"><label for="city" class="form-label">City</label>
+                        <input id="city" data-bind='value:form.city' class="form-control" type="text" /></div>
+                    <div class="col-md-3"><label for="state" class="form-label">State or Province</label>
+                        <input  id="state" data-bind='value:form.state' class="form-control" type="text" /></div>
+                    <div class="col-md-3"><label for="postal-code" class="form-label">Postal Code</label>
+                        <input id="postal-code" data-bind='value:form.postalCode' class="form-control" type="text" /></div>
+                    <div class="col-md-3"><label for="country" class="form-label">Country</label>
+                        <input id="country" data-bind='value:form.country' class="form-control" type="text" /></div>
+                </div>
+
+
+                <!-- comments -->
+
+                <!-- document upload -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <h4>Documentation</h4>
+
+                        <p>
+                            We request a minute from your meeting or organization approving this endorsement.
+                            You can provide the document in one of two ways:
+                        </p>
+                        <ul>
+                            <li>Upload a file in PDF format.</li>
+                            <li>Provide a URL for a web page containing the minute, an online PDF file,
+                                a file or folder on Google Drive, OneDrive, DropBox or other online file
+                                storage.</li>
+                        </ul>
+                        <p>
+                            If it is not possible to provide such documentation, please select "Not applicable".
+                        </p>
+                    </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="form-check">
+                            <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="documentationType"
+                                    id="documentationTypeFile"
+                                    value="upload"
+                                    data-bind="checked: form.documentationType">
+                            <label class="form-check-label" for="documentationTypeFile">
+                                File upload
+                            </label>
+                        </div>
+
+                        <div class="form-check">
+                            <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="documentationType"
+                                    id="documentationTypeLink"
+                                    value="url"
+                                    data-bind="checked: form.documentationType">
+                            <label class="form-check-label" for="documentationTypeLink">
+                                Document URL
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="documentationType"
+                                    id="documentationTypeNone"
+                                    value="none"
+                                    data-bind="checked: form.documentationType">
+                            <label class="form-check-label" for="documentationTypeNone">
+                                Not Applicable
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-3" data-bind="visible:form.documentationType()=='url'">
+                        <label for="doc-url" class="form-label">Document URL</label>
+                        <input id="doc-url" data-bind='value:form.documentUrl' class="form-control" type="text" >
+                        <span class="text-danger" data-bind="visible:form.documentationUrlError">Please enter a valid web address. Starting with "https:\\".</span>
+                    </div>
+                    <div class="col-md-4 mb-3" data-bind="visible:form.documentationType()=='upload'">
+                        <div><label class="form-label" for="documentFile">Select document to upload </label></div>
+                        <input type="file" class="btn btn-outline-dark" id="documentFile" placeholder="Select a file or drag from explorer"/>
+                    </div>
+                   <div class="col-md-4 mb-3" data-bind="visible:form.documentationType()=='none'">
+                        <div><label class="form-label" for="documentFile">Document not available.</label></div>
+                        <p>Please explain in the comment section.</p>
+                    </div>
+                    <div class="col-md-4 mb-3" >
+                        <p class="text-danger" data-bind="visible:form.documentError">
+                            <span class="fa fa-exclamation-circle" aria-hidden="true"></span>
+                            <span data-bind="visible:form.documentationType()=='upload'">
+                                Please select a file to upload.
+                                </span>
+                            <span data-bind="visible:form.documentationType()=='url'">
+                                Please enter a valid URL where your document can be viewed.
+                            </span>
+
+                        </p>
+
+                    </div>
+                </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label" for="edit-comments">
+                                Comments and questions</label>
+                            <textarea class="form-control" id="edit-comments" data-bind="value:form.comments"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- privacy -->
+                    <div class="row">
+                        <p class="mt-4">
+                            <a href="#" data-bind="click:showPrivacyModal">
+                                How will Quaker Call use your information?</a>
+                        </p>
+                    </div>
+
+                    <!-- buttons -->
+                    <div class="row">
+                        <div class="col-md-4 pt-3">
+                            <button
+                                    data-bind="click:submitEndorsement"
+                                    class="btn btn-primary" type="button">Submit your endorsement</button>
+                        </div>
+                        <div class="col-md-6 pt-3">
+                            <div id="form-warning" class="alert alert-danger alert-dismissible fade show  d-none" role="alert">
+                                Some information is missing. Scroll up to see all.
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+            </div>
+            </div>
+            <div data-bind="visible:tab() == 'thanks'">
+                <h2>Thanks for your endorsement</h2>
+                <p>Use the contact link below if any of the information below is incorrect or if you have any other questions.  Please
+                    reference your email address or the "Submission id" in the list below.</p>
+
+                <table class="table">
+                    <tbody>
+                    <tr><td>Organization      </td><td data-bind="text:result.organizationName"></td></tr>
+                    <tr><td>Contact      </td><td data-bind="text:result.contactName"></td></tr>
+                    <tr><td>Email      </td><td data-bind="text:result.email"></td></tr>
+                    <tr><td>Phone  	   </td><td data-bind="text:result.phone"></td></tr>
+                    <tr><td>Location   </td><td data-bind="text:result.location"></td></tr>
+                    <tr><td>Submission id</td><td  data-bind="text:result.submissionId"></td></tr>
+                    </tbody>
+                </table>
+                <div class="mt-3">
+                    <a target="_blank" href="/contact">Contact Quaker Call</a>
+                </div>
+            </div>
+
+            <div id="privacy-modal" class="modal  modal-xl">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">How we use your information</h4><button class="btn-close" type="button" aria-label="Close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>
+                                As an endorser of the Call, you will be listed on our website.
+                                Your organization name, city and state will be listed,
+                                but no other personal information will be displayed.
+                                See <a target="_blank" href="/endorsers/groups">our endorser list for examples</a>.
+                            </p>
+                            <p>The information you provide to Quaker Call is used for future communication with you and to
+                                help us understand more about the constituency the Call to Action has reached.</p>
+                            <!-- p>By submitting this form, we assume that you have granted us permission to add you to our email list,
+                                which will be used to notify you of other events and resources for non-violent action.
+                                You may unsubscribe at any time by clicking the link in any message you receive.</p -->
+                            <p>We will not share your personal information with any other organizations or individuals.
+                                Nor will we expose your personal information such as email address, phone number or postal address
+                                to anonymous visitors to our websites.</p>
+
+                        </div>
+                        <div class="modal-footer"><button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="security-section">
+                <label for="security-control">Do not fill in this field</label>
+                <input type="text" id="security-control" value="" />
             </div>
         </div>
     </div>

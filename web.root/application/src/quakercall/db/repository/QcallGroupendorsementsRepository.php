@@ -29,19 +29,23 @@ class QcallGroupendorsementsRepository extends \Tops\db\TEntityRepository
     {
         return array(
         'id'=>PDO::PARAM_STR,
-        'contactId'=>PDO::PARAM_STR,
-        'submissionDate'=>PDO::PARAM_STR,
-        'typeId'=>PDO::PARAM_INT,
-        'organizationType'=>PDO::PARAM_STR,
         'organizationName'=>PDO::PARAM_STR,
-        'address'=>PDO::PARAM_STR,
-        'contactName'=>PDO::PARAM_STR,
-        'phone'=>PDO::PARAM_STR,
-        'email'=>PDO::PARAM_STR,
-        'attachments'=>PDO::PARAM_STR,
+        'typeId'=>PDO::PARAM_INT,
         'submissionId'=>PDO::PARAM_STR,
-        'approved'=>PDO::PARAM_STR,
+        'submissionDate'=>PDO::PARAM_STR,
+        'contactName'=>PDO::PARAM_STR,
+        'email'=>PDO::PARAM_STR,
+        'phone'=>PDO::PARAM_STR,
+        'address1'=>PDO::PARAM_STR,
+        'address2'=>PDO::PARAM_STR,
+        'city'=>PDO::PARAM_STR,
+        'state'=>PDO::PARAM_STR,
+        'country'=>PDO::PARAM_STR,
+        'postalcode'=>PDO::PARAM_STR,
+        'document'=>PDO::PARAM_STR,
+        'documentUrl'=>PDO::PARAM_STR,
         'ipAddress'=>PDO::PARAM_STR,
+        'approved'=>PDO::PARAM_STR,
         'createdby'=>PDO::PARAM_STR,
         'createdon'=>PDO::PARAM_STR,
         'changedby'=>PDO::PARAM_STR,
@@ -55,9 +59,8 @@ class QcallGroupendorsementsRepository extends \Tops\db\TEntityRepository
     }
 
     public function getGroupendorsementList() {
-        $sql = 'SELECT e.`organizationName`,c.`city`,c.`state` '.
+        $sql = 'SELECT e.`organizationName`,e.`city`,e.`state` '.
             'FROM `qcall_groupendorsements` e '.
-            'JOIN qcall_contacts c ON e.`contactId` = c.id '.
             'WHERE approved = 1 '.
             'ORDER BY e.`organizationName` ';
         $stmt = $this->executeStatement($sql);

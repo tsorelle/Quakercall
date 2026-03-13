@@ -4,6 +4,7 @@ namespace Application\quakercall\db;
 
 use Application\quakercall\db\entity\QcallContact;
 use Application\quakercall\db\entity\QcallEndorsement;
+use Application\quakercall\db\entity\QcallGroupendorsement;
 use Application\quakercall\db\entity\QcallRegistration;
 use Application\quakercall\db\repository\QcallContactsRepository;
 use Application\quakercall\db\repository\QcallEndorsementsRepository;
@@ -120,6 +121,21 @@ class QcallDataManager
             $this->endorsementsRepo = new QcallEndorsementsRepository();
         }
         return $this->endorsementsRepo;
+    }
+
+    public function SubmitGroupEndorsement($request)
+    {
+        $repo = $this->getGroupendorsementsRepo();
+        $endorsement = new QcallGroupendorsement();
+        $endorsement->assignFromObject($request);
+        $endorsement->submissionDate = (new \DateTime())->format('Y-m-d');
+        $endorsement->ipAddress = TWebSite::GetClientIp();
+        $endorsement->approved = 0;
+        $endorsement->active = 1;
+        $endorsement->submissionId = $this->generateSubmissionId();
+        $endorsement->normalizeStateAndCountry();
+        $repo->insert($endorsement);
+        return $endorsement;
     }
 
     protected function getGroupendorsementsRepo() {
@@ -304,7 +320,7 @@ class QcallDataManager
         return ($this->getRegistrationsRepository())->get($registrationId);
     }
 
-    public function generateSubmissionId($extra='qc')
+    public function generateSubmissionId($extra='')
     {
         $requestTime = $_SERVER['REQUEST_TIME'] ?? '';
         return $extra.$requestTime;
