@@ -23,7 +23,7 @@ class GetCurrentMeetingCommand extends TServiceCommand
         }
 
         // testing
-        $meeting->ready= 0;
+       // $meeting->ready= 0;
 
         if(!empty($meeting->image)) {
             $path = '/application/assets/img/meeting/'.$meeting->image;
