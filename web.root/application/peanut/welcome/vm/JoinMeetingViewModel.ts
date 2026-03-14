@@ -37,6 +37,7 @@ namespace Peanut {
         zoomId : string;
         zoomHref :string;
         zoomPwd: string;
+        zoomInvitationUrl: string;
         subscribed: boolean;
     }
 
@@ -61,6 +62,7 @@ namespace Peanut {
         zoomUrl = ko.observable('#');
         zoomId = ko.observable('');
         zoomPasscode = ko.observable('');
+        zoomInvitationUrl = ko.observable('');
         // needsEmail = ko.observable(true);
         needsName = ko.observable(false);
         nameError = ko.observable(false);
@@ -186,6 +188,7 @@ namespace Peanut {
                             me.zoomId(response.zoomId);
                             me.zoomPasscode(response.zoomPwd);
                             me.zoomUrl(response.zoomHref);
+                            me.zoomInvitationUrl(response.zoomInvitationUrl)
                             me.action='done';
                         }
                         else {

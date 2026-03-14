@@ -15,6 +15,7 @@ var Peanut;
             this.zoomUrl = ko.observable('#');
             this.zoomId = ko.observable('');
             this.zoomPasscode = ko.observable('');
+            this.zoomInvitationUrl = ko.observable('');
             this.needsName = ko.observable(false);
             this.nameError = ko.observable(false);
             this.registrationConfirmed = ko.observable(false);
@@ -64,6 +65,7 @@ var Peanut;
                             me.zoomId(response.zoomId);
                             me.zoomPasscode(response.zoomPwd);
                             me.zoomUrl(response.zoomHref);
+                            me.zoomInvitationUrl(response.zoomInvitationUrl);
                             me.action = 'done';
                         }
                         else {

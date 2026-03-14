@@ -22,6 +22,9 @@ class GetCurrentMeetingCommand extends TServiceCommand
             $meeting = $repository->getCurrentMeeting('2 HOUR');
         }
 
+        // testing
+        $meeting->ready= 0;
+
         if(!empty($meeting->image)) {
             $path = '/application/assets/img/meeting/'.$meeting->image;
             $filepath = TPath::fromFileRoot($path);

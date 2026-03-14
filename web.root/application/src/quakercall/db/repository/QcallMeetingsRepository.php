@@ -53,7 +53,7 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
         $sql =
             'SELECT id, meetingCode, '.
             "DATE_FORMAT( meetingDate, '%M %e, %Y') as dateOfMeeting, ".
-            'meetingTime, theme, presenter, zoomMeetingId, zoomUrl, zoomPasscode, '.
+            'meetingTime, theme, presenter, zoomMeetingId, zoomUrl, zoomPasscode, zoomInvitationUrl, '.
             'CASE SIGN(TIMESTAMPDIFF(MINUTE, startTime,UTC_TIMESTAMP())) '.
             '	WHEN -1 THEN -1 '.
             '	WHEN 0 THEN 0 '.
@@ -162,7 +162,7 @@ class QcallMeetingsRepository extends \Tops\db\TEntityRepository
         'presenter'=>PDO::PARAM_STR,
         'zoomMeetingId'=>PDO::PARAM_STR,
         'zoomUrl'=>PDO::PARAM_STR,
-        'invitationUrl'=>PDO::PARAM_STR,
+        'zoomInvitationUrl'=>PDO::PARAM_STR,
         'zoomPasscode'=>PDO::PARAM_STR,
         'phonePasscode'=>PDO::PARAM_STR,
         'meetingType'=>PDO::PARAM_STR,

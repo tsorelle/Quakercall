@@ -75,7 +75,7 @@ namespace Peanut {
          * - If the user is too fast → suspicious
          * - If honeypot is filled → suspicious
          */
-        public likelyHuman(minHumanMs: number = 7000): boolean {
+        public likelyHuman(minHumanMs: number = 2000): boolean {
             const duration = this.getDuration();
 
             // Too fast → likely bot

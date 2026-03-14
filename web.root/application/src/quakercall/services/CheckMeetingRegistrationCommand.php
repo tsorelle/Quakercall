@@ -28,6 +28,7 @@ use Tops\services\TServiceCommand;
         zoomId : string;
         zoomHref :string;
         zoomPwd: string;
+        zoomInvitationUrl: string;
         subscribed: boolean;
     }
 
@@ -125,6 +126,7 @@ class CheckMeetingRegistrationCommand extends TServiceCommand
             $response->zoomId = $this->meeting->zoomMeetingId;
             $response->zoomHref = $this->meeting->zoomUrl;
             $response->zoomPwd = $this->meeting->zoomPasscode;
+            $response->zoomInvitationUrl = $this->meeting->zoomInvitationUrl;
         }
 
         $this->setReturnValue($response);

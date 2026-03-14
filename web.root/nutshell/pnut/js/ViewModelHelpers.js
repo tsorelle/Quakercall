@@ -35,7 +35,7 @@ var Peanut;
             }
             return el.value.trim().length === 0;
         }
-        likelyHuman(minHumanMs = 7000) {
+        likelyHuman(minHumanMs = 2000) {
             const duration = this.getDuration();
             if (duration < minHumanMs) {
                 return false;
