@@ -13,6 +13,29 @@ use Tops\sys\TWebSite;
 class PostGroupEndorsementCommand extends TServiceCommand
 {
 
+    private $documentPath;
+    private function getDocumentPath() {
+        if (!isset($this->documentPath)) {
+            $this->documentPath = TConfiguration::getValue('documents', 'location', 'application/documents');
+            if (str_starts_with($this->documentPath, '/')) {
+                $this->documentPath = substr($this->documentPath, 1);
+            }
+            if (!str_ends_with($this->documentPath, '/')) {
+                $this->documentPath .= '/';
+            }
+            $this->documentPath .= 'endorsements';
+        }
+        return $this->documentPath;
+    }
+
+    private function getDocumentFilePath() {
+        return TPath::fromFileRoot($this->getDocumentPath());
+    }
+
+    private function getDocumentLocalURL($fileName) {
+        return TWebSite::GetLocalUrl($this->getDocumentPath(),$fileName);
+    }
+
     private function saveFiles() : string | false
     {
         $fileNames = TUploadHelper::filesReady($this->getMessages());
@@ -33,8 +56,7 @@ class PostGroupEndorsementCommand extends TServiceCommand
             return false;
         }
 
-        $documentDir = TConfiguration::getValue('documents', 'location', 'application/documents');
-        $documentDir = TPath::fromFileRoot($documentDir.'/endorsements');
+        $documentDir = $this->getDocumentFilePath();
 
         if (!is_dir($documentDir)) {
             if (!@mkdir($documentDir, 0777, true)) {
@@ -70,7 +92,6 @@ class PostGroupEndorsementCommand extends TServiceCommand
             if ($request->document === false) {
                 return;
             }
-            $request->documentUrl = '';
         }
         $manager = new QcallDataManager();
         $endorsement = $manager->SubmitGroupEndorsement($request);

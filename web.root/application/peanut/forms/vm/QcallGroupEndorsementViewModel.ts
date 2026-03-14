@@ -17,12 +17,12 @@ namespace Peanut {
         country : string;
         postalcode : string;
         documentationType : string;
-        documentUrl? : string;
+        document : string;
+        comments : string;
     }
     interface IGroupEndorsement extends IGroupEndorsementUpdateRequest {
         id : any;
         ipAddress : string;
-        document : string;
         submissionId : string;
         submissionDate : string;
         approved : any;
@@ -48,7 +48,7 @@ namespace Peanut {
             country : ko.observable(''),
             documentationType : ko.observable('upload'),
             documentUrl : ko.observable(''),
-
+            comments : ko.observable(''),
 
             emailError: ko.observable(false),
             nameError: ko.observable(false),
@@ -122,6 +122,8 @@ namespace Peanut {
                 postalcode: me.form.postalCode().trim(),
                 typeId: me.form.typeId(),
                 documentationType: this.form.documentationType(),
+                document: me.form.documentationType() == 'url' ? this.form.documentUrl() : '',
+                comments: me.form.comments().trim()
             }
 
             if (request.documentationType === 'url') {
@@ -132,7 +134,7 @@ namespace Peanut {
                 }
                 else {
                     if (Peanut.Helper.isValidUrl(url)) {
-                        request.documentUrl = url;
+                        request.document = url;
                     } else {
                         this.form.documentError(true);
                         this.form.documentationUrlError(true);

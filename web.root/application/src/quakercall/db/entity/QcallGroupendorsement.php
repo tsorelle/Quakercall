@@ -26,7 +26,8 @@ class QcallGroupendorsement  extends \Tops\db\TimeStampedEntity
     public $country;
     public $postalcode;
     public $document;
-    public $documentUrl;
+    public $documentationType;
+    public $comments;
     public $ipAddress;
     public $approved;
     public $active;

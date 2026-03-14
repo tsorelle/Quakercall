@@ -10,9 +10,37 @@ use \PDO;
 use PDOStatement;
 use Tops\db\TDatabase;
 use \Tops\db\TEntityRepository;
+use Tops\sys\TConfiguration;
 
 class QcallGroupendorsementsRepository extends \Tops\db\TEntityRepository
 {
+    public function getGroupEndorsementsForApproval()
+    {
+        $documentPath = TConfiguration::getValue('documents', 'location', 'application/documents');
+        if (!str_starts_with($documentPath, '/')) {
+            $documentPath = '/'.$documentPath;
+        }
+        if (!str_ends_with($documentPath, '/')) {
+            $documentPath .= '/';
+        }
+
+        $sql =
+            'SELECT id,submissionId,submissionDate,comments,ipAddress,email, '.
+            'phone,address1,address2,city,state,country,postalcode, '.
+            'organizationName,contactName, '.
+            'CASE documentationType '.
+            "    WHEN 'upload' THEN CONCAT('%sendorsements/',document) ".
+            "    WHEN 'url' THEN document ".
+            "    ELSE '' ".
+            'END AS documentUrl '.
+            'FROM qcall_groupendorsements '.
+            'WHERE (`approved` = 0 OR `approved` IS NULL) AND active = 1 '.
+            'ORDER BY submissionDate' ;
+        $sql = sprintf($sql, $documentPath);
+        $stmt = $this->executeStatement($sql);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
     protected function getTableName() {
         return 'qcall_groupendorsements';
     }
@@ -42,8 +70,9 @@ class QcallGroupendorsementsRepository extends \Tops\db\TEntityRepository
         'state'=>PDO::PARAM_STR,
         'country'=>PDO::PARAM_STR,
         'postalcode'=>PDO::PARAM_STR,
+        'documentationType'=>PDO::PARAM_STR,
         'document'=>PDO::PARAM_STR,
-        'documentUrl'=>PDO::PARAM_STR,
+        'comments'=>PDO::PARAM_STR,
         'ipAddress'=>PDO::PARAM_STR,
         'approved'=>PDO::PARAM_STR,
         'createdby'=>PDO::PARAM_STR,
