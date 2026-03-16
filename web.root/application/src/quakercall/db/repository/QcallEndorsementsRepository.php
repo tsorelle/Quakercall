@@ -79,6 +79,18 @@ class QcallEndorsementsRepository extends \Tops\db\TEntityRepository
         return $endorsement;
     }
 
+    public function cancelEndorsement($id)
+    {
+        $endorsement = $this->get($id);
+        if (!$endorsement) {
+            return false;
+        }
+        $endorsement->active = 0;
+        $endorsement->approved = 0;
+        $this->update($endorsement);
+        return $endorsement;
+    }
+
     protected function getTableName() {
         return 'qcall_endorsements';
     }

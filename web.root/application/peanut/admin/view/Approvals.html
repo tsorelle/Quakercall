@@ -127,6 +127,9 @@
                     <span style="padding-right: 3rem">
                     <button type="button" class="btn btn-primary" data-bind="click:approve">Approve Endorsement</button>
                         </span>
+                    <span style="padding-right: 3rem">
+                    <button type="button" class="btn btn-outline-danger" data-bind="click:cancelEndorsement">Cancel Endorsement</button>
+                        </span>
                     <a href="#" data-bs-dismiss="modal" data-dismiss="modal">Close</a>
                 </div>
             </div><!-- /.modal-content -->
@@ -162,5 +165,6 @@
         </div>
     </div>
 
+    <modal-confirm params="id:'confirm-cancel-modal',headerText: 'Please confirm', bodyText: confirmCancelMessage, confirmClick: onConfirmCancel,buttonSet:'yesno'"></modal-confirm>
 
 </div>

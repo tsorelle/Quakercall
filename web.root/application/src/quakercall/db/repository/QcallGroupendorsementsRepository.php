@@ -41,6 +41,29 @@ class QcallGroupendorsementsRepository extends \Tops\db\TEntityRepository
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
 
+    public function approve($id)
+    {
+        $endorsement = $this->get($id);
+        if (!$endorsement) {
+            return false;
+        }
+        $endorsement->approved = 1;
+        $this->update($endorsement);
+        return $endorsement;
+    }
+
+    public function cancelEndorsement($id)
+    {
+        $endorsement = $this->get($id);
+        if (!$endorsement) {
+            return false;
+        }
+        $endorsement->active = 0;
+        $endorsement->approved = 0;
+        $this->update($endorsement);
+        return $endorsement;
+    }
+
     protected function getTableName() {
         return 'qcall_groupendorsements';
     }

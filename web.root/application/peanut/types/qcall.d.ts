@@ -33,6 +33,13 @@ declare namespace QuakerCall {
         ready : any;
     }
 
+    export interface ISystemMessageRequest {
+        content : string;
+        email: string;
+        subject: string;
+        toName?: string;
+        fromMailbox?: string;
+    }
 
     export interface IContactItem {
         id : any;

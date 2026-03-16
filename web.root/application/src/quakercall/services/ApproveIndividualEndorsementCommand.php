@@ -8,7 +8,7 @@ use Application\quakercall\db\repository\QcallEndorsementsRepository;
 use Tops\services\TServiceCommand;
 use Application\quakercall\db\entity\QcallEndorsement;
 
-class ApproveEndorsementCommand extends TServiceCommand
+class ApproveIndividualEndorsementCommand extends TServiceCommand
 {
 
     protected function run()

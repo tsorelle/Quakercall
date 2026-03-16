@@ -71,20 +71,22 @@ namespace Peanut {
             me.application.loadResources([
                 '@pnut/htmlEditContainer'
             ], () => {
-                me.htmlEditor =  new Peanut.htmlEditContainer(me);
-                me.services.executeService('GetEndorsementsForReview',null,
-                    function(serviceResponse: Peanut.IServiceResponse) {
-                        if (serviceResponse.Result == Peanut.serviceResultSuccess) {
-                            me.showEndorsements(serviceResponse.Value)
-                        } else {
-                            let debug = serviceResponse;
-                        }
-                    }).fail(() => {
-                    let trace = me.services.getErrorInformation();
-                }).always(() => {
-                    // me.hideWaiter();
-                    me.bindDefaultSection();
-                    successFunction();
+                me.application.registerComponents(['@pnut/modal-confirm'], () => {
+                    me.htmlEditor = new Peanut.htmlEditContainer(me);
+                    me.services.executeService('GetEndorsementsForReview', null,
+                        function (serviceResponse: Peanut.IServiceResponse) {
+                            if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                                me.showEndorsements(serviceResponse.Value)
+                            } else {
+                                let debug = serviceResponse;
+                            }
+                        }).fail(() => {
+                        let trace = me.services.getErrorInformation();
+                    }).always(() => {
+                        // me.hideWaiter();
+                        me.bindDefaultSection();
+                        successFunction();
+                    });
                 });
             });
         }
@@ -179,6 +181,42 @@ namespace Peanut {
                         me.showEndorsements(response.endorsements);
                         if (response.messageText) {
                             me.editAcknowlegement(response.messageText);
+                        }
+                    } else {
+                        let debug = serviceResponse;
+                    }
+                }).fail(() => {
+                let trace = me.services.getErrorInformation();
+            }).always(() => {
+                // me.hideWaiter();
+                this.hideModal('approval-form')
+            });
+        }
+
+        cancelEndorsement = () => {
+            let me = this;
+            let msg = 'Are you sure you want to cancel the endorsement from ' +
+              (me.form.isPerson() ? me.form.name() : me.form.organizationName()) + '?'
+            me.confirmCancelMessage(msg);
+            me.hideModal('approval-form')
+            me.showModal('confirm-cancel-modal');
+        }
+
+        onConfirmCancel = () => {
+            let me = this;
+            me.hideModal('confirm-cancel-modal');
+            let id = this.form.id();
+            let serviceName = me.form.isPerson() ?
+                'CancelEndorsement' : 'CancelGroupEndorsement';
+            me.services.executeService(serviceName, id,
+                function (serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                        if (me.form.isPerson()) {
+                            let list = <IIndividualEndorsementReviewItem[]>serviceResponse.Value;
+                            me.assignIndividualEndorsements(list);
+                        } else {
+                            let list = <IGroupEndorsementReviewItem[]>serviceResponse.Value;
+                            me.assignGroupEndorsements(list);
                         }
                     } else {
                         let debug = serviceResponse;

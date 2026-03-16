@@ -4,6 +4,7 @@ namespace Application\quakercall\services;
 
 use Application\quakercall\db\entity\QcallContact;
 use Application\quakercall\db\entity\QcallEndorsement;
+use Application\quakercall\db\entity\QcallGroupendorsement;
 use Peanut\PeanutMailings\sys\MailTemplateManager;
 use Tops\mail\TEmailAddress;
 use Tops\mail\TEmailValidator;
@@ -30,8 +31,27 @@ class QCallEmailManager
         return TTemplateManager::ReplaceContentTokens($template, $tokens);
     }
 
+    public function getGroupAcknowlegementText(QcallGroupendorsement $contact)
+    {
+        $contact->normalizeStateAndCountry();
+        $tokens = [];
+        $tokens['email'] = $contact->email;
+        $tokens['organization'] = $contact->organizationName;
+        $tokens['name']   = $contact->contactName;
+        $tokens['phone']  = empty($contact->phone) ? '(not provided)' : $contact->phone;
+        $tokens['city']   = $contact->city ?? '(not provided)';
+        $tokens['state']  = $contact->state ?? '(not provided)';
+        $tokens['country']= $contact->country ?? '';
+
+        $templateManager = new MailTemplateManager();
+        $template = $templateManager->getTemplateContent('group-endorsement-acknowledge.html');
+        return TTemplateManager::ReplaceContentTokens($template, $tokens);
+
+    }
+
+
     public function sendMessage(IMessageContainer $messageContainer, string $email, string $fullName,
-                                string $subject, string $messageText) : bool
+                                string $subject, string $messageText, $from = TPostOffice::AdminMailbox) : bool
     {
         $validation = TEmailValidator::CheckEmailAddress($email);
         $ok = $validation->valid ?? false;
@@ -40,8 +60,7 @@ class QCallEmailManager
             return false;
         }
         $recipient = new TEmailAddress($email, $fullName);
-        $sendOk  = TPostOffice::SendMessageFromUs($recipient,'Thank you for your endorsement',
-            $messageText);// ,TPostOffice::ContactMailbox);
+        $sendOk  = TPostOffice::SendMessageFromUs($recipient, $subject,$messageText,$from);
         if (!$sendOk) {
             $messageContainer->addInfoMessage('Message failed to send.');
             return false;
@@ -50,4 +69,5 @@ class QCallEmailManager
         $messageContainer->addInfoMessage('Message sent.');
         return true;
     }
+
 }
