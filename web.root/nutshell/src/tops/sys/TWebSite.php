@@ -49,6 +49,35 @@ class TWebSite
         return strpos($url,'/') === 0 ? $base.$url : "$base/$url";
     }
 
+    public static function GetLocalUrl($path, $filename = ''): string
+    {
+        $path = trim((string)($path ?? ''));
+        $filename = trim((string)($filename ?? ''));
+
+        if ($path === '' && $filename === '') {
+            return '';
+        }
+
+        $normalize = static function (string $value): string {
+            $value = str_replace('\\', '/', $value);
+            $value = preg_replace('#^https?://[^/]+#i', '', $value) ?? $value;
+            return trim($value, " /\t\n\r\0\x0B");
+        };
+
+        $path = $normalize($path);
+        $filename = $normalize($filename);
+
+        if ($filename === '') {
+            return $path === '' ? '' : '/' . $path;
+        }
+
+        if ($path === '') {
+            return '/' . $filename;
+        }
+
+        return '/' . $filename . '/' . $path;
+    }
+
     public static function GetBaseUrl(){
         if (self::$baseUrl!==null) {
             return self::$baseUrl;

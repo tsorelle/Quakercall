@@ -27,6 +27,35 @@ class TWebSiteTest extends TestCase
         $this->assertTrue(true);
     }
 
+    public function testGetLocalUrl()
+    {
+        $file = '';
+        $path = '';
+        $expected = '';
+        $actual = TWebSite::GetLocalUrl($file,$path);
+        $this->assertEquals($expected,$actual);
+
+        $file = 'something.pdf';
+        $path = 'appliction/documents';
+        $expected = '/appliction/documents/something.pdf';
+        $actual = TWebSite::GetLocalUrl($file,$path);
+        $this->assertEquals($expected,$actual);
+
+        $actual = TWebSite::GetLocalUrl($expected);
+        $this->assertEquals($expected,$actual);
+
+        $file = 'something.pdf';
+        $path = '';
+        $expected = '/something.pdf';
+        $actual = TWebSite::GetLocalUrl($file,$path);
+        $this->assertEquals($expected,$actual);
+
+
+
+
+
+    }
+
 
     /*    public function testAppendRequestParams()
         {
