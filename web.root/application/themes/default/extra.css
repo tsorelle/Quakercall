@@ -78,3 +78,11 @@ body, footer, p {
     font-weight: 600;
 }
 
+ .formDisplayLabel {
+     font-weight: bold;
+ }
+
+.formDisplayText {
+    padding-bottom: 2rem;
+}
+

@@ -44,10 +44,6 @@ namespace Peanut {
         messageText: string;
     }
 
-    interface  IConfirmationMessageRequest {
-        contactId: any;
-        messageText: string;
-    }
 
     export class ApprovalsViewModel extends Peanut.ViewModelBase {
         // observables
@@ -109,9 +105,11 @@ namespace Peanut {
                             if (serviceResponse.Result == Peanut.serviceResultSuccess) {
                                 me.showEndorsements(serviceResponse.Value)
                             } else {
+                                // noinspection JSUnusedLocalSymbols
                                 let debug = serviceResponse;
                             }
                         }).fail(() => {
+                        // noinspection JSUnusedLocalSymbols
                         let trace = me.services.getErrorInformation();
                     }).always(() => {
                         // me.hideWaiter();
@@ -155,7 +153,6 @@ namespace Peanut {
             }
         }
 
-        private content = '';
         private showContent = (content: string) => {
             this.htmlEditor.setContent(content);
             this.showModal("confirmation-message-modal")
@@ -179,9 +176,11 @@ namespace Peanut {
                 function (serviceResponse: Peanut.IServiceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
                     } else {
+                        // noinspection JSUnusedLocalSymbols
                         let debug = serviceResponse;
                     }
                 }).fail(() => {
+                // noinspection JSUnusedLocalSymbols
                 let trace = me.services.getErrorInformation();
             }).always(() => {
                 // me.hideWaiter();
@@ -252,9 +251,11 @@ namespace Peanut {
                             me.editAcknowlegement(response.messageText);
                         }
                     } else {
+                        // noinspection JSUnusedLocalSymbols
                         let debug = serviceResponse;
                     }
                 }).fail(() => {
+                // noinspection JSUnusedLocalSymbols
                 let trace = me.services.getErrorInformation();
             }).always(() => {
                 // me.hideWaiter();
@@ -288,9 +289,11 @@ namespace Peanut {
                             me.assignGroupEndorsements(list);
                         }
                     } else {
+                        // noinspection JSUnusedLocalSymbols
                         let debug = serviceResponse;
                     }
                 }).fail(() => {
+                // noinspection JSUnusedLocalSymbols
                 let trace = me.services.getErrorInformation();
             }).always(() => {
                 // me.hideWaiter();
