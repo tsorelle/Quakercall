@@ -15,47 +15,63 @@ namespace Peanut {
         lastDate: string;
     }
     export class GroupListViewModel extends Peanut.ViewModelBase {
+        endorsements : IGroupListItem[]  = [];
         // observables
         endorsementList = ko.observableArray<IGroupListItem>([]);
         endorsementCount = ko.observable('')
         asOf = ko.observable('')
+        currentPage = ko.observable(1);
+        maxPages = ko.observable(15);
+        itemsPerPage = 15;
 
         init(successFunction?: () => void) {
             let me = this;
+            me.application.registerComponents(
+            '@pnut/pager', () => {
+                me.application.loadResources([
+                        '@pnut/ViewModelHelpers'
+                    ], () => {
+                    me.services.executeService('GetGroupList', null,
+                        function (serviceResponse: Peanut.IServiceResponse) {
+                            if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                                let response: IGetGroupListResponse = serviceResponse.Value;
+                                me.endorsements = response.list;
+                                let count = me.endorsements.length;
+                                let max = Math.ceil(count / me.itemsPerPage);
+                                me.maxPages(max);
+                                me.currentPage(1);
+                                me.changePage();
+                                // me.endorsementList(response.list)
+                                me.endorsementCount(response.count)
+                                me.asOf(response.lastDate)
 
-            // const box = document.getElementById('page-content');
-            // box.style.margin = '0';
-            // box.style.maxWidth = '100%';
-
-            Peanut.logger.write('GroupList Init');
-            // let fd = this.getPageVarialble('formdata');
-            me.services.executeService('GetGroupList',null,
-                function(serviceResponse: Peanut.IServiceResponse) {
-                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
-                        let response: IGetGroupListResponse = serviceResponse.Value;
-                        me.endorsementList(response.list)
-                        me.endorsementCount(response.count)
-                        me.asOf(response.lastDate)
-/*
-                        me.allRegistrations = response.registrations;
-                        me.meetingList(response.meetings);
-                        me.selectedMeeting(response.selectedMeeting);
-                        me.meetingDate(response.selectedMeeting.meetingDate);
-                        me.registrationCount(response.registrations.length);
-                        let pageCount = Math.ceil( me.allRegistrations.length / me.itemsPerPage );
-                        me.maxPages(pageCount);
-                        me.getPage(1);
-*/
-                    } else {
-                        let debug = serviceResponse;
-                    }
-                }).fail(() => {
-                let trace = me.services.getErrorInformation();
-            }).always(() => {
-                // me.hideWaiter();
-                me.bindDefaultSection();
-                successFunction();
+                            } else {
+                                let debug = serviceResponse;
+                            }
+                        }).fail(() => {
+                        let trace = me.services.getErrorInformation();
+                    }).always(() => {
+                        // me.hideWaiter();
+                        me.bindDefaultSection();
+                        successFunction();
+                    });
+                });
             });
         }
+
+        changePage = (move: number = 0) => {
+            let current = this.currentPage() + move;
+            let start = this.itemsPerPage * (current - 1)
+            let end = start + this.itemsPerPage;
+            let pageSet = this.endorsements.slice(start,end);
+            if (pageSet.length > 0) {
+                this.endorsementList(pageSet);
+                this.currentPage(current);
+                // this.selectContact(pageSet[0]);
+            }
+            // this.pageview('view');
+            Peanut.Helper.ScrollToTop();
+        }
+
     }
 }
