@@ -3,20 +3,21 @@
 namespace Application\quakercall\services;
 
 use Application\quakercall\db\repository\QcallEndorsementsRepository;
+use Application\quakercall\db\repository\QcallGroupendorsementsRepository;
 use Tops\services\TServiceCommand;
+use Tops\sys\TConfiguration;
+use Tops\sys\TWebSite;
 
-/** Service contract
- * Request none
- * Response:
- * export interface IEndorsementReviewItem {
+/**
+ * Service Contract
+ *	Request (none)
+ *   Response
+ *   ==========
+ *   interface IEndorsementReviewItem {
  *      id : any;
  *      submissionId: string;
  *      submissionDate: string;
- *      contactId: string;
- *      name: string;
  *      comments: string;
- *      religion: string;
- *      howFound: string;
  *      ipAddress: string;
  *      email: string;
  *      phone: string;
@@ -26,17 +27,39 @@ use Tops\services\TServiceCommand;
  *      state: string;
  *      country: string;
  *      postalcode: string;
- * }
+ *  }
  *
+ *   interface IGroupEndorsementReviewItem  extends IEndorsementReviewItem {
+ *      organizationName: string;
+ *      contactName: string;
+ *      documentUrl: string;
+ *  }
+ *  interface IIndividualEndorsementReviewItem extends IEndorsementReviewItem {
+ *      name: string;
+ *      contactId: string;
+ *      religion: string;
+ *      howFound: string;
+ *  }
  *
- */
+ *  interface IGetEndorsementsResponse {
+ *      endorsements: IIndividualEndorsementReviewItem[];
+ *      groupEndorsements: IGroupEndorsementReviewItem[];
+ *      filesUrl: string;
+ *      messageText: string;
+ *  }
+ *
+ ************** */
+
 
 class GetEndorsementsForReviewCommand extends TServiceCommand
 {
     protected function run()
     {
+        $response = new \stdClass();
         $repository =new QcallEndorsementsRepository();
-        $response = $repository->getEndorsementsForApproval();
+        $response->endorsements = $repository->getEndorsementsForApproval();
+        $repository = new QcallGroupendorsementsRepository();
+        $response->groupEndorsements = $repository->getGroupEndorsementsForApproval();
         $this->setReturnValue($response);
     }
 }
