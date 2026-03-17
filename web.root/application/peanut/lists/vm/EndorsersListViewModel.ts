@@ -52,20 +52,13 @@ namespace Peanut {
                                     // me.endorsementList(response.list)
                                     me.endorsementCount(response.count)
                                     me.asOf(response.lastDate)
-                                    /*
-                                                            me.allRegistrations = response.registrations;
-                                                            me.meetingList(response.meetings);
-                                                            me.selectedMeeting(response.selectedMeeting);
-                                                            me.meetingDate(response.selectedMeeting.meetingDate);
-                                                            me.registrationCount(response.registrations.length);
-                                                            let pageCount = Math.ceil( me.allRegistrations.length / me.itemsPerPage );
-                                                            me.maxPages(pageCount);
-                                                            me.getPage(1);
-                                    */
+
                                 } else {
+                                    // noinspection JSUnusedGlobalSymbols
                                     let debug = serviceResponse;
                                 }
                             }).fail(() => {
+                            // noinspection JSUnusedGlobalSymbols
                             let trace = me.services.getErrorInformation();
                             }).always(() => {
                                 // me.hideWaiter();
