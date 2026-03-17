@@ -22,7 +22,7 @@ namespace Peanut {
         asOf = ko.observable('')
         currentPage = ko.observable(1);
         maxPages = ko.observable(15);
-        itemsPerPage = 15;
+        itemsPerPage = 10;
 
         init(successFunction?: () => void) {
             let me = this;
