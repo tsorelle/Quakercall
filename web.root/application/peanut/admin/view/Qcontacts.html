@@ -5,7 +5,7 @@
             <a class="nav-link" data-bind="css: { active: tab() === 'search'}, click:showSearchPage" href="#">Search</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-bind="css: { active: tab() === 'download'}, click:showDownloadPage" href="#">Download</a>
+            <a class="nav-link" data-bind="css: { active: tab() === 'download'}, click:showDownloadPage" href="#">Mailings</a>
         </li>
     </ul>
 
@@ -96,25 +96,35 @@
         </div>
     </div>
     <div class="col-md-12" data-bind="visible:tab()==='download'">
-        <h1>Downloads</h1>
-        <ul>
-            <li>
-                <form id='down-form' action="/peanut/service/download" method="post">
-                    <input id="download-registations-service"
-                           name="serviceCode" type="hidden" value="DownloadEmailRecipients">
-                    <input id="downloadtype"
-                           name="downloadtype" type="hidden" value="godaddy">
-                    <input id="filter"
-                           name="filter" type="hidden" value="full">
-                    <fieldset class="download-form">
-                        <button type="submit" class="btn btn-link">Download Email List for GoDaddy Upload</button>
-                    </fieldset>
-                </form>
+        <h1>Mailing Management</h1>
+        <h3 class="mb-4">Get Contacts for GoDaddy Mailing</h3>
+        <dl>
+            <dt>Get Upload File for full mailing</dt>
+            <dd><a href="#" data-bind="click:downloadContacts">Download Full Contact List</a></dd>
 
-            </li>
-            <!-- li><a href="#" data-bind="click:downloadContacts">Download all contacts</a></li -->
-        </ul>
+            <dt>Get upload file for new additions since last mailing</dt>
+            <dd><a href="#" data-bind="click:downloadUnposted">Download Unposted Contact List</a></dd>
+
+            <dt>Upload and process list of bounces and failures</dt>
+            <dd><a href="#" data-bind="click:uploadBounces">Upload Bounces</a></dd>
+
+        </dl>
+
     </div>
+
+    <form style="display: none" id='download-form' action="/peanut/service/download" method="post">
+        <input id="download-registations-service"
+               name="serviceCode" type="hidden" value="DownloadEmailRecipients">
+        <input id="downloadtype"
+               name="downloadtype" type="hidden" value="godaddy">
+        <input id="filter" data-bind="value:downLoadFilter"
+               name="filter" type="hidden">
+        <fieldset class="download-form">
+            <button type="submit" class="btn btn-link">Download Email List for GoDaddy Upload</button>
+        </fieldset>
+    </form>
+
+
     <div id="contact-update-modal" class="modal fade" role="dialog" tabindex="-1">
         <div class="modal-dialog modal-lg"  role="document">
             <div class="modal-content">
@@ -189,4 +199,27 @@
             </div>
         </div>
     </div>
+
+    <div class="modal" id="bounce-upload-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h4 class="modal-title">Upload GoDaddy Error File</h4>
+                        <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div><label class="form-label" for="bounceFile">Select error file to upload </label></div>
+                        <input  type="file" class="btn btn-outline-dark" id="bounceFile" name="bounceFile"
+                               placeholder="Select a file or drag from explorer"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bind="click:continueBounceUpload">Upload</button>
+                        <button type="button" class="btn btn-default btn-link"  data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- bounce-upload-modal -->
+
 </div>

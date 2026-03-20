@@ -35,6 +35,12 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         return $result;
     }
 
+    public function setBounced(mixed $email)
+    {
+        $sql = 'UPDATE qcall_contacts SET bounced = 1 WHERE email = ? ';
+        $stmt = $this->executeStatement($sql, [$email]);
+    }
+
 
     protected function getTableName() {
         return 'qcall_contacts';
@@ -135,4 +141,41 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         $stmt = $this->executeStatement($sql);
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
+
+    public function getUnPostedEmailRecipients() {
+        $sql = 'SELECT MAX(`postedDate`) FROM qcall_contacts WHERE active=1 AND postedDate IS NOT NULL';
+        $lastPostedDate = $this->getValue($sql);
+        $sql = 'SELECT '.
+            '  `firstName` AS `first_name`, '.
+            '  `lastName`  AS `last_name`, '.
+            '  `email`     AS `email`, '.
+            "  IFNULL(`phone`,'') AS `phone` ".
+            'FROM `qcall_contacts` '.
+            'WHERE (subscribed = 1 AND ACTIVE = 1 AND (bounced=0 OR bounced IS NULL)  '.
+            "AND (`firstName` <> ''  OR `lastName` <> '' OR `fullname` <> '')) ";
+
+        $params = [];
+        if (empty($lastPostedDate)) {
+            $sql .= ' AND postedDate IS NULL';
+        }
+        else {
+            $sql .= ' AND (postedDate IS NULL OR  postedDate <  ?)';
+            $params = [$lastPostedDate];
+        }
+        $stmt = $this->executeStatement($sql, $params);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function setPostedDate() {
+
+        $postedTime = date('Y-m-d H:i:s');
+
+        $sql =
+            'UPDATE `qcall_contacts` SET posteddate = ? '.
+            'WHERE subscribed = 1 AND ACTIVE = 1 AND (bounced=0 OR bounced IS NULL) '.
+            "AND (`firstName` <> ''  OR `lastName` <> '' OR `fullname` <> '')";
+        $this->executeStatement($sql, [$postedTime]);
+        return $postedTime;
+    }
+
 }

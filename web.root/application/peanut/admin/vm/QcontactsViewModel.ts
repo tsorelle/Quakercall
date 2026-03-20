@@ -31,6 +31,7 @@ namespace Peanut {
         currentPage = ko.observable(1);
         maxPages = ko.observable();
         searchTerm = '';
+        downLoadFilter = ko.observable('full');
 
         form = {
             id : ko.observable(0),
@@ -319,9 +320,90 @@ namespace Peanut {
             me.tab('download');
         }
 
+        /**
+         * Execute a service that does not need input and does not return a value.
+         * @param commandName
+         * @param waitMessage
+         */
+        executeContactsService = (commandName: string, waitMessage: string) => {
+            let me = this;
+            me.showWaiter(waitMessage);
+            me.services.executeService(commandName,null,
+                function(serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                    } else {
+                        let debug = serviceResponse;
+                    }
+                }).fail(() => {
+                let trace = me.services.getErrorInformation();
+            }).always(() => {
+                me.hideWaiter();
+            });
+        }
+
         showSearchPage = () => {
             let me = this;
             me.tab('search');
+        }
+
+        downloadContacts = () => {
+            let me = this;
+            me.submitDownloadForm('full');
+        }
+
+        downloadUnposted = () => {
+            let me = this;
+            me.submitDownloadForm('unposted');
+        }
+
+        uploadBounces = () => {
+            const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]');
+            if (fileInput) {
+                fileInput.value = '';
+            }
+            // show upload form
+            this.showModal('bounce-upload-modal');
+        }
+
+        continueBounceUpload = () => {
+            let me = this;
+            // let request = me.validateForm();
+            let request = null;
+            let files = null;
+
+            files = this.getFilesForUpload();
+            if (!files.length) {
+                alert('Please select a file to upload.');
+                return;
+            }
+            me.hideModal('bounce-upload-modal');
+            me.services.postForm( 'ProcessBounceList', request, files, null,
+                function (serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                    } else {
+                        me.showModal('bounce-upload.modal');
+                        let debug = serviceResponse;
+                    }
+                }).fail(() => {
+                let trace = me.services.getErrorInformation();
+            }).always(() => {
+                me.application.hideWaiter();
+            });
+        }
+
+        submitDownloadForm = (filter : string)=> {
+            let me = this;
+            me.downLoadFilter(filter);
+            (<HTMLFormElement>document.querySelector('#download-form')).submit();
+        }
+
+        getFilesForUpload() {
+            let files = null;
+            files = Peanut.Helper.getSelectedFiles('#bounceFile');
+            if (!files) {
+                return false;
+            }
+            return files;
         }
 
 

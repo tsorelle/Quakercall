@@ -52,6 +52,8 @@ class UpdateQContactCommand extends TServiceCommand
                 $this->addErrorMessage('Contact not found');
                 return;
             }
+            $email = $request->contact->email ?? '';
+            $changedEmail = ($email !== $contact->email);
             $city = $request->contact->city ?? '';
             $state = $request->contact->state ?? '';
             $country = $request->contact->country ?? '';
@@ -64,6 +66,9 @@ class UpdateQContactCommand extends TServiceCommand
                 $contact->address1 = '';
                 $contact->address2 = '';
                 $contact->postalcode = '';
+            }
+            if ($changedEmail) {
+                $contact->postedDate = null;
             }
 
             $ok = $repository->update($contact);

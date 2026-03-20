@@ -17,13 +17,25 @@ class DownloadEmailRecipientsCommand extends TServiceCommand
             $type = 'mailing-upload';
         }
         $filter = $_POST['filter'] ?? 'full';
-       $list = (new QcallContactsRepository())->getEmailRecipients();
+        $repo = new QcallContactsRepository();
+        switch ($filter) {
+            case 'unposted':
+                $list = $repo->getUnPostedEmailRecipients();
+                break;
+            case 'full':
+                $list = $repo->getEmailRecipients();
+                break;
+            default:
+                exit('Invalid filter: ' . $filter);
+        }
+        $repo->setPostedDate();
+
         $csv = TCsvFormatter::ToCsv($list);
 
         $response = new \stdClass();
         $response->data = $csv;
         $response->filename =
-            sprintf('%s-%s-%s.csv',
+            sprintf('%s-%s-%s',
                 date('Y-m-d'),$filter, $type);
         $this->setReturnValue($response);
     }
