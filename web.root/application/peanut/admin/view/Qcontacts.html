@@ -96,8 +96,8 @@
         </div>
     </div>
     <div class="col-md-12" data-bind="visible:tab()==='download'">
-        <h1>Mailing Management</h1>
-        <h3 class="mb-4">Get Contacts for GoDaddy Mailing</h3>
+        <div data-bind="visible:reviewCount() == 0">
+        <h1 class="mb-4">Mailing Management</h1>
         <dl>
             <dt>Get Upload File for full mailing</dt>
             <dd><a href="#" data-bind="click:downloadContacts">Download Full Contact List</a></dd>
@@ -108,8 +108,41 @@
             <dt>Upload and process list of bounces and failures</dt>
             <dd><a href="#" data-bind="click:uploadBounces">Upload Bounces</a></dd>
 
-        </dl>
+            <dt>Upload and process list of suppressions (unsubscribe)</dt>
+            <dd><a href="#" data-bind="click:uploadsuppressions">Upload Suppressions</a></dd>
 
+        </dl>
+        </div>
+        <div data-bind="visible:reviewCount() > 0">
+            <h1 class="mb-0">Contacts for Review</h1>
+            <p class="mb-3"><a href="#" data-bind="click:returnToMailings"><i class="fa-solid fa-arrow-left"></i> Return</a> </p>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Email Address</th>
+                                <th>Supression Reason</th>
+                            </tr>
+                            </thead>
+                            <tbody data-bind="foreach:reviewList">
+                            <tr>
+                                <td data-bind="text:firstName"></td>
+                                <td data-bind="text:lastName"></td>
+                                <td data-bind="text:email"></td>
+                                <td data-bind="text:reason"></td>
+                            </tr>
+                            <tr></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <form style="display: none" id='download-form' action="/peanut/service/download" method="post">
@@ -215,6 +248,28 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-primary" data-bind="click:continueBounceUpload">Upload</button>
+                        <button type="button" class="btn btn-default btn-link"  data-bs-dismiss="modal">Close</button>
+                    </div>
+                </form>
+            </div><!-- modal-content -->
+        </div><!-- modal-dialog -->
+    </div><!-- bounce-upload-modal -->
+
+    <div class="modal" id="suppression-upload-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form>
+                    <div class="modal-header">
+                        <h4 class="modal-title">Upload GoDaddy suppressions File</h4>
+                        <button type="button" class="close btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div><label class="form-label" for="bounceFile">Select suppression file to upload </label></div>
+                        <input  type="file" class="btn btn-outline-dark" id="suppressionFile" name="suppressionFile"
+                               placeholder="Select a file or drag from explorer"/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-bind="click:continueSuppressionUpload">Upload</button>
                         <button type="button" class="btn btn-default btn-link"  data-bs-dismiss="modal">Close</button>
                     </div>
                 </form>

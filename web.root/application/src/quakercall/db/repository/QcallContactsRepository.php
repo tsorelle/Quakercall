@@ -41,6 +41,12 @@ class QcallContactsRepository extends \Tops\db\TEntityRepository
         $stmt = $this->executeStatement($sql, [$email]);
     }
 
+    public function unsubscribe(string $email)
+    {
+        $sql = 'UPDATE qcall_contacts SET subscribed = 0 WHERE email = ? ';
+        $stmt = $this->executeStatement($sql, [$email]);
+    }
+
 
     protected function getTableName() {
         return 'qcall_contacts';

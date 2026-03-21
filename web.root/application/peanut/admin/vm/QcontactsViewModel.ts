@@ -10,6 +10,13 @@ namespace Peanut {
         contact: IContactItem;
         searchTerm: string;
     }
+
+    interface ISuppressionItem {
+        firstName: string;
+        lastName: string;
+        email: string;
+        reason: string;
+    }
     export class QcontactsViewModel extends Peanut.ViewModelBase {
         // observables
         tab = ko.observable('search');
@@ -32,6 +39,8 @@ namespace Peanut {
         maxPages = ko.observable();
         searchTerm = '';
         downLoadFilter = ko.observable('full');
+        reviewCount = ko.observable(0);
+        reviewList = ko.observableArray<ISuppressionItem>();
 
         form = {
             id : ko.observable(0),
@@ -356,11 +365,58 @@ namespace Peanut {
             me.submitDownloadForm('unposted');
         }
 
-        uploadBounces = () => {
-            const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]');
+        uploadsuppressions = () => {
+            let me = this;
+            me.clearFileInput('suppressionFile');
+            this.showModal('suppression-upload-modal');
+        }
+
+        continueSuppressionUpload = () => {
+            let me = this;
+            // let request = me.validateForm();
+            let request = null;
+            let files = null;
+
+            files = this.getFilesForUpload('suppressionFile');
+            if (!files.length) {
+                alert('Please select a file to upload.');
+                return;
+            }
+            me.hideModal('suppression-upload-modal');
+            me.services.postForm( 'ProcessSuppressionList', request, files, null,
+                function (serviceResponse: Peanut.IServiceResponse) {
+                    if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                        let responseList = serviceResponse.Value;
+                        if (responseList) {
+                            me.reviewList(responseList);
+                            me.reviewCount(responseList.length);
+                        }
+                        else {
+                            me.reviewCount(0);
+                            me.reviewList([]);
+                        }
+                    } else {
+                        me.showModal('suppression-upload.modal');
+                        let debug = serviceResponse;
+                    }
+                }).fail(() => {
+                let trace = me.services.getErrorInformation();
+            }).always(() => {
+                me.application.hideWaiter();
+            });
+
+
+        }
+
+        clearFileInput = (id: string) => {
+            let fileInput = document.querySelector<HTMLInputElement>('#'+id);
             if (fileInput) {
                 fileInput.value = '';
             }
+        }
+
+        uploadBounces = () => {
+            this.clearFileInput('bounceFile');
             // show upload form
             this.showModal('bounce-upload-modal');
         }
@@ -380,6 +436,7 @@ namespace Peanut {
             me.services.postForm( 'ProcessBounceList', request, files, null,
                 function (serviceResponse: Peanut.IServiceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
+                        me.clearFileInput('bounceFile');
                     } else {
                         me.showModal('bounce-upload.modal');
                         let debug = serviceResponse;
@@ -397,16 +454,19 @@ namespace Peanut {
             (<HTMLFormElement>document.querySelector('#download-form')).submit();
         }
 
-        getFilesForUpload() {
+        getFilesForUpload(id = 'bounceFile') {
             let files = null;
-            files = Peanut.Helper.getSelectedFiles('#bounceFile');
+            files = Peanut.Helper.getSelectedFiles('#'+id);
             if (!files) {
                 return false;
             }
             return files;
         }
 
-
+        returnToMailings = () => {
+            this.reviewCount(0);
+            this.reviewList([]);
+        }
 
     }
 }
