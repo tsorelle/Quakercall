@@ -383,6 +383,7 @@ namespace Peanut {
                 return;
             }
             me.hideModal('suppression-upload-modal');
+            me.showWaitMessage( 'Uploading Suppression List');
             me.services.postForm( 'ProcessSuppressionList', request, files, null,
                 function (serviceResponse: Peanut.IServiceResponse) {
                     if (serviceResponse.Result == Peanut.serviceResultSuccess) {
@@ -404,8 +405,6 @@ namespace Peanut {
             }).always(() => {
                 me.application.hideWaiter();
             });
-
-
         }
 
         clearFileInput = (id: string) => {

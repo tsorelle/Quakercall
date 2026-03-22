@@ -43,8 +43,10 @@ class ProcessBounceListCommand extends TServiceCommand
 
             fclose($handle);
             unlink($filePath);
+            $this->addInfoMessage('Processed '.$processed.' bounces.');
         }
-        $this->addInfoMessage('Processed '.$processed.' bounces.');
-
+        else {
+            $this->addErrorMessage('Could not open file.');
+        }
     }
 }
